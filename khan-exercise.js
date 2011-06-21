@@ -547,7 +547,7 @@ var Khan = {
 					$hint.appendTo( "#rawhintsarea" );
 
 					// Reveal the rendered hint
-					$render.runModules().appendTo( "#hintsarea" );
+					$render.appendTo( "#hintsarea" );
 
 				}
 

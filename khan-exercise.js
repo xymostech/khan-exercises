@@ -4,6 +4,12 @@
 	link.rel = "stylesheet";
 	link.href = "../khan-exercise.css";
 	document.getElementsByTagName('head')[0].appendChild(link);
+
+	// Mathquill too
+	var link = document.createElement("link");
+	link.rel = "stylesheet";
+	link.href = "../utils/mathquill/mathquill.css";
+	document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
 // The main Khan Module
@@ -13,33 +19,7 @@ var Khan = {
 	moduleDependencies: {
 		// Yuck! There is no god. John will personally gut punch whoever
 		// thought this was a good API design.
-		"math": [ {
-			src: "http://cdn.mathjax.org/mathjax/latest/MathJax.js",
-			text: 'MathJax.Hub.Config({\
-				messageStyle: "none",\
-				skipStartupTypeset: true,\
-				jax: ["input/TeX","output/HTML-CSS"],\
-				extensions: ["tex2jax.js","MathMenu.js","MathZoom.js"],\
-				TeX: {\
-					extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]\
-				},\
-				"HTML-CSS": { scale: 93 }\
-			});\
-			\
-			// We don\'t want to use inline script elements, we want to use code blocks\n\
-			MathJax.Hub.elementScripts = function( elem ) {\
-				return elem.nodeName.toLowerCase() === "code" ?\
-					[ elem ] :\
-					elem.getElementsByTagName( "code" );\
-			};\
-			\
-			// Data is read in here:\n\
-			// https://github.com/mathjax/MathJax/blob/master/unpacked/jax/input/TeX/jax.js#L1704\n\
-			// We can force it to convert HTML entities properly by saying we\'re Konqueror\n\
-			MathJax.Hub.Browser.isKonqueror = true;\
-			\
-			MathJax.Hub.Startup.onload();'
-		}, "raphael" ],
+		"math": [ "mathquill/mathquill", "raphael" ],
 
 		// Locally because IE8 has a problem with the 1.5.2 minified raphael release
 		// http://groups.google.com/group/raphaeljs/browse_thread/thread/c34c75ad8d431544

@@ -101,19 +101,13 @@ jQuery.tmpl = {
 					$elem.wrap( "<span class='" + elem.className + "'></span>" );
 				}
 
-				// Trick MathJax into thinking that we're dealing with a script block
-				elem.type = "math/tex";
-
-				// Make sure that the old value isn't being displayed anymore
-				elem.style.display = "none";
-
 				// Clean up any strange mathematical expressions
 				var text = $elem.text();
 				$elem.text( KhanUtil.cleanMath ? KhanUtil.cleanMath( text ) : text );
 
 				// Stick the processing request onto the queue
-				if ( typeof MathJax !== "undefined") {
-					MathJax.Hub.Queue([ "Typeset", MathJax.Hub, elem ]);
+				if ( typeof jQuery.fn.mathquill !== "undefined") {
+					$elem.mathquill();
 				}
 			};
 		}

@@ -200,7 +200,6 @@ jQuery.extend( Khan.answerTypes, {
 		var shownChoices = [];
 		for ( var i = 0; i < possibleChoices.length && shownChoices.length < numChoices; i++ ) {
 			var choice = jQuery( possibleChoices[i] );
-			choice.runModules();
 
 			if ( isCategory && solution.text() === choice.text() ) {
 				choice.data( "correct", true );
@@ -227,7 +226,7 @@ jQuery.extend( Khan.answerTypes, {
 			if( noneIsCorrect ) {
 				none.data( "correct", true );
 				list.data( "real-answer",
-						jQuery( solution ).runModules()
+						jQuery( solution )
 							.contents()
 							.wrapAll( '<span class="value""></span>' )
 							.parent() );

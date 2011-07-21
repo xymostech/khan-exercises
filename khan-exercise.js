@@ -632,20 +632,28 @@ Khan.loadScripts( [ { src: "https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/j
 		},
 
 		// Run the methods provided by a module against some elements
-		runModules: function( problem, type ) {
+		runModules: function( problem, type, extra ) {
+			var response = this;
+			
 			type = type || "";
-
-			return this.each(function( i, elem ) {
+			
+			this.each(function( i, elem ) {
 				elem = jQuery( elem );
 
 				// Run the main method of any modules
 				jQuery.each( Khan.modules, function( src, mod ) {
 					var name = mod.name;
 					if ( jQuery.fn[ name + type ] ) {
-						elem[ name + type ]( problem );
+						var val = elem[ name + type ]( problem, extra );
+						
+						if ( extra && val === false ) {
+							response = val;
+						}
 					}
 				});
 			});
+			
+			return response;
 		}
 	});
 
@@ -836,7 +844,7 @@ function makeProblem( id, seed ) {
 
 	// Run the main method of any modules
 	problem.runModules( problem, "Load" );
-	problem.runModules( problem );
+	var duplicates = problem.runModules( problem, "", true );
 
 	// Store the solution to the problem
 	var solution = problem.find(".solution"),
@@ -876,10 +884,10 @@ function makeProblem( id, seed ) {
 	validator = Khan.answerTypes[answerType]( solutionarea, solution );
 
 	// A working solution was not generated
-	if ( !validator ) {
+	if ( !validator || duplicates === false ) {
 		// Making the problem failed, let's try again
-		makeProblem( id, seed );
-		return;
+		// Go with a new seed to make sure we get a new problem
+		return makeProblem( id, randomSeed + bins );
 	}
 
 	// Remove the solution and choices elements from the display

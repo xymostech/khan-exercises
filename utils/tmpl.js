@@ -1,7 +1,8 @@
 (function() {
 
 // Keep the template variables private, to prevent external access
-var VARS = {};
+var VARS = {},
+	oldVARS;
 
 jQuery.tmpl = {
 	// Processors that act based on element attributes
@@ -221,6 +222,7 @@ if ( typeof KhanUtil !== "undefined" ) {
 
 // Reinitialize VARS for each problem
 jQuery.fn.tmplLoad = function() {
+	oldVARS = VARS;
 	VARS = {};
 	
 	// Check to see if we're in test mode
@@ -230,10 +232,20 @@ jQuery.fn.tmplLoad = function() {
 	}
 };
 
-jQuery.fn.tmpl = function() {
+jQuery.fn.tmpl = function( problem, check ) {
 	// Call traverse() for each element in the jQuery object
 	for ( var i = 0, l = this.length; i < l; i++ ) {
 		traverse( this[i] );
+	}
+	
+	if ( check ) {
+		for ( var prop in VARS ) {
+			if ( VARS[ prop ] !== oldVARS[ prop ] ) {
+				return this;
+			}
+		}
+		
+		return false;
 	}
 
 	return this;

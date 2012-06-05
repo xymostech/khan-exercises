@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html data-require="math word-problems graphie interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Conditional intuition</title>
+    <script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div>
+            <div class="vars">
+                <var id="NUMBER">randRange(4, 20)</var>
+                <var id="FACTORS">getFactors(NUMBER)</var>
+            </div>
+
+            <p class="question">What are the factors of <var>NUMBER</var>?</p>
+
+            <div class="problem">
+                <div class="graphie">
+                    graph.shape = function(x, y, shape) {
+                        var moveShape = addMovablePoint({
+                            coord: [x, y],
+                            onMove: function(x, y) {
+                                this.visibleShape.remove();
+                                this.visibleShape = shape();
+                                graph.redraw();
+                                return [x, y];
+                            }
+                        });
+                    }
+
+                    graph.triangle = function(x, y, color) {
+                        return path([[x, y+1.5], [x-1, y-0.5], [x+1, y-0.5], true],
+                                     {strokeWidth: 2, stroke: "black", fill: "blue"});
+                    }
+
+                    init({ range: [[-1, 21], [-11, 1]], scale: [20, 20] });
+                    addMouseLayer();
+
+                    graph.redraw = function() {
+                        <!--graph.triangles.remove();-->
+
+                        <!--graph.topLabel.remove();-->
+                        <!--graph.leftLabel.remove();-->
+                        <!--graph.height = ceil(NUMBER / graph.width);-->
+                        <!--init({ range: [[-3, graph.width + 3], [-graph.height - 2, 3]], scale: [20, 20] });-->
+
+                        <!--graph.set = raphael.set();-->
+                        <!--graph.set.push(path([-->
+                                <!--[-1, 1],-->
+                                <!--[graph.width, 1],-->
+                                <!--[graph.width, -graph.height],-->
+                                <!--[-1, -graph.height],-->
+                                <!--[-1, 1], [1, 1]],{ stroke: BLUE, opacity: 1.0 }));-->
+
+                        <!--_(NUMBER).times(function(i) {-->
+                            <!--graph.set.push(circle([i % graph.width, -floor(i / graph.width)], 0.25,-->
+                                    <!--{ stroke: BLUE, fill: BLUE, opacity: 0.6 }));-->
+                        <!--});-->
+
+                        <!--graph.handle.translate(-->
+                                <!--graph.width * 20 - graph.handle[0].attr("translation").x,-->
+                                <!--graph.height * 10 - graph.handle[0].attr("translation").y);-->
+
+                        <!--graph.topLabel = label([graph.width / 2 - 0.5, 1], graph.width, "above");-->
+                        <!--graph.leftLabel = label([-1, -graph.height / 2 + 0.5], graph.height, "left");-->
+
+                        <!--graph.shapes = raphael.set();-->
+                        <!--graph.triangles.push(graph.triangle(graph.dragHandle.coord[0], graph.dragHandle.coord[1], "blue"));-->
+                        <!--graph.triangles.push(graph.triangle(graph.dragHandle.coord[0]+2, graph.dragHandle.coord[1], "blue"));-->
+                        <!--graph.triangles.push(graph.triangle(graph.dragHandle.coord[0]+4, graph.dragHandle.coord[1], "blue"));-->
+
+                        <!--graph.triangles.forEach(function(e) {-->
+                            <!--e.attr({fill:"#000"});-->
+                            <!--return true;-->
+                        <!--});-->
+
+                        <!--_.each(graph.shapes.items, function(e) {-->
+                            <!--console.log(e);-->
+                        <!--});-->
+                    };
+
+                    <!--graph.shapes = []-->
+
+                    <!--graph.shape.push(-->
+                    addMovablePoint({
+                        coord: [0, 0]
+                    });
+                        <!--);-->
+                    <!--graph.shape.visibleShape.remove();-->
+                    <!--graph.shape.visibleShape = graph.triangle(0, 0, "blue");-->
+                    <!--[>graph.dragHandle.mouseTarget.attr({ scale: 2.0 });<]-->
+
+                    <!--[>graph.shape.normalStyle = {};<]-->
+                    <!--graph.shape.highlightStyle.scale = 1;-->
+                    <!--graph.shape.highlightStyle.fill = "blue";-->
+                    <!--graph.shape.highlightStyle.stroke = "black";-->
+
+                    <!--graph.shape.normalStyle.scale = 1;-->
+                    <!--graph.shape.normalStyle.fill = "blue";-->
+                    <!--graph.shape.normalStyle.stroke = "black";-->
+
+
+                    <!--console.log(graph.shape);-->
+
+                    <!--graph.redraw();-->
+
+                </div>
+            </div>
+            <div class="solution" data-type="set">
+                <span class="set-sol" data-each="FACTORS as FACTOR"><var>FACTOR</var></span>
+                <p class="input-format">
+                    Enter all the different factors you can find:<br/>
+                    <span class="entry"></span><br/>
+                    <span class="entry"></span><br/>
+                    <span class="entry"></span><br/>
+                    <span class="entry"></span><br/>
+                    <span class="entry"></span><br/>
+                    <span class="entry"></span><br/>
+                    <span class="entry"></span><br/>
+                    <span class="entry"></span>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="hints">
+        <div data-each="FACTORS.reverse() as FACTOR">
+            <p>
+                The <var>NUMBER</var> dots can be arranged in <var>plural(NUMBER / FACTOR, "row")</var>
+                with <var>plural(FACTOR, "dot")</var> each, so
+                <code class="hint_pink"><var>NUMBER / FACTOR</var></code> is a factor of <var>NUMBER</var>:
+            </p>
+            <div class="graphie">
+                graph.width = FACTOR;
+                graph.height = ceil(NUMBER / graph.width);
+                init({ range: [[-3, graph.width + 3], [-graph.height - 2, 3]], scale: [7, 7] });
+
+                graph.set = raphael.set();
+                graph.set.push(path([
+                        [-1, 1],
+                        [graph.width, 1],
+                        [graph.width, -graph.height],
+                        [-1, -graph.height],
+                        [-1, 1], [1, 1]],{ stroke: BLUE, opacity: 1.0 }));
+
+                _(NUMBER).times(function(i) {
+                    graph.set.push(circle([i % graph.width, -floor(i / graph.width)], 0.25,
+                            { stroke: BLUE, fill: BLUE, opacity: 0.6 }));
+                });
+            </div>
+        </div>
+        <p>
+            The factors of <code><var>NUMBER</var></code> are
+            <var>toSentenceTex(FACTORS.reverse(), "and", function(){return true;}, "hint_pink")</var>.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

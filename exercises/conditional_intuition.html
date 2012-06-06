@@ -10,35 +10,40 @@
     <div class="problems">
         <div>
             <div class="vars">
-                <var id="NUMBER">randRange(4, 20)</var>
-                <var id="FACTORS">getFactors(NUMBER)</var>
             </div>
-
-            <p class="question">What are the factors of <var>NUMBER</var>?</p>
 
             <div class="problem">
                 <div class="graphie">
-                    graph.shape = function(x, y, shape) {
-                        var moveShape = addMovablePoint({
-                            coord: [x, y],
-                            onMove: function(x, y) {
-                                this.visibleShape.remove();
-                                this.visibleShape = shape();
-                                graph.redraw();
-                                return [x, y];
-                            }
-                        });
-                    }
-
-                    graph.triangle = function(x, y, color) {
-                        return path([[x, y+1.5], [x-1, y-0.5], [x+1, y-0.5], true],
-                                     {strokeWidth: 2, stroke: "black", fill: "blue"});
-                    }
-
                     init({ range: [[-1, 21], [-11, 1]], scale: [20, 20] });
                     addMouseLayer();
 
-                    graph.redraw = function() {
+                    console.log(KhanUtil.currentGraph.graph);
+
+                    <!--graph.shape = function(x, y) {-->
+                        <!--var moveShape = addMovablePoint({-->
+                            <!--coord: [x, y],-->
+                            <!--onMove: function(x, y) {-->
+                                <!--console.log(graph);-->
+                                <!--var truepos = graph.scalePoint([x, y]);-->
+                                <!--this.visibleShape.transform("T"+truepos[0]+","+truepos[1]);-->
+                                <!--graph.redraw();-->
+                                <!--return [x, y];-->
+                            <!--}-->
+                        <!--});-->
+                        <!--return moveShape;-->
+                    <!--}-->
+
+                    <!--graph.triangle = function(x, y, color) {-->
+                        <!--var myshape = path([[x, y+1.5], [x-1, y-0.5], [x+1, y-0.5], true],-->
+                                           <!--{strokeWidth: 2, stroke: "black", fill: "blue"});-->
+
+                        <!--var shape = graph.shape(x, y);-->
+
+                        <!--shape.visibleShape.remove();-->
+                        <!--shape.visibleShape = myshape;-->
+                    <!--}-->
+
+                    <!--graph.redraw = function() {-->
                         <!--graph.triangles.remove();-->
 
                         <!--graph.topLabel.remove();-->
@@ -79,18 +84,19 @@
                         <!--_.each(graph.shapes.items, function(e) {-->
                             <!--console.log(e);-->
                         <!--});-->
-                    };
+                    <!--};-->
 
-                    <!--graph.shapes = []-->
+                    <!--graph.shapes = [];-->
 
-                    <!--graph.shape.push(-->
-                    addMovablePoint({
-                        coord: [0, 0]
-                    });
-                        <!--);-->
-                    <!--graph.shape.visibleShape.remove();-->
-                    <!--graph.shape.visibleShape = graph.triangle(0, 0, "blue");-->
-                    <!--[>graph.dragHandle.mouseTarget.attr({ scale: 2.0 });<]-->
+                    <!--graph.shapes.push(-->
+                        <!--addMovablePoint({-->
+                            <!--coord: [0, 0]-->
+                        <!--})-->
+                    <!--);-->
+                    <!--graph.shapes[1].visibleShape.remove();-->
+                    <!--graph.shapes[1].visibleShape = graph.triangle(0, 0, "blue");-->
+
+                    <!--graph.triangle(0, 0, "blue");-->
 
                     <!--[>graph.shape.normalStyle = {};<]-->
                     <!--graph.shape.highlightStyle.scale = 1;-->
@@ -108,56 +114,10 @@
 
                 </div>
             </div>
-            <div class="solution" data-type="set">
-                <span class="set-sol" data-each="FACTORS as FACTOR"><var>FACTOR</var></span>
-                <p class="input-format">
-                    Enter all the different factors you can find:<br/>
-                    <span class="entry"></span><br/>
-                    <span class="entry"></span><br/>
-                    <span class="entry"></span><br/>
-                    <span class="entry"></span><br/>
-                    <span class="entry"></span><br/>
-                    <span class="entry"></span><br/>
-                    <span class="entry"></span><br/>
-                    <span class="entry"></span>
-                </p>
-
+            <div class="solution">
             </div>
         </div>
     </div>
-
-    <div class="hints">
-        <div data-each="FACTORS.reverse() as FACTOR">
-            <p>
-                The <var>NUMBER</var> dots can be arranged in <var>plural(NUMBER / FACTOR, "row")</var>
-                with <var>plural(FACTOR, "dot")</var> each, so
-                <code class="hint_pink"><var>NUMBER / FACTOR</var></code> is a factor of <var>NUMBER</var>:
-            </p>
-            <div class="graphie">
-                graph.width = FACTOR;
-                graph.height = ceil(NUMBER / graph.width);
-                init({ range: [[-3, graph.width + 3], [-graph.height - 2, 3]], scale: [7, 7] });
-
-                graph.set = raphael.set();
-                graph.set.push(path([
-                        [-1, 1],
-                        [graph.width, 1],
-                        [graph.width, -graph.height],
-                        [-1, -graph.height],
-                        [-1, 1], [1, 1]],{ stroke: BLUE, opacity: 1.0 }));
-
-                _(NUMBER).times(function(i) {
-                    graph.set.push(circle([i % graph.width, -floor(i / graph.width)], 0.25,
-                            { stroke: BLUE, fill: BLUE, opacity: 0.6 }));
-                });
-            </div>
-        </div>
-        <p>
-            The factors of <code><var>NUMBER</var></code> are
-            <var>toSentenceTex(FACTORS.reverse(), "and", function(){return true;}, "hint_pink")</var>.
-        </p>
-    </div>
-
 </div>
 </body>
 </html>

@@ -22,10 +22,15 @@
             <div class="vars">
                 <var id="SHAPE">randFromArray(["triangle", "circle", "square"])</var>
                 <var id="COLOR">randFromArray(["red", "blue", "green"])</var>
+                <var id="TYPE">randRange(0, 3)</var>
+                <var id="QUESTION">(TYPE &lt; 2) ? ("a "+SHAPE) : COLOR</var>
             </div>
 
             <div class="question">
-                All <var>SHAPE</var>s must be <var>COLOR</var>. If a shape is a <var>SHAPE</var>, what color must it be?
+                All <var>SHAPE</var>s must be <var>COLOR</var>.
+                <br>
+                If an object is <var>(TYPE === 1 || TYPE === 3) ? "not " : ""</var><var>QUESTION</var>,
+                    what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?
             </div>
             <div class="problem">
                 <div>
@@ -177,12 +182,96 @@
                 </div>
             </div>
 
-            <p class="solution" data-type="multiple">
-                <var>capitalize(SHAPE)</var>s must be
-                <span class="sol" data-type="list" data-choices="['red', 'green', 'blue']">
-                    <var>COLOR</var>
-                </span>
-            </p>
+            <div class="solution" data-type="custom" data-if="TYPE < 2">
+                <div class="instruction">
+                    <input type="radio" name="answertype" value="deduce" checked />
+                        Objects that are <var>SHAPE</var>s<br>
+                        <select id="decision-choice">
+                            <option>must be</option>
+                            <option>must not be</option>
+                        </select>
+                        <select id="answer-choice">
+                            <option>red</option>
+                            <option>blue</option>
+                            <option>green</option>
+                        </select>
+                    <br>
+                    <input type="radio" name="answertype" value="notdeduce" />
+                        We can't be sure of anything
+                </div>
+                <div class="guess">
+                    [ $("#decision-choice option:selected").text(),
+                      $("#answer-choice   option:selected").text(),
+                      $("input[name=answertype]:checked").val() ]
+                </div>
+                <div class="validator-function">
+                    if (TYPE === 0) {
+                        return (guess[0] === "must be") &amp;&amp;
+                               (guess[1] === COLOR) &amp;&amp;
+                               (guess[2] === "deduce");
+                    } else {
+                        return (guess[2] === "notdeduce");
+                    }
+                </div>
+                <div class="show-guess-solutionarea">
+                    if (guess.length &gt; 0) {
+                        $("#decision-choice").val(guess[0]).attr('selected', true);
+                        $("#answer-choice").val(guess[1]).attr('selected', true);
+                        $("input:radio[name=answertype]").filter("[value="+guess[2]+"]")
+                                                         .attr('checked', true);
+                    } else {
+                        $("#decision-choice").val("must be").attr('selected', true);
+                        $("#answer-choice").val("red").attr('selected', true);
+                        $("input:radio[name=answertype]").filter("[value=deduce]")
+                                                         .attr('checked', true);
+                    }
+                </div>
+            </div>
+            <div class="solution" data-type="custom" data-else>
+                <div class="instruction">
+                    <input type="radio" name="answertype" value="deduce" checked />
+                        Objects that are <var>COLOR</var><br>
+                        <select id="decision-choice">
+                            <option>must be</option>
+                            <option>must not be</option>
+                        </select>
+                        <select id="answer-choice">
+                            <option>triangles</option>
+                            <option>circles</option>
+                            <option>squares</option>
+                        </select>
+                    <br>
+                    <input type="radio" name="answertype" value="notdeduce" />
+                        We can't be sure of anything
+                </div>
+                <div class="guess">
+                    [ $("#decision-choice option:selected").text(),
+                      $("#answer-choice   option:selected").text(),
+                      $("input[name=answertype]:checked").val() ]
+                </div>
+                <div class="validator-function">
+                    if (TYPE === 3) {
+                        return (guess[0] === "must not be") &amp;&amp;
+                               (guess[1] === SHAPE+"s") &amp;&amp;
+                               (guess[2] === "deduce");
+                    } else {
+                        return (guess[2] === "notdeduce");
+                    }
+                </div>
+                <div class="show-guess-solutionarea">
+                    if (guess.length &gt; 0) {
+                        $("#decision-choice").val(guess[0]).attr('selected', true);
+                        $("#answer-choice").val(guess[1]).attr('selected', true);
+                        $("input:radio[name=answertype]").filter("[value="+guess[2]+"]")
+                                                         .attr('checked', true);
+                    } else {
+                        $("#decision-choice").val("must be").attr('selected', true);
+                        $("#answer-choice").val("triangle").attr('selected', true);
+                        $("input:radio[name=answertype]").filter("[value=deduce]")
+                                                         .attr('checked', true);
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>

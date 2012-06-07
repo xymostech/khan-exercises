@@ -121,12 +121,13 @@
                     graph.shapes = [];
 
                     graph.addShape = function(shape, color) {
-                        if (shape === SHAPE) {
-                            color = COLOR;
+                        if (shape === SHAPE &amp;&amp; color !== COLOR) {
+                            return false;
                         }
                         var newShape = graph[shape](0, 0, color);
                         newShape.setCoord([random() * 20, random() * -20]);
                         graph.shapes.push(newShape);
+                        return true;
                     };
 
                     graph.addShapeFromSelector = function() {
@@ -143,8 +144,10 @@
                     }
 
                     graph.addRandomShape = function() {
-                        graph.addShape(randFromArray(["triangle", "square", "circle"]),
-                                       randFromArray(["red", "blue", "green"]));
+                        while(!graph.addShape(randFromArray(["triangle", "square", "circle"]),
+                                              randFromArray(["red", "blue", "green"]))) {
+
+                        }
                     }
 
                     graph.sortByShape = function() {
@@ -276,6 +279,9 @@
                                                          .attr('checked', true);
                     }
                 </div>
+            </div>
+            <div class="hints">
+                <p>Try adding a bunch of random shapes, and then sorting by both color and shape.</p>
             </div>
         </div>
     </div>

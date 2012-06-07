@@ -170,11 +170,10 @@
                         });
                     }
 
-                    graph.addShape("triangle", "blue");
-                    graph.addShape("square", "red");
-                    graph.addShape("circle", "green");
-                    graph.addShape("triangle", "red");
-                    graph.addShape("square", "green");
+                    _(5).times(function() {
+                        graph.addShape(randFromArray(["triangle", "square", "circle"]),
+                                       randFromArray(["red", "blue", "green"]));
+                    });
                 </div>
             </div>
 

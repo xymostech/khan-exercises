@@ -23,13 +23,15 @@
                 <var id="SHAPE">randFromArray(["triangle", "circle", "square"])</var>
                 <var id="COLOR">randFromArray(["red", "blue", "green"])</var>
                 <var id="TYPE">randRange(0, 3)</var>
+                <var id="NOT">(TYPE === 1 || TYPE === 3) ? "not " : ""</var>
                 <var id="QUESTION">(TYPE &lt; 2) ? ("a "+SHAPE) : COLOR</var>
+                <var id="COLORSHAPE">(TYPE &lt; 2) ? "color" : "shape"</var>
             </div>
 
             <div class="question">
                 All <var>SHAPE</var>s must be <var>COLOR</var>.
                 <br>
-                If an object is <var>(TYPE === 1 || TYPE === 3) ? "not " : ""</var><var>QUESTION</var>,
+                If an object is <var>NOT</var><var>QUESTION</var>,
                     what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?
             </div>
             <div class="problem">
@@ -52,7 +54,7 @@
                     <input type="button" value="Sort by Color" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').sortByColor(); return false;" />
                     <input type="button" value="Sort by Shape" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').sortByShape(); return false;" />
                 </div>
-                <div class="graphie">
+                <div class="graphie" id="main">
                     init({ range: [[-1, 21], [-21, 1]], scale: [20, 20] });
                     addMouseLayer();
 
@@ -141,14 +143,14 @@
                             $(".color-error").css("display", "none");
                             graph.addShape(shape, color);
                         }
-                    }
+                    };
 
                     graph.addRandomShape = function() {
                         while(!graph.addShape(randFromArray(["triangle", "square", "circle"]),
                                               randFromArray(["red", "blue", "green"]))) {
 
                         }
-                    }
+                    };
 
                     graph.sortByShape = function() {
                         _.each(graph.shapes, function(e) {
@@ -165,7 +167,7 @@
                                 e.moveTo(newX[0] + 4 * random(), e.coord[1]);
                             }
                         });
-                    }
+                    };
 
                     graph.sortByColor = function() {
                         _.each(graph.shapes, function(e) {
@@ -182,7 +184,36 @@
                                 e.moveTo(e.coord[0], newY[0] + 4 * random());
                             }
                         });
-                    }
+                    };
+
+                    graph.colorShapePos = { 
+                        square: {
+                            blue:  [0, 0],
+                            red:   [0, 1],
+                            green: [0, 2]
+                        },
+                        triangle: {
+                            blue:  [1, 0],
+                            red:   [1, 1],
+                            green: [1, 2]
+                        },
+                        circle: {
+                            blue:  [2, 0],
+                            red:   [2, 1],
+                            green: [2, 2]
+                        }
+                    };
+
+                    graph.drawX = function(shape, color) {
+                        pos = graph.colorShapePos[shape][color];
+                        pos[0] =  3 + pos[0] * 7;
+                        pos[1] = -3 - pos[1] * 7;
+
+                        path([[pos[0]-2, pos[1]-2], [pos[0]+2, pos[1]+2]],
+                             { strokeWidth: 4 });
+                        path([[pos[0]+2, pos[1]-2], [pos[0]-2, pos[1]+2]],
+                             { strokeWidth: 4 });
+                    };
 
                     _(5).times(function() {
                         graph.addRandomShape();
@@ -190,26 +221,40 @@
                 </div>
             </div>
 
-            <div class="solution" data-type="custom" data-if="TYPE < 2">
+            <div class="solution" data-type="custom">
                 <div class="instruction">
-                    <input type="radio" name="answertype" value="deduce" checked />
-                        Objects that are <var>SHAPE</var>s<br>
-                        <select id="decision-choice">
+                    <div data-if="TYPE < 2">
+                        <input type="radio" name="answertype" value="deduce" checked />
+                            Objects that are <var>NOT</var><var>SHAPE</var>s<br>
+                        <select class="decision-choice">
                             <option>must be</option>
                             <option>must not be</option>
                         </select>
-                        <select id="answer-choice">
+                        <select class="answer-choice">
                             <option>red</option>
                             <option>blue</option>
                             <option>green</option>
                         </select>
-                    <br>
+                    </div>
+                    <div data-else>
+                        <input type="radio" name="answertype" value="deduce" checked />
+                            Objects that are <var>NOT</var><var>COLOR</var><br>
+                        <select class="decision-choice">
+                            <option>must be</option>
+                            <option>must not be</option>
+                        </select>
+                        <select class="answer-choice">
+                            <option>triangles</option>
+                            <option>circles</option>
+                            <option>squares</option>
+                        </select>
+                    </div>
                     <input type="radio" name="answertype" value="notdeduce" />
                         We can't be sure of anything
                 </div>
                 <div class="guess">
-                    [ $("#decision-choice option:selected").text(),
-                      $("#answer-choice   option:selected").text(),
+                    [ $(".decision-choice option:selected").text(),
+                      $(".answer-choice   option:selected").text(),
                       $("input[name=answertype]:checked").val() ]
                 </div>
                 <div class="validator-function">
@@ -217,50 +262,9 @@
                         return (guess[0] === "must be") &amp;&amp;
                                (guess[1] === COLOR) &amp;&amp;
                                (guess[2] === "deduce");
-                    } else {
-                        return (guess[2] === "notdeduce");
-                    }
-                </div>
-                <div class="show-guess-solutionarea">
-                    if (guess.length &gt; 0) {
-                        $("#decision-choice").val(guess[0]).attr('selected', true);
-                        $("#answer-choice").val(guess[1]).attr('selected', true);
-                        $("input:radio[name=answertype]").filter("[value="+guess[2]+"]")
-                                                         .attr('checked', true);
-                    } else {
-                        $("#decision-choice").val("must be").attr('selected', true);
-                        $("#answer-choice").val("red").attr('selected', true);
-                        $("input:radio[name=answertype]").filter("[value=deduce]")
-                                                         .attr('checked', true);
-                    }
-                </div>
-            </div>
-            <div class="solution" data-type="custom" data-else>
-                <div class="instruction">
-                    <input type="radio" name="answertype" value="deduce" checked />
-                        Objects that are <var>COLOR</var><br>
-                        <select id="decision-choice">
-                            <option>must be</option>
-                            <option>must not be</option>
-                        </select>
-                        <select id="answer-choice">
-                            <option>triangles</option>
-                            <option>circles</option>
-                            <option>squares</option>
-                        </select>
-                    <br>
-                    <input type="radio" name="answertype" value="notdeduce" />
-                        We can't be sure of anything
-                </div>
-                <div class="guess">
-                    [ $("#decision-choice option:selected").text(),
-                      $("#answer-choice   option:selected").text(),
-                      $("input[name=answertype]:checked").val() ]
-                </div>
-                <div class="validator-function">
-                    if (TYPE === 3) {
+                    } if (TYPE === 3) {
                         return (guess[0] === "must not be") &amp;&amp;
-                               (guess[1] === SHAPE+"s") &amp;&amp;
+                               (guess[1] === shape+"s") &amp;&amp;
                                (guess[2] === "deduce");
                     } else {
                         return (guess[2] === "notdeduce");
@@ -268,20 +272,62 @@
                 </div>
                 <div class="show-guess-solutionarea">
                     if (guess.length &gt; 0) {
-                        $("#decision-choice").val(guess[0]).attr('selected', true);
-                        $("#answer-choice").val(guess[1]).attr('selected', true);
+                        $(".decision-choice").val(guess[0]).attr('selected', true);
+                        $(".answer-choice").val(guess[1]).attr('selected', true);
                         $("input:radio[name=answertype]").filter("[value="+guess[2]+"]")
-                                                         .attr('checked', true);
-                    } else {
-                        $("#decision-choice").val("must be").attr('selected', true);
-                        $("#answer-choice").val("triangle").attr('selected', true);
-                        $("input:radio[name=answertype]").filter("[value=deduce]")
                                                          .attr('checked', true);
                     }
                 </div>
             </div>
             <div class="hints">
                 <p>Try adding a bunch of random shapes, and then sorting by both color and shape.</p>
+                <div>
+                    <div class="graphie" data-update="main">
+                        path([[-2, 2], [-2, -6.5], [22, -6.5], [22, 2], true],
+                             { fill: BLUE, stroke: null, opacity: 0.3 });
+                        path([[-2, -6.5], [-2, -13.5], [22, -13.5], [22, -6.5], true],
+                             { fill: "red", stroke: null, opacity: 0.3 });
+                        path([[-2, -13.5], [-2, -22], [22, -22], [22, -13.5], true],
+                             { fill: GREEN, stroke: null, opacity: 0.3 });
+                        path([[6.5, 2], [6.5, -22]]);
+                        path([[13.5, 2], [13.5, -22]]);
+                    </div>
+                    <p>Look at the categories that <strong>do</strong> and <strong>don't</strong> have objects in them. What information can we get from this?</p>
+                </div>
+                <div>
+                    <div class="graphie" data-update="main">
+                        var shapes = ["triangle", "circle", "square"];
+                        var colors = ["red", "green", "blue"];
+                        var notShapes = _.without(shapes, SHAPE);
+                        var notColors = _.without(colors, COLOR);
+                        console.log("here");
+                        if (TYPE === 0) {
+                            _.each(notShapes, function(shape) {
+                                _.each(colors, function(color) {
+                                    graph.drawX(shape, color);
+                                });
+                            });
+                        } else if (TYPE === 1) {
+                            _.each(colors, function(color) {
+                                graph.drawX(SHAPE, color);
+                            });
+                        } else if (TYPE === 2) {
+                            _.each(notColors, function(color) {
+                                _.each(shapes, function(shape) {
+                                    graph.drawX(shape, color);
+                                });
+                            });
+                        } else if (TYPE === 3) {
+                            _.each(shapes, function(shape) {
+                                graph.drawX(shape, COLOR);
+                            });
+                        }
+                    </div>
+                    <p>Now, only look at the categories that the question asks about. In these categories, are the objects of only one <var>COLORSHAPE</var>, or is there a single <var>COLORSHAPE</var> missing?<p>
+                </div>
+                <p data-if="TYPE === 0">Yes, the objects are only of one color: <var>COLOR</var>. So, we can be sure that <strong>objects that are <var>SHAPE</var>s must be <var>COLOR</var></strong>.</p>
+                <p data-else-if="TYPE === 3">Yes, the objects are missing the <var>SHAPE</var> shape. So, we can be sure that <strong>objects that are not <var>COLOR</var> must not be <var>SHAPE</var></strong>.</p>
+                <p data-else>No, there are not any <var>COLORSHAPE</var>s missing. So, <strong>we can't be sure of anything</strong>.</p>
             </div>
         </div>
     </div>

@@ -46,6 +46,7 @@
                         <option>circle</option>
                     </select>
                     <input type="button" value="Add!" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').addShapeFromSelector(); return false;" />
+                    <input type="button" value="Add random!" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').addRandomShape(); return false;" />
                     <span class="color-error">Can't have <span id="color-error-shape"></span>s that are <span id="color-error-color"></span></span>
                     <br>
                     <input type="button" value="Sort by Color" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').sortByColor(); return false;" />
@@ -141,6 +142,11 @@
                         }
                     }
 
+                    graph.addRandomShape = function() {
+                        graph.addShape(randFromArray(["triangle", "square", "circle"]),
+                                       randFromArray(["red", "blue", "green"]));
+                    }
+
                     graph.sortByShape = function() {
                         _.each(graph.shapes, function(e) {
                             var newX = 0;
@@ -176,8 +182,7 @@
                     }
 
                     _(5).times(function() {
-                        graph.addShape(randFromArray(["triangle", "square", "circle"]),
-                                       randFromArray(["red", "blue", "green"]));
+                        graph.addRandomShape();
                     });
                 </div>
             </div>

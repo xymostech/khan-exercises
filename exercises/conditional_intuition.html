@@ -5,13 +5,16 @@
     <title>Conditional intuition</title>
     <script src="../khan-exercise.js"></script>
     <style type="text/css">
-        .color-error {
+        .hint {
             display: none;
+        }
+
+        .error {
             color: red;
         }
 
-        .graphie {
-            outline: black solid 2px;
+        .phase {
+            display: none;
         }
     </style>
 </head>
@@ -29,9 +32,212 @@
             </div>
 
             <div class="question">
-                Assume all <var>SHAPE</var>s must be <var>COLOR</var>.
+                <strong>Assume all <var>SHAPE</var>s must be <var>COLOR</var>.</strong>
             </div>
             <div class="problem">
+                <strong>Click on</strong> the shapes which do not fit with this assumption. In other words, click on all the <var>SHAPE</var>s that are not <var>COLOR</var>.
+                <div class="graphie">
+                    init({ range: [[-1, 21], [-21, 1]], scale: [20, 20] });
+
+                    graph.triangle = function(x, y, color) {
+                        var shape = path([[x, y+3], [x+3*cos(210), y-3*sin(210)], [x-3*cos(210), y-3*sin(210)], true],
+                                         {strokeWidth: 2, stroke: "black", fill: color});
+
+                        return shape;
+                    };
+
+                    graph.square = function(x, y, color) {
+                        var shape = path([[x-2, y-2+0.7], [x-2, y+2+0.7], [x+2, y+2+0.7], [x+2, y-2+0.7], true],
+                                           {strokeWidth: 2, stroke: "black", fill: color});
+
+                        return shape;
+                    };
+
+                    graph.circle = function(x, y, color) {
+                        var shape = ellipse([x, y+0.6], 2.5,
+                                           {strokeWidth: 2, stroke: "black", fill: color});
+
+                        return shape;
+                    };
+
+                    graph.colorShapePos = {
+                        square: {
+                            blue:  [0, 0],
+                            red:   [0, 1],
+                            green: [0, 2]
+                        },
+                        triangle: {
+                            blue:  [1, 0],
+                            red:   [1, 1],
+                            green: [1, 2]
+                        },
+                        circle: {
+                            blue:  [2, 0],
+                            red:   [2, 1],
+                            green: [2, 2]
+                        }
+                    };
+
+                    graph.toCrossOut = 2;
+
+                    graph.crossOut = function(event, shape) {
+                        event.data.shape.animate({
+                            opacity: 0
+                        }, 100, "linear",
+                        function() {
+                            this.remove();
+                            graph.toCrossOut -= 1;
+                            if (graph.toCrossOut == 0) {
+                                graph.nextPhase();
+                            }
+                        });
+                    };
+
+                    var stopHints = function() {
+                        $(".hint").hide().stop(true, true);
+                    };
+
+                    var showHint = function(object) {
+                        stopHints();
+                        $("#"+object).show().css({ opacity: 0.0 })
+                                     .animate({ opacity: 1.0 }, 100)
+                                     .animate({ _: 0 }, 5000)
+                                     .animate({ opacity: 0.0 }, 100, function() {
+                                        $(this).hide();
+                                     });
+                    };
+
+                    graph.addShape = function(shape, color) {
+                        var pos = graph.colorShapePos[shape][color];
+
+                        var x =  3 + pos[0] * 7;
+                        var y = -3 - pos[1] * 7;
+
+                        var newshape = graph[shape](x, y, color);
+
+                        if (shape === SHAPE) {
+                            if (color === COLOR) {
+                                $(newshape[0]).bind("vmousedown", function() {
+                                    showHint("wrong-color");
+                                });
+                            } else {
+                                $(newshape[0]).bind("vmousedown", { shape: newshape }, graph.crossOut);
+                            }
+                        } else {
+                            $(newshape[0]).bind("vmousedown", function() {
+                                showHint("wrong-shape");
+                            });
+                        }
+
+                        return newshape;
+                    };
+
+                    graph.phase = 1;
+
+                    graph.nextPhase = function() {
+                        graph.phase += 1;
+                        if (graph.phase === 2) {
+                            graph.phaseTwo();
+                        } else if (graph.phase === 3) {
+                            graph.phaseThree();
+                        }
+                    };
+
+                    graph.phaseTwoHintNum = 0;
+
+                    graph.phaseTwoHint = function() {
+                        graph.phaseTwoHintNum += 1;
+                        if (graph.phaseTwoHintNum === 1) {
+                            $("#phase-two-hint-one").show();
+                        } else if (graph.phaseTwoHintNum === 2) {
+                            $("#phase-two-hint-two").show();
+                        }
+                    };
+
+                    graph.phaseTwo = function() {
+                        stopHints();
+                        _.each(_.keys(graph.shapes), function(shape) {
+                            _.each(_.keys(graph.shapes[shape]), function(color) {
+                                var testshape = graph.shapes[shape][color];
+                                $(testshape[0]).unbind();
+                                var bindFunc = graph.phaseTwoHint;
+                                if (TYPE === 0) {
+                                    if (shape !== SHAPE) {
+                                        bindFunc = graph.crossOut;
+                                        graph.toCrossOut = 6;
+                                    }
+                                } else if (TYPE === 1) {
+                                    if (shape === SHAPE) {
+                                        bindFunc = graph.crossOut;
+                                        graph.toCrossOut = 1;
+                                    }
+                                } else if (TYPE === 2) {
+                                    if (color !== COLOR) {
+                                        bindFunc = graph.crossOut;
+                                        graph.toCrossOut = 4;
+                                    }
+                                } else if (TYPE === 3) {
+                                    if (color === COLOR) {
+                                        bindFunc = graph.crossOut;
+                                        graph.toCrossOut = 3;
+                                    }
+                                }
+                                $(testshape[0]).bind("vmousedown", { shape: testshape }, bindFunc);
+                            });
+                        });
+                        $("#phase-two").show();
+                    };
+
+                    graph.phaseThree = function() {
+                        _.each(_.keys(graph.shapes), function(shape) {
+                            _.each(_.keys(graph.shapes[shape]), function(color) {
+                                var testshape = graph.shapes[shape][color];
+                                $(testshape[0]).unbind();
+                            });
+                        });
+                        $("#phase-three").show();
+                    };
+
+                    graph.shapes = {
+                        triangle: {},
+                        square: {},
+                        circle: {}
+                    };
+
+                    _.each(["triangle", "square", "circle"], function(shape) {
+                        _.each(["red", "blue", "green"], function(color) {
+                            graph.shapes[shape][color] = graph.addShape(shape, color);
+                        });
+                    });
+                </div>
+                <div id="wrong-shape" class="hint error">
+                    The assumption doesn't say anything about this shape, so it does fit the assumption.
+                </div>
+                <div id="wrong-color" class="hint error">
+                    The assumption specifically allows this color, so it does fit the assumption.
+                </div>
+                <div id="phase-two" class="phase">
+                    Good job! Now, think about this: <br>
+                    <strong>If an object is <var>NOT</var><var>QUESTION</var>,
+                        what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?</strong> <br> <br>
+                    To figure this out, first cross out the things that this question isn't talking about.
+                </div>
+                <div class="hint" id="phase-two-hint-one">
+                    The question talks about objects that are <var>NOT</var><var>(TYPE &lt; 2) ? SHAPE+"s" : COLOR</var>. We want to cross out things that don't follow this.
+                </div>
+                <div class="hint" id="phase-two-hint-two">
+                    In other words,
+                    <strong>click on the 
+                        <span      data-if="TYPE === 0">objects that are not <var>SHAPE</var>s.</span>
+                        <span data-else-if="TYPE === 1"><var>SHAPE</var>s.</span>
+                        <span data-else-if="TYPE === 2">objects that are not <var>COLOR</var>.</span>
+                        <span data-else-if="TYPE === 3"><var>COLOR</var> objects.</span>
+                    </strong>
+                </div>
+                <div id="phase-three" class="phase">
+                    <br>
+                    Great! Now, look at the shapes that are left. All of these satisfy the original condition, and they are mentioned in our question. <br> <br> Based on the shapes that are left, what can we decide about the <var>COLORSHAPE</var> of the remaining objects?
+                </div>
             </div>
         </div>
     </div>

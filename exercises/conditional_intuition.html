@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html data-require="math word-problems graphie interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Conditional intuition</title>
+    <script src="../khan-exercise.js"></script>
+    <style type="text/css">
+        .color-error {
+            display: none;
+            color: red;
+        }
+
+        .graphie {
+            outline: black solid 2px;
+        }
+    </style>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="choose-shape">
+            <div class="vars">
+                <var id="SHAPE">randFromArray(["triangle", "circle", "square"])</var>
+                <var id="COLOR">randFromArray(["red", "blue", "green"])</var>
+                <var id="TYPE">randRange(0, 3)</var>
+                <var id="NOT">(TYPE === 1 || TYPE === 3) ? "not " : ""</var>
+                <var id="QUESTION">(TYPE &lt; 2) ? ("a "+SHAPE) : COLOR</var>
+                <var id="COLORSHAPE">(TYPE &lt; 2) ? "color" : "shape"</var>
+            </div>
+
+            <div class="question">
+                Assume all <var>SHAPE</var>s must be <var>COLOR</var>.
+            </div>
+            <div class="problem">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

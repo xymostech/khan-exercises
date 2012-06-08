@@ -29,39 +29,46 @@
             </div>
 
             <div class="question">
-                All <var>SHAPE</var>s must be <var>COLOR</var>.
+                Assume all <var>SHAPE</var>s must be <var>COLOR</var>.
                 <br>
-                If an object is <var>NOT</var><var>QUESTION</var>,
-                    what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?
+                <strong>If an object is <var>NOT</var><var>QUESTION</var>,
+                        what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?</strong>
             </div>
             <div class="problem">
                 <div>
-                    Add Shape:
-                    <select id="color">
-                        <option>red</option>
-                        <option>blue</option>
-                        <option>green</option>
-                    </select>
-                    <select id="shape">
-                        <option>triangle</option>
-                        <option>square</option>
-                        <option>circle</option>
-                    </select>
-                    <input type="button" value="Add!" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').addShapeFromSelector(); return false;" />
-                    <input type="button" value="Add random!" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').addRandomShape(); return false;" />
-                    <span class="color-error">Can't have <span id="color-error-shape"></span>s that are <span id="color-error-color"></span></span>
                     <br>
-                    <input type="button" value="Sort by Color" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').sortByColor(); return false;" />
-                    <input type="button" value="Sort by Shape" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').sortByShape(); return false;" />
+                    The shapes in this diagram follow the rules above. Try exploring adding shapes by dragging them in from the right, and see if you can come up with the answer based on the kinds of shapes that are allowed. <br> <input type="button" value="Sort the shapes" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').sortShapes(); return false;" /> to see what kinds of shapes you already have more easily.
                 </div>
                 <div class="graphie" id="main">
-                    init({ range: [[-1, 21], [-21, 1]], scale: [20, 20] });
+                    init({ range: [[-1, 24], [-21, 1]], scale: [20, 20] });
                     addMouseLayer();
 
                     graph.shape = function(x, y, color) {
                         var moveShape = addMovablePoint({
                             coord: [x, y]
                         });
+
+                        moveShape.movedOut = true;
+                        this.toolbox = false;
+
+                        moveShape.onMove = function(x, y) {
+                            if (this.toolbox) {
+                                graph.addToolboxShape(this.shape, this.color);
+                                this.toolbox = false;
+                                graph.shapes.push(this);
+                            }
+                            if (this.movedOut) {
+                                if (x &gt; 20) {
+                                    return [20, y];
+                                }
+                            } else {
+                                if (x &lt; 20) {
+                                    this.movedOut = true;
+                                    return true;
+                                }
+                            }
+                        }
+
                         moveShape.highlightStyle.scale = 1;
                         moveShape.highlightStyle.fill = color;
                         moveShape.highlightStyle.stroke = "black";
@@ -132,6 +139,50 @@
                         return true;
                     };
 
+                    graph.toolboxPos = {
+                        square: {
+                            blue:  0,
+                            red:   1,
+                            green: 2
+                        },
+                        triangle: {
+                            blue:  3,
+                            red:   4,
+                            green: 5
+                        },
+                        circle: {
+                            blue:  6,
+                            red:   7,
+                            green: 8
+                        }
+                    };
+
+                    graph.addToolboxShape = function(shape, color) {
+                        var pos = graph.toolboxPos[shape][color];
+
+                        var y = 1 - 11 / 9 - 22 / 9 * pos;
+
+                        var shape = graph[shape](0, 0, color);
+
+                        shape.setCoord([22.5, y]);
+
+                        shape.movedOut = false;
+                        shape.toolbox = true;
+
+                        if (shape.shape === SHAPE &amp;&amp;
+                            shape.color !== COLOR) {
+                            shape.mouseTarget.remove();
+                            path([[21.2, y-1], [23.8, y+1]]);
+                            path([[21.2, y+1], [23.8, y-1]]);
+                        }
+                    };
+
+                    _.each(["triangle", "circle", "square"], function(shape) {
+                        _.each(["red", "green", "blue"], function(color) {
+                            graph.addToolboxShape(shape, color);
+                        });
+                    });
+
                     graph.addShapeFromSelector = function() {
                         var shape = $("#shape option:selected").text();
                         var color = $("#color option:selected").text();
@@ -152,9 +203,10 @@
                         }
                     };
 
-                    graph.sortByShape = function() {
+                    graph.sortShapes = function() {
                         _.each(graph.shapes, function(e) {
-                            var newX = 0;
+                            var newX = [];
+                            var newY = []
                             if (e.shape === "square") {
                                 newX = [1, 5];
                             } else if (e.shape === "triangle") {
@@ -162,16 +214,6 @@
                             } else {
                                 newX = [15, 19];
                             }
-                            if (e.coord[0] &lt; newX[0] ||
-                                e.coord[0] &gt; newX[1]) {
-                                e.moveTo(newX[0] + 4 * random(), e.coord[1]);
-                            }
-                        });
-                    };
-
-                    graph.sortByColor = function() {
-                        _.each(graph.shapes, function(e) {
-                            var newY = 0;
                             if (e.color === "blue") {
                                 newY = [-5, -1];
                             } else if (e.color === "red") {
@@ -179,14 +221,16 @@
                             } else {
                                 newY = [-19, -15];
                             }
-                            if (e.coord[1] &lt; newY[0] ||
+                            if (e.coord[0] &lt; newX[0] ||
+                                e.coord[0] &gt; newX[1] ||
+                                e.coord[1] &lt; newY[0] ||
                                 e.coord[1] &gt; newY[1]) {
-                                e.moveTo(e.coord[0], newY[0] + 4 * random());
+                                e.moveTo(newX[0] + 4 * random(), newY[0] + 4 * random());
                             }
                         });
-                    };
+                    }
 
-                    graph.colorShapePos = { 
+                    graph.colorShapePos = {
                         square: {
                             blue:  [0, 0],
                             red:   [0, 1],
@@ -218,6 +262,13 @@
                     _(5).times(function() {
                         graph.addRandomShape();
                     });
+
+                    path([[21, 2], [21, -22]]);
+
+                    for (var i = 1; i &lt; 9; i += 1) {
+                        var y = 1 - 22 / 9 * i;
+                        path([[21, y], [25, y]]);
+                    }
                 </div>
             </div>
 
@@ -262,9 +313,10 @@
                         return (guess[0] === "must be") &amp;&amp;
                                (guess[1] === COLOR) &amp;&amp;
                                (guess[2] === "deduce");
-                    } if (TYPE === 3) {
+                    } else if (TYPE === 3) {
+                        console.log(guess);
                         return (guess[0] === "must not be") &amp;&amp;
-                               (guess[1] === shape+"s") &amp;&amp;
+                               (guess[1] === SHAPE+"s") &amp;&amp;
                                (guess[2] === "deduce");
                     } else {
                         return (guess[2] === "notdeduce");
@@ -280,14 +332,14 @@
                 </div>
             </div>
             <div class="hints">
-                <p>Try adding a bunch of random shapes, and then sorting by both color and shape.</p>
+                <p>Try adding one of each object, and then sorting them.</p>
                 <div>
                     <div class="graphie" data-update="main">
-                        path([[-2, 2], [-2, -6.5], [22, -6.5], [22, 2], true],
+                        path([[-2, 2], [-2, -6.5], [21, -6.5], [21, 2], true],
                              { fill: BLUE, stroke: null, opacity: 0.3 });
-                        path([[-2, -6.5], [-2, -13.5], [22, -13.5], [22, -6.5], true],
+                        path([[-2, -6.5], [-2, -13.5], [21, -13.5], [21, -6.5], true],
                              { fill: "red", stroke: null, opacity: 0.3 });
-                        path([[-2, -13.5], [-2, -22], [22, -22], [22, -13.5], true],
+                        path([[-2, -13.5], [-2, -22], [21, -22], [21, -13.5], true],
                              { fill: GREEN, stroke: null, opacity: 0.3 });
                         path([[6.5, 2], [6.5, -22]]);
                         path([[13.5, 2], [13.5, -22]]);
@@ -326,7 +378,7 @@
                     <p>Now, only look at the categories that the question asks about. In these categories, are the objects of only one <var>COLORSHAPE</var>, or is there a single <var>COLORSHAPE</var> missing?<p>
                 </div>
                 <p data-if="TYPE === 0">Yes, the objects are only of one color: <var>COLOR</var>. So, we can be sure that <strong>objects that are <var>SHAPE</var>s must be <var>COLOR</var></strong>.</p>
-                <p data-else-if="TYPE === 3">Yes, the objects are missing the <var>SHAPE</var> shape. So, we can be sure that <strong>objects that are not <var>COLOR</var> must not be <var>SHAPE</var></strong>.</p>
+                <p data-else-if="TYPE === 3">Yes, the objects are missing the <var>SHAPE</var> shape. So, we can be sure that <strong>objects that are not <var>COLOR</var> must not be <var>SHAPE</var>s</strong>.</p>
                 <p data-else>No, there are not any <var>COLORSHAPE</var>s missing. So, <strong>we can't be sure of anything</strong>.</p>
             </div>
         </div>

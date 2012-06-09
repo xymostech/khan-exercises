@@ -5,6 +5,10 @@
     <title>Conditional intuition</title>
     <script src="../khan-exercise.js"></script>
     <style type="text/css">
+        .phases {
+            height: 180px;
+        }
+
         .hint {
             display: none;
         }
@@ -15,6 +19,10 @@
 
         .phase {
             display: none;
+        }
+
+        .graphie {
+            border: 1px solid black;
         }
     </style>
 </head>
@@ -32,10 +40,67 @@
             </div>
 
             <div class="question">
-                <strong>Assume all <var>SHAPE</var>s must be <var>COLOR</var>.</strong>
+                    Assume all <var>SHAPE</var>s must be <var>COLOR</var>.
+                    <br>
+                    If an object is <var>NOT</var><var>QUESTION</var>,
+                        what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?
+                    <br> <br> <br>
             </div>
             <div class="problem">
-                <strong>Click on</strong> the shapes which do not fit with this assumption. In other words, click on all the <var>SHAPE</var>s that are not <var>COLOR</var>.
+                <div class="phases">
+                    <div class="phase" id="phase-one">
+                        Let's explore how we can solve this question by using the shapes below. First, look at the assumption:
+                        <strong>Assume all <var>SHAPE</var>s must be <var>COLOR</var>.</strong> <br> <br>
+                        <strong>Click on</strong> the shapes which <strong>do not</strong> fit with this assumption.
+                            In other words, click on all the <var>SHAPE</var>s that are not <var>COLOR</var>.
+                        <div id="wrong-shape" class="hint error">
+                            The assumption doesn't say anything about this shape, so it does fit the assumption.
+                        </div>
+                        <div id="wrong-color" class="hint error">
+                            The assumption specifically allows this shape and color, so it does fit the assumption.
+                        </div>
+                    </div>
+                    <div id="phase-two" class="phase">
+                        Good job! Now, think about the second sentence: <br>
+                        <strong>If an object is <var>NOT</var><var>QUESTION</var>,
+                            what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?</strong> <br> <br>
+                        To figure this out, first cross out the things that this question isn't talking about.
+                        <div class="hint" id="phase-two-hint-one">
+                            <br>
+                            The question talks about objects that are <var>NOT</var><var>(TYPE &lt; 2) ? SHAPE+"s" : COLOR</var>.
+                            We want to cross out things that are the opposite of this.
+                            In other words,
+                            <strong>click on the 
+                                <span      data-if="TYPE === 0">objects that are not <var>SHAPE</var>s.</span>
+                                <span data-else-if="TYPE === 1"><var>SHAPE</var>s.</span>
+                                <span data-else-if="TYPE === 2">objects that are not <var>COLOR</var>.</span>
+                                <span data-else-if="TYPE === 3"><var>COLOR</var> objects.</span>
+                            </strong>
+                        </div>
+                    </div>
+                    <div id="phase-three" class="phase">
+                        Great! Now, look at the shapes that are left. All of these satisfy the original condition, and they are mentioned in our question.
+                        <br><br>
+                        Based on the objects that are left, can we decide anything about the <var>COLORSHAPE</var> of the remaining objects?
+                        <br>
+                        <span data-if="TYPE &lt; 2">
+                            <input type="button" value="One color is missing" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').guessOneMissing()" />
+                            <input type="button" value="There is only one color" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').guessOneThere()" />
+                            <input type="button" value="We can't decide anything" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').guessNothing()" />
+                        </span>
+                        <span data-else>
+                            <input type="button" value="One shape is missing" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').guessOneMissing()" />
+                            <input type="button" value="There is only one shape" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').guessOneThere()" />
+                            <input type="button" value="We can't decide anything" onclick="KhanUtil.tmpl.getVAR('currentGraph.graph').guessNothing()" />
+                        </span>
+                        <div class="hint error" id="wrong-guess">
+                            Nope, try again!
+                        </div>
+                    </div>
+                    <div class="phase" id="phase-four">
+                        Now, type your answer into the answer box.
+                    </div>
+                </div>
                 <div class="graphie">
                     init({ range: [[-1, 21], [-21, 1]], scale: [20, 20] });
 
@@ -86,6 +151,7 @@
                         }, 100, "linear",
                         function() {
                             this.remove();
+                            $(this[0]).hide();
                             graph.toCrossOut -= 1;
                             if (graph.toCrossOut == 0) {
                                 graph.nextPhase();
@@ -134,12 +200,17 @@
 
                     graph.phase = 1;
 
+                    $("#phase-one").show();
+
                     graph.nextPhase = function() {
+                        $(".phase").hide();
                         graph.phase += 1;
                         if (graph.phase === 2) {
                             graph.phaseTwo();
                         } else if (graph.phase === 3) {
                             graph.phaseThree();
+                        } else if (graph.phase === 4) {
+                            graph.phaseFour();
                         }
                     };
 
@@ -192,10 +263,39 @@
                         _.each(_.keys(graph.shapes), function(shape) {
                             _.each(_.keys(graph.shapes[shape]), function(color) {
                                 var testshape = graph.shapes[shape][color];
-                                $(testshape[0]).unbind();
+                                $(testshape[0]).unbind().css('cursor', 'auto');
                             });
                         });
                         $("#phase-three").show();
+                    };
+
+                    graph.guessOneMissing = function() {
+                        if (TYPE === 3) {
+                            graph.nextPhase();
+                        } else {
+                            $("#wrong-guess").show();
+                        }
+                    };
+
+                    graph.guessOneThere = function() {
+                        if (TYPE === 0) {
+                            graph.nextPhase();
+                        } else {
+                            $("#wrong-guess").show();
+                        }
+                    };
+
+                    graph.guessNothing = function() {
+                        if (TYPE === 1 || TYPE === 2) {
+                            graph.nextPhase();
+                        } else {
+                            $("#wrong-guess").show();
+                        }
+                    };
+
+                    graph.phaseFour = function() {
+                        alert("Yay!");
+                        $("#phase-four").show();
                     };
 
                     graph.shapes = {
@@ -207,36 +307,68 @@
                     _.each(["triangle", "square", "circle"], function(shape) {
                         _.each(["red", "blue", "green"], function(color) {
                             graph.shapes[shape][color] = graph.addShape(shape, color);
+                            $(graph.shapes[shape][color][0]).css('cursor', 'pointer');
                         });
                     });
                 </div>
-                <div id="wrong-shape" class="hint error">
-                    The assumption doesn't say anything about this shape, so it does fit the assumption.
+            </div>
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <div data-if="TYPE < 2">
+                        <input type="radio" name="answertype" value="deduce" checked />
+                            Objects that are <var>NOT</var><var>SHAPE</var>s<br>
+                        <select class="decision-choice">
+                            <option>must be</option>
+                            <option>must not be</option>
+                        </select>
+                        <select class="answer-choice">
+                            <option>red</option>
+                            <option>blue</option>
+                            <option>green</option>
+                        </select>
+                    </div>
+                    <div data-else>
+                        <input type="radio" name="answertype" value="deduce" checked />
+                            Objects that are <var>NOT</var><var>COLOR</var><br>
+                        <select class="decision-choice">
+                            <option>must be</option>
+                            <option>must not be</option>
+                        </select>
+                        <select class="answer-choice">
+                            <option>triangles</option>
+                            <option>circles</option>
+                            <option>squares</option>
+                        </select>
+                    </div>
+                    <input type="radio" name="answertype" value="notdeduce" />
+                        We can't be sure of anything
                 </div>
-                <div id="wrong-color" class="hint error">
-                    The assumption specifically allows this color, so it does fit the assumption.
+                <div class="guess">
+                    [ $(".decision-choice option:selected").text(),
+                      $(".answer-choice   option:selected").text(),
+                      $("input[name=answertype]:checked").val() ]
                 </div>
-                <div id="phase-two" class="phase">
-                    Good job! Now, think about this: <br>
-                    <strong>If an object is <var>NOT</var><var>QUESTION</var>,
-                        what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?</strong> <br> <br>
-                    To figure this out, first cross out the things that this question isn't talking about.
+                <div class="validator-function">
+                    if (TYPE === 0) {
+                        return (guess[0] === "must be") &amp;&amp;
+                               (guess[1] === COLOR) &amp;&amp;
+                               (guess[2] === "deduce");
+                    } else if (TYPE === 3) {
+                        console.log(guess);
+                        return (guess[0] === "must not be") &amp;&amp;
+                               (guess[1] === SHAPE+"s") &amp;&amp;
+                               (guess[2] === "deduce");
+                    } else {
+                        return (guess[2] === "notdeduce");
+                    }
                 </div>
-                <div class="hint" id="phase-two-hint-one">
-                    The question talks about objects that are <var>NOT</var><var>(TYPE &lt; 2) ? SHAPE+"s" : COLOR</var>. We want to cross out things that don't follow this.
-                </div>
-                <div class="hint" id="phase-two-hint-two">
-                    In other words,
-                    <strong>click on the 
-                        <span      data-if="TYPE === 0">objects that are not <var>SHAPE</var>s.</span>
-                        <span data-else-if="TYPE === 1"><var>SHAPE</var>s.</span>
-                        <span data-else-if="TYPE === 2">objects that are not <var>COLOR</var>.</span>
-                        <span data-else-if="TYPE === 3"><var>COLOR</var> objects.</span>
-                    </strong>
-                </div>
-                <div id="phase-three" class="phase">
-                    <br>
-                    Great! Now, look at the shapes that are left. All of these satisfy the original condition, and they are mentioned in our question. <br> <br> Based on the shapes that are left, what can we decide about the <var>COLORSHAPE</var> of the remaining objects?
+                <div class="show-guess-solutionarea">
+                    if (guess.length &gt; 0) {
+                        $(".decision-choice").val(guess[0]).attr('selected', true);
+                        $(".answer-choice").val(guess[1]).attr('selected', true);
+                        $("input:radio[name=answertype]").filter("[value="+guess[2]+"]")
+                                                         .attr('checked', true);
+                    }
                 </div>
             </div>
         </div>

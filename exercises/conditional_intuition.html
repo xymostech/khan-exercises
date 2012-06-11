@@ -31,51 +31,66 @@
     <div class="problems">
         <div id="choose-shape">
             <div class="vars">
-                <var id="SHAPE">randFromArray(["triangle", "circle", "square"])</var>
-                <var id="COLOR">randFromArray(["red", "blue", "green"])</var>
+                <var id="SHAPES">["triangle", "circle", "square"]</var>
+                <var id="COLORS">["red", "blue", "green"]</var>
+                <var id="SHAPE">randFromArray(SHAPES)</var>
+                <var id="COLOR">randFromArray(COLORS)</var>
                 <var id="TYPE">randRange(0, 3)</var>
                 <var id="NOT">(TYPE === 1 || TYPE === 3) ? "not " : ""</var>
+                <var id="NOTSHAPE">_.without(SHAPES, SHAPE)</var>
+                <var id="NOTCOLOR">_.without(COLORS, COLOR)</var>
                 <var id="QUESTION">(TYPE &lt; 2) ? ("a "+SHAPE) : COLOR</var>
                 <var id="COLORSHAPE">(TYPE &lt; 2) ? "color" : "shape"</var>
             </div>
 
             <div class="question">
-                    Assume all <var>SHAPE</var>s must be <var>COLOR</var>.
+                    Rule: All <var>SHAPE</var>s must be <var>COLOR</var>.
                     <br>
-                    If an object is <var>NOT</var><var>QUESTION</var>,
-                        what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?
+                    What do we know about the <var>COLORSHAPE</var> of
+                    <var      data-if="TYPE === 0">SHAPE+"s"</var>
+                    <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))</var>
+                    <var data-else-if="TYPE === 2">COLOR+" objects"</var>
+                    <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects"</var>
+                    following this rule?
                     <br> <br> <br>
             </div>
             <div class="problem">
                 <div class="phases">
                     <div class="phase" id="phase-one">
-                        Let's explore how we can solve this question by using the shapes below. First, look at the assumption:
-                        <strong>Assume all <var>SHAPE</var>s must be <var>COLOR</var>.</strong> <br> <br>
-                        <strong>Click on</strong> the shapes which <strong>do not</strong> fit with this assumption.
-                            In other words, click on all the <var>SHAPE</var>s that are not <var>COLOR</var>.
+                        Let's explore how we can solve this question by using the shapes below. First, look at the rule:
+                        <strong>All <var>SHAPE</var>s must be <var>COLOR</var></strong>.<br> <br>
+                        <strong>Click on</strong> the shapes which break this rule.
+                            <!--In other words, click on all the <var>SHAPE</var>s that are not <var>COLOR</var>.-->
                         <div id="wrong-shape" class="hint error">
-                            The assumption doesn't say anything about this shape, so it does fit the assumption.
+                            The rule doesn't say anything about this shape, so it doesn't break the rule.
                         </div>
                         <div id="wrong-color" class="hint error">
-                            The assumption specifically allows this shape and color, so it does fit the assumption.
+                            The rule allows this shape and color, so it doesn't break the rule.
                         </div>
                     </div>
                     <div id="phase-two" class="phase">
-                        Good job! Now, think about the second sentence: <br>
-                        <strong>If an object is <var>NOT</var><var>QUESTION</var>,
-                            what do we know about its <var>(TYPE &lt; 2) ? "color" : "shape"</var>?</strong> <br> <br>
-                        To figure this out, first cross out the things that this question isn't talking about.
+                        Good job! Now, think about the question: <br>
+                        <strong>
+                            What do we know about the <var>COLORSHAPE</var> of
+                            <var      data-if="TYPE === 0">SHAPE+"s"</var>
+                            <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))</var>
+                            <var data-else-if="TYPE === 2">COLOR+" objects"</var>
+                            <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects"</var>
+                            following this rule?
+                        </strong> <br> <br>
+                        To figure this out, first get rid of things that this question isn't talking about by clicking on them.
                         <div class="hint" id="phase-two-hint-one">
                             <br>
-                            The question talks about objects that are <var>NOT</var><var>(TYPE &lt; 2) ? SHAPE+"s" : COLOR</var>.
-                            We want to cross out things that are the opposite of this.
-                            In other words,
-                            <strong>click on the 
-                                <span      data-if="TYPE === 0">objects that are not <var>SHAPE</var>s.</span>
-                                <span data-else-if="TYPE === 1"><var>SHAPE</var>s.</span>
-                                <span data-else-if="TYPE === 2">objects that are not <var>COLOR</var>.</span>
-                                <span data-else-if="TYPE === 3"><var>COLOR</var> objects.</span>
-                            </strong>
+                            The question talks about
+                            <var      data-if="TYPE === 0">SHAPE+"s,"</var>
+                            <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))+","</var>
+                            <var data-else-if="TYPE === 2">COLOR+" objects,"</var>
+                            <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects,"</var>
+                            so we want to click on things that aren't
+                            <var      data-if="TYPE === 0">SHAPE+"s."</var>
+                            <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))+"."</var>
+                            <var data-else-if="TYPE === 2">COLOR+" objects."</var>
+                            <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects."</var>
                         </div>
                     </div>
                     <div id="phase-three" class="phase">
@@ -316,7 +331,9 @@
                 <div class="instruction">
                     <div data-if="TYPE < 2">
                         <input type="radio" name="answertype" value="deduce" checked />
-                            Objects that are <var>NOT</var><var>SHAPE</var>s<br>
+                            <var      data-if="TYPE === 0">SHAPE+"s"</var>
+                            <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))</var>
+                            <br>
                         <select class="decision-choice">
                             <option>must be</option>
                             <option>must not be</option>
@@ -329,7 +346,9 @@
                     </div>
                     <div data-else>
                         <input type="radio" name="answertype" value="deduce" checked />
-                            Objects that are <var>NOT</var><var>COLOR</var><br>
+                            <var      data-if="TYPE === 2">COLOR+" objects"</var>
+                            <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects"</var>
+                            <br>
                         <select class="decision-choice">
                             <option>must be</option>
                             <option>must not be</option>

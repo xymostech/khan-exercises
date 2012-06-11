@@ -41,17 +41,19 @@
                 <var id="NOTCOLOR">_.without(COLORS, COLOR)</var>
                 <var id="QUESTION">(TYPE &lt; 2) ? ("a "+SHAPE) : COLOR</var>
                 <var id="COLORSHAPE">(TYPE &lt; 2) ? "color" : "shape"</var>
+                <var id="TOPIC">
+                    [SHAPE+"s",
+                     toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; })),
+                     COLOR+" objects",
+                     toSentence(NOTCOLOR)+" objects"][TYPE]
+                </var>
+                <var id="PHASETWONUM"></var>
             </div>
 
             <div class="question">
                     Rule: All <var>SHAPE</var>s must be <var>COLOR</var>.
                     <br>
-                    What do we know about the <var>COLORSHAPE</var> of
-                    <var      data-if="TYPE === 0">SHAPE+"s"</var>
-                    <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))</var>
-                    <var data-else-if="TYPE === 2">COLOR+" objects"</var>
-                    <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects"</var>
-                    following this rule?
+                    What do we know about the <var>COLORSHAPE</var> of <var>TOPIC</var> following this rule?
                     <br> <br> <br>
             </div>
             <div class="problem">
@@ -71,26 +73,12 @@
                     <div id="phase-two" class="phase">
                         Good job! Now, think about the question: <br>
                         <strong>
-                            What do we know about the <var>COLORSHAPE</var> of
-                            <var      data-if="TYPE === 0">SHAPE+"s"</var>
-                            <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))</var>
-                            <var data-else-if="TYPE === 2">COLOR+" objects"</var>
-                            <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects"</var>
-                            following this rule?
+                            What do we know about the <var>COLORSHAPE</var> of <var>TOPIC</var> following this rule?
                         </strong> <br> <br>
-                        To figure this out, first get rid of things that this question isn't talking about by clicking on them.
+                        To figure this out, first highlight the <var>plural([1, 6, 3, 4][TYPE], "object")</var> that this question is talking about by clicking on them.
                         <div class="hint" id="phase-two-hint-one">
                             <br>
-                            The question talks about
-                            <var      data-if="TYPE === 0">SHAPE+"s,"</var>
-                            <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))+","</var>
-                            <var data-else-if="TYPE === 2">COLOR+" objects,"</var>
-                            <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects,"</var>
-                            so we want to click on things that aren't
-                            <var      data-if="TYPE === 0">SHAPE+"s."</var>
-                            <var data-else-if="TYPE === 1">toSentence(_.map(NOTSHAPE, function(s) { return s+"s"; }))+"."</var>
-                            <var data-else-if="TYPE === 2">COLOR+" objects."</var>
-                            <var data-else-if="TYPE === 3">toSentence(NOTCOLOR)+" objects."</var>
+                            The question talks about <var>TOPIC</var> so we want to click on those.
                         </div>
                     </div>
                     <div id="phase-three" class="phase">
@@ -160,7 +148,7 @@
 
                     graph.toCrossOut = 2;
 
-                    graph.crossOut = function(event, shape) {
+                    graph.crossOut = function(event) {
                         event.data.shape.animate({
                             opacity: 0
                         }, 100, "linear",
@@ -229,14 +217,25 @@
                         }
                     };
 
+                    graph.toUnHide = 0;
+
+                    graph.unHide = function(event) {
+                        graph.toUnHide -= 1;
+                        event.data.shape.animate({
+                            opacity: 1.0
+                        }, 200, "linear");
+                        $(event.data.shape[0]).unbind();
+                        if (graph.toUnHide === 0) {
+                            graph.nextPhase();
+                        }
+                    };
+
                     graph.phaseTwoHintNum = 0;
 
                     graph.phaseTwoHint = function() {
                         graph.phaseTwoHintNum += 1;
                         if (graph.phaseTwoHintNum === 1) {
                             $("#phase-two-hint-one").show();
-                        } else if (graph.phaseTwoHintNum === 2) {
-                            $("#phase-two-hint-two").show();
                         }
                     };
 
@@ -246,26 +245,29 @@
                             _.each(_.keys(graph.shapes[shape]), function(color) {
                                 var testshape = graph.shapes[shape][color];
                                 $(testshape[0]).unbind();
+                                testshape.animate({
+                                    opacity: 0.5
+                                }, 200, "linear");
                                 var bindFunc = graph.phaseTwoHint;
                                 if (TYPE === 0) {
-                                    if (shape !== SHAPE) {
-                                        bindFunc = graph.crossOut;
-                                        graph.toCrossOut = 6;
+                                    if (shape === SHAPE) {
+                                        bindFunc = graph.unHide;
+                                        graph.toUnHide = 1;
                                     }
                                 } else if (TYPE === 1) {
-                                    if (shape === SHAPE) {
-                                        bindFunc = graph.crossOut;
-                                        graph.toCrossOut = 1;
+                                    if (shape !== SHAPE) {
+                                        bindFunc = graph.unHide;
+                                        graph.toUnHide = 6;
                                     }
                                 } else if (TYPE === 2) {
-                                    if (color !== COLOR) {
-                                        bindFunc = graph.crossOut;
-                                        graph.toCrossOut = 4;
+                                    if (color === COLOR) {
+                                        bindFunc = graph.unHide;
+                                        graph.toUnHide = 3;
                                     }
                                 } else if (TYPE === 3) {
-                                    if (color === COLOR) {
-                                        bindFunc = graph.crossOut;
-                                        graph.toCrossOut = 3;
+                                    if (color !== COLOR) {
+                                        bindFunc = graph.unHide;
+                                        graph.toUnHide = 4;
                                     }
                                 }
                                 $(testshape[0]).bind("vmousedown", { shape: testshape }, bindFunc);
@@ -279,6 +281,31 @@
                             _.each(_.keys(graph.shapes[shape]), function(color) {
                                 var testshape = graph.shapes[shape][color];
                                 $(testshape[0]).unbind().css('cursor', 'auto');
+                                if (TYPE === 0) {
+                                    if (shape !== SHAPE) {
+                                        testshape.animate({
+                                            opacity: 0.0
+                                        }, 200, "linear");
+                                    }
+                                } else if (TYPE === 1) {
+                                    if (shape === SHAPE) {
+                                        testshape.animate({
+                                            opacity: 0.0
+                                        }, 200, "linear");
+                                    }
+                                } else if (TYPE === 2) {
+                                    if (color !== COLOR) {
+                                        testshape.animate({
+                                            opacity: 0.0
+                                        }, 200, "linear");
+                                    }
+                                } else if (TYPE === 3) {
+                                    if (color === COLOR) {
+                                        testshape.animate({
+                                            opacity: 0.0
+                                        }, 200, "linear");
+                                    }
+                                }
                             });
                         });
                         $("#phase-three").show();
@@ -302,14 +329,15 @@
 
                     graph.guessNothing = function() {
                         if (TYPE === 1 || TYPE === 2) {
-                            graph.nextPhase();
+                            <!--graph.nextPhase();-->
+                            $("#wrong-guess").hide();
+                            $("#phase-four").show();
                         } else {
                             $("#wrong-guess").show();
                         }
                     };
 
                     graph.phaseFour = function() {
-                        alert("Yay!");
                         $("#phase-four").show();
                     };
 

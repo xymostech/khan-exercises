@@ -33,12 +33,13 @@
                     graph.movablePoint = addMovablePoint({ constraints: { constrainY: true } });
                     graph.movablePoint.onMove = function( x, y ) {
                         var newx = round(x);
-                        if (abs(newx - x) &lt; 0.3) {
+                        if (abs(newx - x) &lt; $("#snap").val()) {
                             x = newx;
                         }
                         return [ min( max( LOWER_BOUND, x ), UPPER_BOUND ), y ];
                     };
                 </div>
+                <input type="text" value="0.2" id="snap"/>
             </div>
 
             <div class="solution" data-type="custom">

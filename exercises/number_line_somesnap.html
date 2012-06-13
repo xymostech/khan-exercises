@@ -32,10 +32,9 @@
                     addMouseLayer();
                     graph.movablePoint = addMovablePoint({ constraints: { constrainY: true } });
                     graph.movablePoint.onMove = function( x, y ) {
-                        var newx = round(x * 4);
-                        console.log(newx);
-                        if (newx % 4 === 0) {
-                            x = newx / 4;
+                        var newx = round(x * 2);
+                        if (newx % 2 === 0) {
+                            x = newx / 2;
                         }
                         return [ min( max( LOWER_BOUND, x ), UPPER_BOUND ), y ];
                     };

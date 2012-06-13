@@ -30,7 +30,7 @@
                     label( [ 0, -0.53 ],  "0", "center", { color: "#6495ED" });
 
                     addMouseLayer();
-                    graph.movablePoint = addMovablePoint({ constraints: { constrainY: true }, snapX: 1 });
+                    graph.movablePoint = addMovablePoint({ constraints: { constrainY: true } });
                     graph.movablePoint.onMove = function( x, y ) {
                         return [ min( max( LOWER_BOUND, x ), UPPER_BOUND ), y ];
                     };

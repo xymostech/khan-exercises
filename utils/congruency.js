@@ -142,9 +142,12 @@ $.extend(KhanUtil, {
                                   * arc.radius * graph.scale[0];
                 arc.point.mouseTarget.attr({ r: pointRadius });
 
-                // replace the shape with our arc
+                // Replace the shape with our arc
                 arc.point.visibleShape.remove();
 
+                // Styles for different mouse-over states
+                // TODO: come up with a way to set different styles
+                // for normal/highlight
                 arc.unsetNormal = {
                     stroke: KhanUtil.GRAY,
                     "stroke-width": 2,
@@ -166,30 +169,39 @@ $.extend(KhanUtil, {
                     opacity: 1.0
                 };
 
+                // Set the default styles
                 arc.point.normalStyle = arc.unsetNormal;
                 arc.point.highlightStyle = arc.unsetHighlight;
 
+                // Draw the arc(s)
                 arc.draw = function() {
+                    // Remove any left over arcs
                     if (this.arc != null) {
                         this.arc.remove();
                     }
 
+                    // Count how many arcs there should be
                     var arcs = (this.state === 0) ? 1 : this.state;
                     var startRad = this.radius - this.stateDiff * (arcs - 1) / 2;
 
+                    // Create a raphael set
                     this.arc = graph.raphael.set();
 
+                    // Put all the arcs in the set
                     for (var curr = 0; curr < arcs; curr += 1) {
                         var currRad = startRad + this.stateDiff * curr;
                         this.arc.push(graph.arc(this.pos, currRad,
                                                 this.start, this.end));
                     }
+                    // Attach it and style correctly
                     this.point.visibleShape = this.arc;
                     this.arc.attr(this.point.normalStyle);
                 };
 
+                // Ensure the arc gets drawn on creation
                 arc.draw();
 
+                // Set the state of an arc
                 arc.set = function(state) {
                     arc.state = state;
 
@@ -204,23 +216,29 @@ $.extend(KhanUtil, {
                     arc.draw();
                 }
 
+                // Function called upon clicking
                 arc.click = function(event) {
                     arc.set((arc.state === arc.max) ? 0 : arc.state + 1);
                 };
 
+                // Bind mouseclick
                 $(arc.point.mouseTarget[0]).bind("vmouseup", arc.click);
 
+                // Make an arc stick in its current state
+                // by removing the clicky part
                 arc.stick = function() {
                     $(arc.point.mouseTarget[0]).unbind();
                     this.point.mouseTarget.remove();
                 };
 
+                // Set the style of arcs when unset
                 arc.styleUnset = function(options) {
                     $.extend(true, this.unsetNormal, options);
                     $.extend(true, this.unsetHighlight, options);
                     this.draw();
                 };
 
+                // Set the style of arcs when set
                 arc.styleSet = function(options) {
                     $.extend(true, this.setNormal, options);
                     $.extend(true, this.setHighlight, options);
@@ -230,11 +248,14 @@ $.extend(KhanUtil, {
                 return arc;
             };
 
+            // Pre-calculate some angles
             var startAngle = ang.line1.angle;
             var diffAngle = ang.line2.angle - ang.line1.angle;
 
+            // Make the set of angles
             ang.ang = [];
 
+            // Push the angles into the set
             if (ang.show[0]) {
                 ang.ang[0] = ang.addArc(ang.coord, ang.radius,
                                         startAngle,

@@ -82,7 +82,8 @@ $.extend(KhanUtil, {
                 line1: line1,
                 line2: line2,
                 radius: 0.6,
-                show: [true, true, true, true]
+                show: [true, true, true, true],
+                states: 1
             }, options);
 
             if (ang.line1.slope === ang.line2.slope) {
@@ -104,9 +105,10 @@ $.extend(KhanUtil, {
                     start: start,
                     end: end,
                     state: 0,
-                    max: 1,
+                    max: ang.states,
                     shown: false,
-                    stuck: false
+                    stuck: false,
+                    stateDiff: 0.15
                 };
 
                 if (arc.start > arc.end) {
@@ -171,8 +173,17 @@ $.extend(KhanUtil, {
                     if (this.arc != null) {
                         this.arc.remove();
                     }
-                    this.arc = graph.arc(this.pos, this.radius,
-                                         this.start, this.end);
+
+                    var arcs = (this.state === 0) ? 1 : this.state;
+                    var startRad = this.radius - this.stateDiff * (arcs - 1) / 2;
+
+                    this.arc = graph.raphael.set();
+
+                    for (var curr = 0; curr < arcs; curr += 1) {
+                        var currRad = startRad + this.stateDiff * curr;
+                        this.arc.push(graph.arc(this.pos, currRad,
+                                                this.start, this.end));
+                    }
                     this.point.visibleShape = this.arc;
                     this.arc.attr(this.point.normalStyle);
                 };

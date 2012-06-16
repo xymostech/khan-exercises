@@ -21,10 +21,21 @@ $.extend(KhanUtil, {
 
         var graph = KhanUtil.currentGraph;
 
+        congruency.lines = {};
+        congruency.angles = {};
+        congruency.points = {};
+
         congruency.addLine = function(options) {
             var line = $.extend(true, {
+                startPt: "",
+                endPt: "",
                 start: [0, 0],
-                extend: true
+                extend: true,
+                clickable: false,
+                state: 0,
+                max: 1,
+                tickDiff: 0.15,
+                tickLength: 0.2
             }, options);
 
             if (line.end != null) {
@@ -72,7 +83,87 @@ $.extend(KhanUtil, {
                 }
             }
 
-            graph.line(line.start, line.end);
+            line.draw = function() {
+                if (this.line != null) {
+                    this.line.remove();
+                }
+
+                this.line = graph.raphael.set();
+
+                var startDiff = this.tickDiff * (this.state - 1) / 2;
+
+                var direction = [Math.cos(this.radAngle), Math.sin(this.radAngle)];
+                var normalDir = [-direction[1]*this.tickLength,
+                                  direction[0]*this.tickLength];
+
+                var midpoint = [(this.start[0] + this.end[0]) / 2,
+                                (this.start[1] + this.end[1]) / 2];
+
+                var startPos = [midpoint[0] - startDiff * direction[0],
+                                midpoint[1] - startDiff * direction[1]];
+
+                for (var curr = 0; curr < this.state; curr += 1) {
+                    var currPos = [startPos[0] + curr * direction[0] * this.tickDiff,
+                                   startPos[1] + curr * direction[1] * this.tickDiff];
+                    var start = [currPos[0] + normalDir[0],
+                                 currPos[1] + normalDir[1]];
+                    var end = [currPos[0] - normalDir[0],
+                               currPos[1] - normalDir[1]];
+
+                    this.line.push(graph.line(start, end));
+                }
+
+                this.line.push(graph.line(this.start, this.end));
+
+                this.point.visibleShape = this.line;
+            };
+
+            var pointPos = [(line.start[0] + line.end[0]) / 2,
+                            (line.start[1] + line.end[1]) / 2];
+
+            line.point = KhanUtil.addMovablePoint({
+                coord: pointPos
+            });
+            // Make it not move
+            line.point.onMove = function(x, y) {
+                return pointPos;
+            };
+
+            line.point.visibleShape.remove();
+
+            line.point.visibleShape = line.line;
+
+            if (!line.clickable) {
+                line.point.mouseTarget.remove();
+            }
+
+            line.normal = {
+                stroke: "black",
+                "stroke-width": 2
+            };
+            line.highlight = {
+                stroke: "black",
+                "stroke-width": 3
+            };
+
+            line.point.normalStyle = line.normal;
+            line.point.highlightStyle = line.highlight;
+
+            line.draw();
+
+            line.set = function(state) {
+                this.state = state;
+
+                this.draw();
+            };
+
+            line.click = function(event) {
+                line.set((line.state === line.max) ? 0 : line.state + 1);
+            };
+
+            if (line.clickable) {
+                $(line.point.mouseTarget[0]).bind("vmouseup", line.click);
+            }
 
             return line;
         };
@@ -83,7 +174,8 @@ $.extend(KhanUtil, {
                 line2: line2,
                 radius: 0.6,
                 show: [true, true, true, true],
-                states: 1
+                states: 1,
+                point: ""
             }, options);
 
             if (ang.line1.slope === ang.line2.slope) {

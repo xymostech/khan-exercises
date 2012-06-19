@@ -129,6 +129,8 @@ $.extend(KhanUtil, {
                 return pointPos;
             };
 
+            line.point.mouseTarget.attr({ r: graph.scale[0]/2 });
+
             line.point.visibleShape.remove();
 
             line.point.visibleShape = line.line;

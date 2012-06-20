@@ -115,6 +115,8 @@ $.extend(KhanUtil, {
 
                 this.line.push(graph.line(this.start, this.end));
 
+                this.line.attr(this.normal);
+
                 this.point.visibleShape = this.line;
             };
 
@@ -126,7 +128,7 @@ $.extend(KhanUtil, {
             });
             // Make it not move
             line.point.onMove = function(x, y) {
-                return pointPos;
+                return false;
             };
 
             line.point.mouseTarget.attr({ r: graph.scale[0]/2 });
@@ -150,6 +152,16 @@ $.extend(KhanUtil, {
 
             line.point.normalStyle = line.normal;
             line.point.highlightStyle = line.highlight;
+
+            line.highlightStyle = function(options) {
+                $.extend(true, this.highlight, options);
+                this.draw();
+            };
+
+            line.normalStyle = function(options) {
+                $.extend(true, this.normal, options);
+                this.draw();
+            };
 
             line.draw();
 

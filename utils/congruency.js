@@ -1,4 +1,8 @@
 $.extend(KhanUtil, {
+    /*
+     * Add a congruency object, which contains all the information
+     * for creating and using congruency diagrams
+     */
     addCongruency: function(options) {
         var congruency = $.extend(true, {
             x1: 0,
@@ -30,6 +34,8 @@ $.extend(KhanUtil, {
                 startPt: "",
                 endPt: "",
                 start: [0, 0],
+                setStart: true,
+                setEnd: true,
                 extend: true,
                 clickable: false,
                 state: 0,
@@ -37,6 +43,19 @@ $.extend(KhanUtil, {
                 tickDiff: 0.15,
                 tickLength: 0.2
             }, options);
+
+            line.setStart = (line.startPt.length > 0);
+            line.setEnd = (line.endPt.length > 0);
+
+            if (typeof(line.start) === "string") {
+                line.setStart = false;
+                line.start = congruency.points[line.start];
+            }
+
+            if (typeof(line.end) === "string") {
+                line.setEnd = false;
+                line.end = congruency.points[line.end];
+            }
 
             if (line.end != null) {
                 line.radAngle = Math.atan2(line.end[1] - line.start[1],
@@ -81,6 +100,14 @@ $.extend(KhanUtil, {
                 } else {
                     line.end = [line.invfunc(congruency.y1), congruency.y1];
                 }
+            }
+
+            if (line.setStart) {
+                congruency.points[line.startPt] = line.start.slice();
+            }
+
+            if (line.setEnd) {
+                congruency.points[line.endPt] = line.end.slice();
             }
 
             line.draw = function() {
@@ -131,7 +158,7 @@ $.extend(KhanUtil, {
                 return false;
             };
 
-            line.point.mouseTarget.attr({ r: graph.scale[0]/2 });
+            line.point.mouseTarget.attr({ r: graph.scale[0] * 0.7 });
 
             line.point.visibleShape.remove();
 

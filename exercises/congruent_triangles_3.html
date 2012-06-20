@@ -34,34 +34,38 @@
                     graph.congruency = addCongruency({ y1: -0.7, y2: 3.7 });
 
                     graph.top = graph.congruency.addLine({
-                        start: [3, 0],
-                        end: [4, 3],
+                        start: [4, 3],
+                        end: [8, 3],
+                        startPt: "A",
+                        endPt: "C",
                         extend: false,
-                        state: 1
+                        state: 2
                     });
                     graph.bottom = graph.congruency.addLine({
                         start: [3, 0],
                         end: [7, 0],
+                        startPt: "B",
+                        endPt: "D",
                         extend: false,
                         clickable: true,
                         max: 3
                     });
                     graph.left = graph.congruency.addLine({
-                        start: [4, 3],
-                        end: [8, 3],
+                        start: "B",
+                        end: "A",
                         extend: false,
-                        state: 2
+                        state: 1
                     });
                     graph.right = graph.congruency.addLine({
-                        start: [7, 0],
-                        end: [8, 3],
+                        start: "D",
+                        end: "C",
                         extend: false,
                         clickable: true,
                         max: 3
                     });
                     graph.cross = graph.congruency.addLine({
-                        start: [3, 0],
-                        end: [8, 3],
+                        start: "B",
+                        end: "C",
                         extend: false,
                         state: 3
                     });

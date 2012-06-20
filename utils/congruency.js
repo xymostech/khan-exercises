@@ -49,12 +49,14 @@ $.extend(KhanUtil, {
 
             if (typeof(line.start) === "string") {
                 line.setStart = false;
-                line.start = congruency.points[line.start];
+                line.startPt = line.start;
+                line.start = congruency.points[line.startPt];
             }
 
             if (typeof(line.end) === "string") {
                 line.setEnd = false;
-                line.end = congruency.points[line.end];
+                line.endPt = line.end;
+                line.end = congruency.points[line.endPt];
             }
 
             if (line.end != null) {
@@ -108,6 +110,12 @@ $.extend(KhanUtil, {
 
             if (line.setEnd) {
                 congruency.points[line.endPt] = line.end.slice();
+            }
+
+            if (line.startPt != null &&
+                line.endPt != null) {
+                congruency.lines[line.startPt+line.endPt] = line;
+                congruency.lines[line.endPt+line.startPt] = line;
             }
 
             line.draw = function() {

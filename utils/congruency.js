@@ -172,10 +172,6 @@ $.extend(KhanUtil, {
 
             line.point.visibleShape = line.line;
 
-            if (!line.clickable) {
-                line.point.mouseTarget.remove();
-            }
-
             line.normal = {
                 stroke: "black",
                 "stroke-width": 2
@@ -210,8 +206,14 @@ $.extend(KhanUtil, {
                 line.set((line.state === line.max) ? 0 : line.state + 1);
             };
 
-            if (line.clickable) {
-                $(line.point.mouseTarget[0]).bind("vmouseup", line.click);
+            $(line.point.mouseTarget[0]).bind("vmouseup", line.click);
+
+            line.stick = function() {
+                line.point.mouseTarget.remove();
+            };
+
+            if (!line.clickable) {
+                line.stick();
             }
 
             return line;
@@ -419,6 +421,26 @@ $.extend(KhanUtil, {
             }
 
             return ang;
+        };
+
+        congruency.getGuess = function() {
+            var guess = {};
+
+            _.each(congruency.lines, function(line, name) {
+                guess[name] = line.state;
+            });
+
+            return guess;
+        };
+
+        congruency.showGuess = function(guess) {
+            _.each(guess, function(t, g) {
+                if (g.length === 2) {
+                    congruency.lines[g].set(t);
+                } else {
+                    congruency.angles[g].set(t);
+                }
+            });
         };
 
         return congruency;

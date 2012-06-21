@@ -2,7 +2,7 @@
 <html data-require="math graphie interactive congruency">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Congruent angles</title>
+    <title>Congruent triangles 3</title>
     <script src="../khan-exercise.js"></script>
 </head>
 <body>
@@ -10,14 +10,13 @@
     <div class="problems">
         <div>
             <div class="vars">
-                <var id="ANGLE">randRange(40, 140)</var>
-                <var id="GIVENTOP">rand(2) === 1</var>
-                <var id="GIVENPOS">rand(4)</var>
-                <var id="GIVEN">GIVENPOS + (GIVENTOP ? 4 : 0)</var>
-                <var id="SOLUTION">[(GIVEN + 2) % 8,
-                                    (GIVEN + 4) % 8,
-                                    (GIVEN + 6) % 8]</var>
-                <var id="GRAPH">null</var>
+                <var id="LEFT">rand(2) === 1</var>
+                <var id="TOP">rand(2) === 1</var>
+                <var id="CROSS">rand(2) === 1</var>
+                <var id="TICKS">[1, 2, 3]</var>
+                <var id="LEFTTICK">TICKS.splice(rand(3), 1)[0]</var>
+                <var id="TOPTICK">TICKS.splice(rand(2), 1)[0]</var>
+                <var id="CROSSTICK">TICKS[0]</var>
             </div>
             <p class="question">
                 Triangle <code>ABC</code> is congruent to <code>DCB</code>.
@@ -39,7 +38,8 @@
                         startPt: "A",
                         endPt: "C",
                         extend: false,
-                        state: 2
+                        clickable: true,
+                        max: 3
                     });
                     graph.bottom = graph.congruency.addLine({
                         start: [3, 0],
@@ -54,7 +54,8 @@
                         start: "B",
                         end: "A",
                         extend: false,
-                        state: 1
+                        clickable: true,
+                        max: 3
                     });
                     graph.right = graph.congruency.addLine({
                         start: "D",
@@ -67,15 +68,40 @@
                         start: "B",
                         end: "C",
                         extend: false,
-                        state: 3
+                        clickable: true,
+                        max: 3
                     });
 
-                    graph.top.normalStyle({
-                        stroke: ORANGE
-                    });
-                    graph.left.normalStyle({
-                        stroke: ORANGE
-                    });
+                    if (LEFT) {
+                        graph.left.set(LEFTTICK);
+                        graph.left.stick();
+                        graph.left.normalStyle({
+                            stroke: ORANGE
+                        });
+                    } else {
+                        graph.right.set(LEFTTICK);
+                        graph.right.stick();
+                        graph.right.normalStyle({
+                            stroke: ORANGE
+                        });
+                    }
+
+                    if (TOP) {
+                        graph.top.set(TOPTICK);
+                        graph.top.stick();
+                        graph.top.normalStyle({
+                            stroke: ORANGE
+                        });
+                    } else {
+                        graph.bottom.set(TOPTICK);
+                        graph.bottom.stick();
+                        graph.bottom.normalStyle({
+                            stroke: ORANGE
+                        });
+                    }
+
+                    graph.cross.set(CROSSTICK);
+                    graph.cross.stick();
                     graph.cross.normalStyle({
                         stroke: ORANGE
                     });
@@ -93,61 +119,21 @@
                     Click on the congruent parts, and then click "check answer" when done.
                 </div>
                 <div class="guess">
-                    GRAPH.getGuess()
+                    graph.congruency.getGuess()
                 </div>
                 <div class="validator-function">
-                    if (!_.any(guess)) {
+                    if ((guess["AB"] === 0 || guess["CD"] === 0) &amp;&amp;
+                        (guess["AC"] === 0 || guess["BD"] === 0)) {
                         return "";
                     }
-                    return _.all(guess, function(e, i) {
-                        if (e) {
-                            return _.include(SOLUTION, i);
-                        } else {
-                            return !_.include(SOLUTION, i);
-                        }
-                    });
+                    return (guess["AB"] === guess["CD"] &amp;&amp;
+                            guess["AC"] === guess["BD"]);
+                </div>
+                <div class="show-guess">
+                    graph.congruency.showGuess(guess);
                 </div>
             </div>
             <div class="hints">
-                <p>Three angles are congruent to the given angle.</p>
-                <div>
-                    <p>Vertical angles are congruent, so the angle <span class="hint_red">vertical</span> to the <span class="hint_orange">given</span> is congruent.</p>
-                    <div class="graphie">
-                        if (GIVEN % 4 &lt; 2) {
-                            GRAPH.hint((GIVEN + 2) % 8, RED);
-                        } else {
-                            GRAPH.hint((GIVEN + 6) % 8, RED);
-                        }
-                    </div>
-                </div>
-                <div data-if="GIVEN < 2 || GIVEN > 5">
-                    <p>Opposite interior angles are congruent, so the angle <span class="hint_purple">opposite</span> of the <span class="hint_orange">given</span> is congruent</p>
-                    <div class="graphie">
-                        if (GIVEN &lt; 2) {
-                            GRAPH.hint((GIVEN + 6) % 8, PURPLE);
-                        } else {
-                            GRAPH.hint((GIVEN + 2) % 8, PURPLE);
-                        }
-                    </div>
-                </div>
-                <div data-else>
-                    <p>Opposite interior angles are congruent, so the angle <span class="hint_purple">opposite</span> of the <span class="hint_red">vertical angle</span> is congruent</p>
-                    <div class="graphie">
-                        GRAPH.hint((GIVEN + 4) % 8, PURPLE);
-                    </div>
-                </div>
-                <div>
-                    <p>Vertical angles are congruent, so the angle <span class="hint_pink">vertical</span> to the <span class="hint_purple">opposite interior angle</span> is congruent.</p>
-                    <div class="graphie">
-                        if (GIVEN &lt; 2 || GIVEN &gt; 5) {
-                            GRAPH.hint((GIVEN + 4) % 8, PINK);
-                        } else if (GIVEN &lt; 4) {
-                            GRAPH.hint((GIVEN + 2) % 8, PINK);
-                        } else {
-                            GRAPH.hint((GIVEN + 6) % 8, PINK);
-                        }
-                    </div>
-                </div>
             </div>
         </div>
     </div>

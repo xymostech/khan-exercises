@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html data-require="math graphie interactive congruency">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Congruent triangles 3</title>
+    <script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div>
+            <p class="question">
+                Triangle <code>ABC</code> is congruent to <code>DCB</code>.
+                Click the parts that are congruent by matching them with the
+                orange parts.
+            </p>
+            <div class="problem">
+                <div class="graphie" id="number-line">
+                    init({
+                        range: [[-5, 5], [-5, 5]],
+                        scale: 40
+                    });
+                    addMouseLayer();
+
+                    graph.congruency = addCongruency({ y1: -0.7, y2: 10.7 });
+
+                    graph.congruency.addPoint("A", [0, 4]);
+                    graph.congruency.addPoint("B", [-2, 0]);
+                    graph.congruency.addPoint("C", [2, 0]);
+                    graph.congruency.addPoint("D", [-4, -4]);
+                    graph.congruency.addPoint("E", [4, -4]);
+
+                    graph.congruency.addLine({
+                        start: "D",
+                        end: "E",
+                        clickable: true,
+                        max: 3
+                    });
+                    graph.congruency.addLine({
+                        start: "B",
+                        end: "C",
+                        clickable: true,
+                        max: 3
+                    });
+                    graph.congruency.addLine({
+                        start: "B",
+                        end: "D",
+                        clickable: true,
+                        max: 3
+                    });
+                    graph.congruency.addLine({
+                        start: "C",
+                        end: "D",
+                        clickable: true,
+                        max: 3
+                    });
+                    graph.congruency.addLine({
+                        start: "C",
+                        end: "E",
+                        clickable: true,
+                        max: 3
+                    });
+                    graph.congruency.addLine({
+                        start: "A",
+                        end: "B",
+                        clickable: true,
+                        max: 3
+                    });
+                    graph.congruency.addLine({
+                        start: "A",
+                        end: "C",
+                        clickable: true,
+                        max: 3
+                    });
+
+                    graph.congruency.addAngles("A");
+                    graph.congruency.addAngles("B");
+                    graph.congruency.addAngles("C");
+                    graph.congruency.addAngles("D");
+                    graph.congruency.addAngles("E");
+
+                    graph.congruency.lines["AC"].normalStyle({
+                        stroke: ORANGE
+                    });
+
+                    graph.congruency.addLine({
+                        start: "A",
+                        end: "E",
+                        clickable: false,
+                        max: 3
+                    });
+
+                    graph.congruency.addLabel("A", "above");
+                    graph.congruency.addLabel("B", "left");
+                    graph.congruency.addLabel("C", "right");
+                    graph.congruency.addLabel("D", "left");
+                    graph.congruency.addLabel("E", "right");
+
+                    g = graph;
+
+                    $(".hover").bind("vmouseover", function(event) {
+                        graph.congruency.lines["AE"].normalStyle({
+                            stroke: ORANGE,
+                            "stroke-width": 3
+                        });
+                        $(this).bind("vmouseout", function(event) {
+                            graph.congruency.lines["AE"].normalStyle({
+                                stroke: "black",
+                                "stroke-width": 2
+                            });
+                        });
+                    });
+                    $(".hover2").bind("vmouseover", function(event) {
+                        graph.congruency.lines["AC"].normalStyle({
+                            stroke: ORANGE,
+                            "stroke-width": 3
+                        });
+                        $(this).bind("vmouseout", function(event) {
+                            graph.congruency.lines["AC"].normalStyle({
+                                stroke: "black",
+                                "stroke-width": 2
+                            });
+                        });
+                    });
+                </div>
+
+                <div class="hover">Hello, world!</div>
+                <div class="hover2">Hello, world!</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

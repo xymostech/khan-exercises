@@ -416,6 +416,10 @@ $.extend(KhanUtil, {
                     ang2 += Math.PI * 2;
                 }
 
+                if (ang2 - ang1 >= Math.PI) {
+                    continue;
+                }
+
                 var arc = pt.addArc(pt.pos, 0.6,
                                     KhanUtil.toDegrees(ang1),
                                     KhanUtil.toDegrees(ang2));
@@ -426,6 +430,7 @@ $.extend(KhanUtil, {
                 name = pt2.name + pt.name + pt1.name;
                 congruency.angles[name] = arc;
             }
+
         };
 
         congruency.intersect = function(line1, line2, options) {
@@ -455,210 +460,6 @@ $.extend(KhanUtil, {
             point.angles.push(line2.endPt);
 
             congruency.addAngles(point.name);
-        };
-
-        congruency.blah = function(line1, line2, options) {
-            var ang = $.extend(true, {
-                line1: line1,
-                line2: line2,
-                radius: 0.6,
-                show: [true, true, true, true],
-                states: 1,
-                point: ""
-            }, options);
-
-            if (ang.line1.slope === ang.line2.slope) {
-                return false;
-            }
-
-            ang.coord = [0, 0];
-
-            ang.coord[0] = (ang.line1.slope * ang.line1.start[0]
-                            - ang.line2.slope * ang.line2.start[0]
-                            + ang.line2.start[1] - ang.line1.start[1]) /
-                           (ang.line1.slope - ang.line2.slope);
-            ang.coord[1] = ang.line1.func(ang.coord[0]);
-
-            ang.addArc = function(pos, radius, start, end) {
-                var arc = {
-                    pos: pos,
-                    radius: radius,
-                    start: start,
-                    end: end,
-                    state: 0,
-                    max: ang.states,
-                    shown: false,
-                    stuck: false,
-                    stateDiff: 0.15
-                };
-
-                if (arc.start > arc.end) {
-                    var hold = arc.start;
-                    arc.start = arc.end;
-                    arc.end = hold;
-                }
-
-                arc.angle = arc.end - arc.start;
-
-                // Add a movable point for clicking
-                var aveAngle = KhanUtil.toRadians((arc.start + arc.end) / 2);
-
-                var pointPos = arc.pos.slice();
-                pointPos[0] += Math.cos(aveAngle) * arc.radius;
-                pointPos[1] += Math.sin(aveAngle) * arc.radius;
-
-                arc.point = KhanUtil.addMovablePoint({
-                    coord: pointPos
-                });
-                // Make it not move
-                arc.point.onMove = function(x, y) {
-                    return false;
-                };
-
-                // Make a clicky pointer
-                $(arc.point.mouseTarget[0]).css("cursor", "pointer");
-
-                // Increase the point's size
-                var pointRadius = Math.sin(KhanUtil.toRadians(arc.angle) / 2)
-                                  * arc.radius * graph.scale[0];
-                arc.point.mouseTarget.attr({ r: pointRadius });
-
-                // Replace the shape with our arc
-                arc.point.visibleShape.remove();
-
-                // Styles for different mouse-over states
-                // TODO: come up with a way to set different styles
-                // for normal/highlight
-                arc.unsetNormal = {
-                    stroke: KhanUtil.GRAY,
-                    "stroke-width": 2,
-                    opacity: 0.1
-                };
-                arc.unsetHighlight = {
-                    stroke: KhanUtil.GRAY,
-                    "stroke-width": 2,
-                    opacity: 0.4
-                };
-                arc.setNormal = {
-                    stroke: KhanUtil.BLUE,
-                    "stroke-width": 3,
-                    opacity: 0.9
-                };
-                arc.setHighlight = {
-                    stroke: KhanUtil.BLUE,
-                    "stroke-width": 3,
-                    opacity: 1.0
-                };
-
-                // Set the default styles
-                arc.point.normalStyle = arc.unsetNormal;
-                arc.point.highlightStyle = arc.unsetHighlight;
-
-                // Draw the arc(s)
-                arc.draw = function() {
-                    // Remove any left over arcs
-                    if (this.arc != null) {
-                        this.arc.remove();
-                    }
-
-                    // Count how many arcs there should be
-                    var arcs = (this.state === 0) ? 1 : this.state;
-                    var startRad = this.radius - this.stateDiff * (arcs - 1) / 2;
-
-                    // Create a raphael set
-                    this.arc = graph.raphael.set();
-
-                    // Put all the arcs in the set
-                    for (var curr = 0; curr < arcs; curr += 1) {
-                        var currRad = startRad + this.stateDiff * curr;
-                        this.arc.push(graph.arc(this.pos, currRad,
-                                                this.start, this.end));
-                    }
-                    // Attach it and style correctly
-                    this.point.visibleShape = this.arc;
-                    this.arc.attr(this.point.normalStyle);
-                };
-
-                // Ensure the arc gets drawn on creation
-                arc.draw();
-
-                // Set the state of an arc
-                arc.set = function(state) {
-                    arc.state = state;
-
-                    if (arc.state === 0) {
-                        arc.point.normalStyle = arc.unsetNormal;
-                        arc.point.highlightStyle = arc.unsetHighlight;
-                    } else {
-                        arc.point.normalStyle = arc.setNormal;
-                        arc.point.highlightStyle = arc.setHighlight;
-                    }
-
-                    arc.draw();
-                }
-
-                // Function called upon clicking
-                arc.click = function(event) {
-                    arc.set((arc.state === arc.max) ? 0 : arc.state + 1);
-                };
-
-                // Bind mouseclick
-                $(arc.point.mouseTarget[0]).bind("vmouseup", arc.click);
-
-                // Make an arc stick in its current state
-                // by removing the clicky part
-                arc.stick = function() {
-                    $(arc.point.mouseTarget[0]).unbind();
-                    this.point.mouseTarget.remove();
-                };
-
-                // Set the style of arcs when unset
-                arc.styleUnset = function(options) {
-                    $.extend(true, this.unsetNormal, options);
-                    $.extend(true, this.unsetHighlight, options);
-                    this.draw();
-                };
-
-                // Set the style of arcs when set
-                arc.styleSet = function(options) {
-                    $.extend(true, this.setNormal, options);
-                    $.extend(true, this.setHighlight, options);
-                    this.draw();
-                };
-
-                return arc;
-            };
-
-            // Pre-calculate some angles
-            var startAngle = ang.line1.angle;
-            var diffAngle = ang.line2.angle - ang.line1.angle;
-
-            // Make the set of angles
-            ang.ang = [];
-
-            // Push the angles into the set
-            if (ang.show[0]) {
-                ang.ang[0] = ang.addArc(ang.coord, ang.radius,
-                                        startAngle,
-                                        startAngle + diffAngle);
-            }
-            if (ang.show[1]) {
-                ang.ang[1] = ang.addArc(ang.coord, ang.radius,
-                                        startAngle + diffAngle,
-                                        startAngle + 180);
-            }
-            if (ang.show[2]) {
-                ang.ang[2] = ang.addArc(ang.coord, ang.radius,
-                                        startAngle + 180,
-                                        startAngle + 180 + diffAngle);
-            }
-            if (ang.show[3]) {
-                ang.ang[3] = ang.addArc(ang.coord, ang.radius,
-                                        startAngle + 180 + diffAngle,
-                                        startAngle + 360);
-            }
-
-            return ang;
         };
 
         congruency.addLabel = function(point, position) {

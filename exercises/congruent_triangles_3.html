@@ -41,41 +41,41 @@
                         start: "A",
                         end: "C",
                         clickable: true,
-                        max: 3
+                        maxState: 3
                     });
                     graph.bottom = graph.congruency.addLine({
                         start: "B",
                         end: "D",
                         clickable: true,
-                        max: 3
+                        maxState: 3
                     });
                     graph.left = graph.congruency.addLine({
                         start: "B",
                         end: "A",
                         clickable: true,
-                        max: 3
+                        maxState: 3
                     });
                     graph.right = graph.congruency.addLine({
                         start: "D",
                         end: "C",
                         clickable: true,
-                        max: 3
+                        maxState: 3
                     });
                     graph.cross = graph.congruency.addLine({
                         start: "B",
                         end: "C",
                         clickable: true,
-                        max: 3
+                        maxState: 3
                     });
 
                     if (LEFT) {
-                        graph.left.set(LEFTTICK);
+                        graph.left.setState(LEFTTICK);
                         graph.left.stick();
                         graph.left.normalStyle({
                             stroke: ORANGE
                         });
                     } else {
-                        graph.right.set(LEFTTICK);
+                        graph.right.setState(LEFTTICK);
                         graph.right.stick();
                         graph.right.normalStyle({
                             stroke: ORANGE
@@ -83,20 +83,20 @@
                     }
 
                     if (TOP) {
-                        graph.top.set(TOPTICK);
+                        graph.top.setState(TOPTICK);
                         graph.top.stick();
                         graph.top.normalStyle({
                             stroke: ORANGE
                         });
                     } else {
-                        graph.bottom.set(TOPTICK);
+                        graph.bottom.setState(TOPTICK);
                         graph.bottom.stick();
                         graph.bottom.normalStyle({
                             stroke: ORANGE
                         });
                     }
 
-                    graph.cross.set(CROSSTICK);
+                    graph.cross.setState(CROSSTICK);
                     graph.cross.stick();
                     graph.cross.normalStyle({
                         stroke: ORANGE

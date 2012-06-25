@@ -73,11 +73,13 @@
                     graph.bottom = graph.congruency.addLine({ start: "A", end: "B" });
                     graph.top = graph.congruency.addLine({ start: "C", end: "D" });
 
-                    graph.congruency.intersect(graph.bottom, graph.cross, { addPoint: "G" });
-                    graph.congruency.intersect(graph.top, graph.cross, { addPoint: "H" });
+                    graph.congruency.intersect(graph.bottom, graph.cross,
+                                               "G", true);
+                    graph.congruency.intersect(graph.top, graph.cross,
+                                               "H", true);
 
                     graph.congruency.angles[GIVEN].stick();
-                    graph.congruency.angles[GIVEN].set(1);
+                    graph.congruency.angles[GIVEN].setState(1);
                     graph.congruency.angles[GIVEN].styleSet({
                         stroke: ORANGE
                     });

@@ -4,6 +4,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Congruent angles</title>
     <script src="../khan-exercise.js"></script>
+    <style type="text/css">
+        .floater {
+            position: absolute;
+            z-index: 9999;
+            pointer-events: none;
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
 <div class="exercise">
@@ -91,9 +99,43 @@
                         });
                     };
 
+                    ang = graph.congruency.angles.AGF;
+
+                    target = $(ang.point.mouseTarget[0]);
+
+                    made = false;
+
+                    target.bind("vmousedown", function(event) {
+                        $(this).bind("vmousemove", function(event) {
+                            floating = $("&lt;span&gt;Hello&lt;/span&gt;");
+                            floating.prependTo("body");
+                            floating.addClass("floater");
+                            floating.css("left", (event.pageX - floating.width() / 2)+"px");
+                            floating.css("top", (event.pageY - floating.height() / 2)+"px");
+                            made = true;
+                            $(this).unbind("vmousemove vmouseup vmouseout");
+                            $("#problemarea").bind("vmousemove", function(event) {
+                                floating.css("left", (event.pageX - floating.width() / 2)+"px");
+                                floating.css("top", (event.pageY - floating.height() / 2)+"px");
+                            });
+
+                            $(".drag_drop").bind("vmousedown", function(event) {
+                                box = $(this);
+                                $(this).val(floating.text());
+                                floating.remove();
+                                $("#problemarea").unbind("vmousemove");
+                                $(this).unbind("vmousedown");
+                            });
+                        });
+                        $(this).bind("vmouseup vmouseout", function(event) {
+                            $(this).unbind("vmousemove vmouseup vmouseout");
+                        });
+                    });
+
                     label([0.5, 3.4], "p");
                     label([0.5, 0.4], "q");
                 </div>
+                <input type="text" class="drag_drop" />
             </div>
             <div class="solution" data-type="custom">
                 <div class="instruction">

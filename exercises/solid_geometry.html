@@ -23,6 +23,10 @@
     <div class="problems">
         <div id="int-tripri-V">
             <div class="vars">
+                <var id="COLOR1">BLUE</var>
+                <var id="COLOR2">GREEN</var>
+                <var id="COLOR3">GRAY</var>
+                <var id="COLOR4">ORANGE</var>
                 <var id="HEIGHT">randRange(2, 5)</var>
                 <var id="BASE">HEIGHT * 2</var>
                 <var id="SIDE">"" + HEIGHT + "\\sqrt{2}"</var>
@@ -41,27 +45,27 @@
                 <var id="FACES">[
                     {
                         verts: [0, 2, 1],
-                        color: GRAY,
+                        color: COLOR3,
                         lines: [[[0, -0.5, 1], [0, 0.5, 1]]],
                         labels: [[[0, 0, 1], HEIGHT]]
                     }, {
                         verts: [3, 4, 5],
-                        color: GRAY,
+                        color: COLOR3,
                         lines: [[[-0.03, -0.47, -1], [0.95, 0.5, -1]]],
                         labels: [[[0.2, -0.08, -1], SIDE]]
                     }, {
                         verts: [0, 1, 4, 3],
-                        color: ORANGE,
+                        color: COLOR4,
                         lines: [[[1, 0.5, 0], [-1, 0.5, 0]]],
                         labels: [[[0, 0.5, 0], BASE]]
                     }, {
                         verts: [1, 2, 5, 4],
-                        color: BLUE,
+                        color: COLOR1,
                         lines: [[[0.5, 0, 1], [0.5, 0, -1]]],
                         labels: [[[0.5, 0, 0], DEPTH]]
                     }, {
                         verts: [0, 3, 5, 2],
-                        color: GREEN,
+                        color: COLOR2,
                         lines: [[[-1, 0.5, 0], [0, -0.5, 0]]],
                         labels: [[[-0.5, 0, 0], SIDE]]
                     }
@@ -153,7 +157,7 @@
                         init({ range: [[-2, 2], [-1.2, 1.2]], scale: [100, 100] });
 
                         path([[-1.5, -0.75], [1.5, -0.75], [0, 0.75], true],
-                            { stroke: "black", strokeWidth: 1, fill: GRAY });
+                            { stroke: "black", strokeWidth: 1, fill: COLOR3 });
 
                         path([[0, -0.75], [0, 0.75]],
                             { stroke: "black", strokeDasharray: ". " });
@@ -220,27 +224,27 @@
                 <var id="FACES">[
                     {
                         verts: [3, 2, 1, 0],
-                        color: BLUE,
+                        color: COLOR1,
                         labels: [[[XBORD, 0, ZBORD], WIDTH]]
                     }, {
                         verts: [4, 5, 6, 7],
-                        color: BLUE,
+                        color: COLOR1,
                         labels: [[[-XBORD, 0, -ZBORD], WIDTH]]
                     }, {
                         verts: [0, 1, 5, 4],
-                        color: GRAY,
+                        color: COLOR3,
                         labels: [[[-XBORD, YBORD, 0], HEIGHT]]
                     }, {
                         verts: [2, 3, 7, 6],
-                        color: GRAY,
+                        color: COLOR3,
                         labels: [[[-XBORD, -YBORD, 0], HEIGHT]]
                     }, {
                         verts: [1, 2, 6, 5],
-                        color: GREEN,
+                        color: COLOR2,
                         labels: [[[0, -YBORD, -ZBORD], LENGTH]]
                     }, {
                         verts: [3, 0, 4, 7],
-                        color: GREEN,
+                        color: COLOR2,
                         labels: [[[0, YBORD, ZBORD], LENGTH]]
                     }
                 ]</var>
@@ -320,31 +324,31 @@
                         var faces = [
                             {
                                 verts: [5, 6, 2, 1],
-                                color: GREEN
+                                color: COLOR2
                             }, {
                                 verts: [4, 5, 1, 0],
-                                color: GRAY
+                                color: COLOR3
                             }, {
                                 verts: [6, 7, 3, 2],
-                                color: GRAY
+                                color: COLOR3
                             }, {
                                 verts: [1, 2, 9, 8],
-                                color: BLUE
+                                color: COLOR1
                             }, {
                                 verts: [6, 5, 10, 11],
-                                color: BLUE
+                                color: COLOR1
                             }, {
                                 verts: [13, 12, 3, 7],
-                                color: GREEN
+                                color: COLOR2
                             }, {
                                 verts: [0, 1, 5, 4],
-                                color: GRAY
+                                color: COLOR3
                             }, {
                                 verts: [11, 10, 5, 6],
-                                color: BLUE
+                                color: COLOR1
                             }, {
                                 verts: [7, 3, 12, 13],
-                                color: GREEN
+                                color: COLOR2
                             }
                         ];
 
@@ -446,22 +450,22 @@
                             init({range: [[-1, width + 1], [-1, height + 1]],
                                 scale: [400 / width, 400 / width]});
 
-                            makeSquare(0, HEIGHT, 0, WIDTH, BLUE);
-                            makeSquare(1, HEIGHT, 1, WIDTH, BLUE);
+                            makeSquare(0, HEIGHT, 0, WIDTH, COLOR1);
+                            makeSquare(1, HEIGHT, 1, WIDTH, COLOR1);
                             label([0.8 + HEIGHT / 2, WIDTH + 1.2],
                                 HEIGHT, "below");
                             label([1.1 + HEIGHT, 1 + WIDTH / 2],
                                 WIDTH, "left");
 
-                            makeSquare(HEIGHT + 2, WIDTH, 0, LENGTH, GREEN);
-                            makeSquare(HEIGHT + 3, WIDTH, 1, LENGTH, GREEN);
+                            makeSquare(HEIGHT + 2, WIDTH, 0, LENGTH, COLOR2);
+                            makeSquare(HEIGHT + 3, WIDTH, 1, LENGTH, COLOR2);
                             label([2.8 + HEIGHT + WIDTH / 2, 1.2 + LENGTH],
                                 WIDTH, "below");
                             label([3.1 + HEIGHT + WIDTH, 1 + LENGTH / 2],
                                 LENGTH, "left");
 
-                            makeSquare(HEIGHT + WIDTH + 4, LENGTH, 0, HEIGHT, GRAY);
-                            makeSquare(HEIGHT + WIDTH + 5, LENGTH, 1, HEIGHT, GRAY);
+                            makeSquare(HEIGHT + WIDTH + 4, LENGTH, 0, HEIGHT, COLOR3);
+                            makeSquare(HEIGHT + WIDTH + 5, LENGTH, 1, HEIGHT, COLOR3);
                             label([4.8 + HEIGHT + WIDTH + LENGTH / 2, 1.2 + HEIGHT],
                                 LENGTH, "below");
                             label([5.1 + HEIGHT + WIDTH + LENGTH, 1 + HEIGHT / 2],
@@ -565,7 +569,7 @@
                             init({range: [[-1, width + 1], [-1, height + 1]],
                                 scale: [300 / width, 300 / width]});
 
-                            var colors = [GRAY, GRAY, BLUE, BLUE, GREEN, GREEN];
+                            var colors = [COLOR3, COLOR3, COLOR1, COLOR1, COLOR2, COLOR2];
 
                             for (var i = 0; i < 6; ++i) {
                                 makeSquare(i, HEIGHT, i / 3, WIDTH, colors[i]);

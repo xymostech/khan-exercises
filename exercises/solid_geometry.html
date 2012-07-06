@@ -16,6 +16,13 @@
                 { stroke: "black", strokeWidth: 1, fill: color }
             );
         };
+
+        var normalize = function(vect) {
+            var length = Math.sqrt(vect[0] * vect[0] +
+                                   vect[1] * vect[1] +
+                                   vect[2] * vect[2]);
+            return _.map(vect, function(e) { return e / length; });
+        };
     </script>
 </head>
 <body>
@@ -122,8 +129,8 @@
                             GRAPH.lastX = event.pageX;
                             GRAPH.lastY = event.pageY;
 
-                            var xAxis = GRAPH.obj.perspective[1];
-                            var yAxis = GRAPH.obj.perspective[0];
+                            var xAxis = normalize(GRAPH.obj.perspective[1]);
+                            var yAxis = normalize(GRAPH.obj.perspective[0]);
 
                             GRAPH.obj.rotate(xAxis[0], xAxis[1], xAxis[2], -dx / 2);
                             GRAPH.obj.rotate(yAxis[0], yAxis[1], yAxis[2], -dy / 2);

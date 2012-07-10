@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html data-require="math math-format graphie interactive">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Plotting the line of best fit</title>
+    <script src="../khan-exercise.js"></script>
+</head>
+<body>
+    <div class="exercise">
+        <div class="problems">
+            <div>
+                <div class="vars">
+                    <var id="SLOPE">randRange(-100, 100) / 20</var>
+                    <var id="INTERSECT">randRange(-5, 5)</var>
+                    <var id="FUNC">function(x) { return SLOPE * x + INTERSECT }</var>
+                    <var id="TOP">(10 - INTERSECT) / abs(SLOPE)</var>
+                    <var id="BOTTOM">(-10 - INTERSECT) / abs(SLOPE)</var>
+                    <var id="BOUND">function(x, low, high) { return (x < low) ? low : (x > high) ? high : x; }</var>
+                    <var id="XS">(function() {
+
+                        var right = (TOP > 10) ? 10 : TOP;
+                        var left = (BOTTOM < -10) ? -10 : BOTTOM;
+
+                        var range = (right - left) / 20;
+
+                        return _.map(shuffle(_.range(-8, 9), 7), function(x) {
+                            return round(x * range);
+                        });
+                    })()</var>
+                    <var id="POINTS">_.map(XS, function(x) {
+                        return [x, BOUND(round(FUNC(x) + randRange(-1, 1)), -9, 9)];
+                    })</var>
+                </div>
+
+                <p class="question">Find the line of best fit</p>
+                <div class="problem">
+                    <div class="graphie">
+                        graphInit({
+                            range: 11,
+                            scale: 20,
+                            axisArrows: "&lt;-&gt;",
+                            tickStep: 1,
+                            labelStep: 1,
+                            gridOpacity: 0.05,
+                            axisOpacity: 0.2,
+                            tickOpacity: 0.4,
+                            labelOpacity: 0.5
+                        });
+
+                        var func = function(x) {
+                            return SLOPE * x + INTERSECT;
+                        };
+
+                        _.each(POINTS, function(pt) {
+                            circle(pt, 0.2, { fill: "black" });
+                        });
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

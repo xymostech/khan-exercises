@@ -18,7 +18,7 @@
                 <var id="BOUND">function(x, low, high) {
                     return (x < low) ? low : (x > high) ? high : x;
                 }</var>
-                <var id="OFFSET">randRange(2, 4) / 2</var>
+                <var id="OFFSET">random() + 1.0</var>
                 <var id="XS">(function() {
 
                     var right = (TOP > 10) ? 10 : TOP;
@@ -30,10 +30,21 @@
                         return round(x * range);
                     });
                 })()</var>
+                <var id="UNIQARRAYS">function(a) {
+                    for (var i = 0; i < a.length; ++i) {
+                        for (var j = i + 1; j < a.length; ++j) {
+                            if (_.isEqual(a[i], a[j])) {
+                                a.splice(j, 1);
+                                --j;
+                            }
+                        }
+                    }
+                    return a;
+                }</var>
                 <var id="ANG">atan2(SLOPE, 1) + PI / 2</var>
                 <var id="PERP">[cos(ANG), sin(ANG)]</var>
                 <var id="TOTALOFFSET">[]</var>
-                <var id="POINTS">_.map(XS, function(x) {
+                <var id="POINTS">_.sortBy(UNIQARRAYS(_.map(XS, function(x) {
                     var total = _.reduce(TOTALOFFSET, function(sum, num) {
                         return sum + num;
                     }, 0);
@@ -46,7 +57,7 @@
 
                     return [BOUND(round(x + PERP[0] * offset), -9, 9),
                             BOUND(round(FUNC(x) + PERP[1] * offset), -9, 9)];
-                })</var>
+                    })), function(pt) { return pt[0]; })</var>
             </div>
 
             <p class="question">Find the line of best fit</p>
@@ -118,13 +129,54 @@
                     [graph.pointA.coord, graph.pointB.coord]
                 </div>
                 <div class="validator-function">
+
+                    if (_.isEqual([-5, 5], guess[0]) &amp;&amp;
+                        _.isEqual([5, 5], guess[1])) {
+                        return "";
+                    }
+
+                    // the slope and intersect of the given line
                     var slope = (guess[0][1] - guess[1][1]) /
                         (guess[0][0] - guess[1][0]);
-                    var intersect = slope * -guess[0][0] + guess[0][1];
-                    return abs(slope / SLOPE - 1) +
-                        abs(intersect - INTERSECT) /
-                            BOUND(abs(SLOPE), 1, Infinity)
-                        < OFFSET;
+                    var intercept = slope * -guess[0][0] + guess[0][1];
+
+                    // whether or not each of the points are above or below
+                    // the given line
+                    var updown = _.map(POINTS, function(pt) {
+                        var x = pt[0], y = pt[1],
+                            est = slope * x + intercept;
+                        return y &gt;= est ? 1 : -1;
+                    });
+
+                    // sort and reverse-sort updown
+                    var updownSorted = sortNumbers(updown);
+                    var updownReversed = updowns.slice(0).reverse();
+
+                    var normLength = pow((guess[1][0] - guess[0][0]), 2) + pow((guess[1][1] - guess[0][1]), 2);
+                    // calculate the distance from a point to the line
+                    var distTo = function(pt) {
+                        return abs((pt[0] - guess[0][0]) * (guess[1][1] - guess[0][1]) -
+                                   (pt[1] - guess[0][1]) * (guess[1][0] - guess[0][0])) / normLength;
+                    };
+
+                    // the average distance the points are from the line
+                    var aveDist = _.reduce(POINTS, function(sum, pt) {
+                        return sum + distTo(pt);
+                    }, 0) / POINTS.length;
+
+                    // ensure:
+                    return
+                        // all the points are not up, ..., up, down, ..., down
+                        !_.isEqual(updown, updownSorted) &amp;&amp;
+                        // all the points are not down, ..., down, up, ..., up
+                        !_.isEqual(updown, updownReversed) &amp;&amp;
+                        // one point is above
+                        _.include(updown, 1) &amp;&amp;
+                        // one point is below
+                        _.include(updown, -1) &amp;&amp;
+                        // the average distance is within some distance,
+                        // proportional to the offest
+                        aveDist &lt; 0.08 * OFFSET;
                 </div>
                 <div class="show-guess">
                     graph.pointA.coord = guess[0];

@@ -150,7 +150,7 @@
 
                     // sort and reverse-sort updown
                     var updownSorted = sortNumbers(updown);
-                    var updownReversed = updowns.slice(0).reverse();
+                    var updownReversed = updownSorted.slice(0).reverse();
 
                     var normLength = pow((guess[1][0] - guess[0][0]), 2) + pow((guess[1][1] - guess[0][1]), 2);
                     // calculate the distance from a point to the line
@@ -165,9 +165,8 @@
                     }, 0) / POINTS.length;
 
                     // ensure:
-                    return
-                        // all the points are not up, ..., up, down, ..., down
-                        !_.isEqual(updown, updownSorted) &amp;&amp;
+                    // all the points are not up, ..., up, down, ..., down
+                    return !_.isEqual(updown, updownSorted) &amp;&amp;
                         // all the points are not down, ..., down, up, ..., up
                         !_.isEqual(updown, updownReversed) &amp;&amp;
                         // one point is above
@@ -176,7 +175,7 @@
                         _.include(updown, -1) &amp;&amp;
                         // the average distance is within some distance,
                         // proportional to the offest
-                        aveDist &lt; 0.08 * OFFSET;
+                        aveDist &lt; 0.1 * OFFSET;
                 </div>
                 <div class="show-guess">
                     graph.pointA.coord = guess[0];

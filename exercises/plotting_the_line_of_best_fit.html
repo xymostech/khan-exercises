@@ -16,6 +16,7 @@
                     <var id="TOP">(10 - INTERSECT) / abs(SLOPE)</var>
                     <var id="BOTTOM">(-10 - INTERSECT) / abs(SLOPE)</var>
                     <var id="BOUND">function(x, low, high) { return (x < low) ? low : (x > high) ? high : x; }</var>
+                    <var id="OFFSET">randRange(2, 4) / 2</var>
                     <var id="XS">(function() {
 
                         var right = (TOP > 10) ? 10 : TOP;
@@ -27,8 +28,12 @@
                             return round(x * range);
                         });
                     })()</var>
+                    <var id="ANG">atan2(SLOPE, 1) + PI / 2</var>
+                    <var id="PERP">[cos(ANG), sin(ANG)]</var>
                     <var id="POINTS">_.map(XS, function(x) {
-                        return [x, BOUND(round(FUNC(x) + randRange(-1, 1)), -9, 9)];
+                        var offset = randRange(-OFFSET, OFFSET);
+                        return [BOUND(round(x + PERP[0] * offset), -9, 9),
+                                BOUND(round(FUNC(x) + PERP[1] * offset), -9, 9)];
                     })</var>
                 </div>
 
@@ -54,6 +59,44 @@
                         _.each(POINTS, function(pt) {
                             circle(pt, 0.2, { fill: "black" });
                         });
+
+                        addMouseLayer();
+                        graph.pointA = addMovablePoint({
+                            coord: [ -5, 5 ],
+                            snapX: 0.5,
+                            snapY: 0.5,
+                            normalStyle: {
+                                stroke: KhanUtil.BLUE,
+                                fill: KhanUtil.BLUE
+                            }
+                        });
+                        graph.pointB = addMovablePoint({
+                            coord: [ 5, 5 ],
+                            snapX: 0.5,
+                            snapY: 0.5,
+                            normalStyle: {
+                                stroke: KhanUtil.BLUE,
+                                fill: KhanUtil.BLUE
+                            }
+                        });
+                        graph.line1 = addMovableLineSegment({
+                            pointA: graph.pointA,
+                            pointZ: graph.pointB,
+                            fixed: true,
+                            extendLine: true
+                        });
+
+                        // A and B can't be in the same place
+                        graph.pointA.onMove = function( x, y ) {
+                            return ( x != graph.pointB.coord[0] || y != graph.pointB.coord[1] );
+                        }
+                        graph.pointB.onMove = function( x, y ) {
+                            return ( x != graph.pointA.coord[0] || y != graph.pointA.coord[1] );
+                        }
+
+                        graph.pointA.toFront();
+                        graph.pointB.toFront();
+
                     </div>
                 </div>
             </div>

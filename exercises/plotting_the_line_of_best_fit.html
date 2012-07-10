@@ -4,6 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Plotting the line of best fit</title>
     <script src="../khan-exercise.js"></script>
+    <style type="text/css">
+        .graphie.float {
+            float: left;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="exercise">
@@ -13,18 +19,16 @@
                 <var id="SLOPE">randRange(-100, 100) / 20</var>
                 <var id="INTERSECT">randRange(-5, 5)</var>
                 <var id="FUNC">function(x) { return SLOPE * x + INTERSECT }</var>
-                <var id="TOP">(10 - INTERSECT) / abs(SLOPE)</var>
-                <var id="BOTTOM">(-10 - INTERSECT) / abs(SLOPE)</var>
+                <var id="TOP">(10 - INTERSECT) / SLOPE</var>
+                <var id="BOTTOM">(-10 - INTERSECT) / SLOPE</var>
                 <var id="BOUND">function(x, low, high) {
                     return (x < low) ? low : (x > high) ? high : x;
                 }</var>
                 <var id="OFFSET">random() + 1.0</var>
+                <var id="LEFT">(BOTTOM < -10) ? -10 : BOTTOM</var>
+                <var id="RIGHT">(TOP > 10) ? 10 : TOP</var>
                 <var id="XS">(function() {
-
-                    var right = (TOP > 10) ? 10 : TOP;
-                    var left = (BOTTOM < -10) ? -10 : BOTTOM;
-
-                    var range = (right - left) / 20;
+                    var range = (RIGHT - LEFT) / 20;
 
                     return _.map(shuffle(_.range(-8, 9), 7), function(x) {
                         return round(x * range);
@@ -58,6 +62,7 @@
                     return [BOUND(round(x + PERP[0] * offset), -9, 9),
                             BOUND(round(FUNC(x) + PERP[1] * offset), -9, 9)];
                     })), function(pt) { return pt[0]; })</var>
+                <var id="GRAPH">{}</var>
             </div>
 
             <p class="question">Find the line of best fit</p>
@@ -118,6 +123,48 @@
                     graph.pointA.toFront();
                     graph.pointB.toFront();
 
+                    graph.showSolution = function() {
+                        var roundToHalf = function(x) {
+                            return round(x * 2) / 2;
+                        };
+
+                        var linearreg
+
+                        $("html, body").animate({
+                            scrollTop: $(".question").offset().top
+                        }, {
+                            duration: 500,
+                            easing: "swing",
+                            complete: function() {
+                                var coords = {
+                                    x1: graph.pointA.coord[0],
+                                    y1: graph.pointA.coord[1],
+                                    x2: graph.pointB.coord[0],
+                                    y2: graph.pointB.coord[1]
+                                };
+                                var left = roundToHalf(LEFT + (RIGHT - LEFT) * 0.1);
+                                var right = roundToHalf(RIGHT - (RIGHT - LEFT) * 0.1);
+                                $(coords).delay(100).animate({
+                                    x1: left,
+                                    y1: roundToHalf(FUNC(left)),
+                                    x2: right,
+                                    y2: roundToHalf(FUNC(right))
+                                }, {
+                                    duration: 500,
+                                    easing: "linear",
+                                    step: function( now, fx ) {
+                                        coords[ fx.prop ] = now;
+                                        graph.pointA.setCoord([ coords.x1, coords.y1 ]);
+                                        graph.pointB.setCoord([ coords.x2, coords.y2 ]);
+
+                                        graph.line1.transform(true);
+                                    }
+                                });
+                            }
+                        });
+                    };
+
+                    GRAPH = graph;
                 </div>
             </div>
 
@@ -126,7 +173,7 @@
                     Move the line to be a line of best fit for the data points.
                 </div>
                 <div class="guess">
-                    [graph.pointA.coord, graph.pointB.coord]
+                    [GRAPH.pointA.coord, GRAPH.pointB.coord]
                 </div>
                 <div class="validator-function">
 
@@ -178,11 +225,131 @@
                         aveDist &lt; 0.1 * OFFSET;
                 </div>
                 <div class="show-guess">
-                    graph.pointA.coord = guess[0];
-                    graph.pointB.coord = guess[1];
+                    GRAPH.pointA.coord = guess[0];
+                    GRAPH.pointB.coord = guess[1];
 
-                    graph.line1.transform();
+                    GRAPH.line1.transform(true);
                 </div>
+            </div>
+
+            <div class="hints">
+                <p>The line of best fit is the line that best approximates
+                    the data points.</p>
+                <div>
+                    <p>First, make sure that your line passes through the points,
+                        and does not lie completely above or below the points.</p>
+                    <div class="clearfix">
+                        <div class="graphie float">
+                            init({ range: [[-5, 5], [-5, 5]], scale: [20, 20] });
+
+                            circle([-2, -3], 0.2, { fill: "black" });
+                            circle([ 0, -1], 0.2, { fill: "black" });
+                            circle([-1,  1], 0.2, { fill: "black" });
+                            circle([ 1,  1], 0.2, { fill: "black" });
+                            circle([ 0,  2], 0.2, { fill: "black" });
+
+                            line([-5, -4], [5, -3], { stroke: BLUE });
+
+                            label([0, 4], "Bad", "center", false)
+                                .css("color", "red")
+                                .css("font-size", "20px");
+                        </div>
+                        <div class="graphie float">
+                            init({ range: [[-5, 5], [-5, 5]], scale: [20, 20] });
+
+                            circle([-2, -3], 0.2, { fill: "black" });
+                            circle([ 0, -1], 0.2, { fill: "black" });
+                            circle([-1,  1], 0.2, { fill: "black" });
+                            circle([ 1,  1], 0.2, { fill: "black" });
+                            circle([ 0,  2], 0.2, { fill: "black" });
+
+                            line([-5, -4], [5, 3], { stroke: BLUE });
+
+                            label([0, 4], "Good", "center", false)
+                                .css("color", "green")
+                                .css("font-size", "20px");
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p>Next, make sure that your line alternates between
+                        passing above and then below points, and doesn't simply
+                        go above some points and then below the rest.</p>
+                    <div class="clearfix">
+                        <div class="graphie float">
+                            init({ range: [[-5, 5], [-5, 5]], scale: [20, 20] });
+
+                            circle([-2, -3], 0.2, { fill: "black" });
+                            circle([ 0, -1], 0.2, { fill: "black" });
+                            circle([-1,  1], 0.2, { fill: "black" });
+                            circle([ 1,  1], 0.2, { fill: "black" });
+                            circle([ 0,  2], 0.2, { fill: "black" });
+
+                            line([-5, -2.5], [5, -1.5], { stroke: BLUE });
+
+                            label([0, 4], "Bad", "center", false)
+                                .css("color", "red")
+                                .css("font-size", "20px");
+                        </div>
+                        <div class="graphie float">
+                            init({ range: [[-5, 5], [-5, 5]], scale: [20, 20] });
+
+                            circle([-2, -3], 0.2, { fill: "black" });
+                            circle([ 0, -1], 0.2, { fill: "black" });
+                            circle([-1,  1], 0.2, { fill: "black" });
+                            circle([ 1,  1], 0.2, { fill: "black" });
+                            circle([ 0,  2], 0.2, { fill: "black" });
+
+                            line([-4, -5], [4, 5], { stroke: BLUE });
+
+                            label([0, 4], "Good", "center", false)
+                                .css("color", "green")
+                                .css("font-size", "20px");
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p>Last, make sure that the line goes through the middle
+                        of all the points, so that it is close to all of
+                        the points.</p>
+                    <div class="clearfix">
+                        <div class="graphie float">
+                            init({ range: [[-5, 5], [-5, 5]], scale: [20, 20] });
+
+                            circle([-2, -3], 0.2, { fill: "black" });
+                            circle([ 0, -1], 0.2, { fill: "black" });
+                            circle([-1,  1], 0.2, { fill: "black" });
+                            circle([ 1,  1], 0.2, { fill: "black" });
+                            circle([ 0,  2], 0.2, { fill: "black" });
+
+                            line([-5, -3.5], [3, 5], { stroke: BLUE });
+
+                            label([0, 4], "Bad", "center", false)
+                                .css("color", "red")
+                                .css("font-size", "20px");
+                        </div>
+                        <div class="graphie float">
+                            init({ range: [[-5, 5], [-5, 5]], scale: [20, 20] });
+
+                            circle([-2, -3], 0.2, { fill: "black" });
+                            circle([ 0, -1], 0.2, { fill: "black" });
+                            circle([-1,  1], 0.2, { fill: "black" });
+                            circle([ 1,  1], 0.2, { fill: "black" });
+                            circle([ 0,  2], 0.2, { fill: "black" });
+
+                            line([-4, -5], [3, 5], { stroke: BLUE });
+
+                            label([0, 4], "Good", "center", false)
+                                .css("color", "green")
+                                .css("font-size", "20px");
+                        </div>
+                    </div>
+                </div>
+                <p>
+                    There are several lines that satisfy this.
+                    <input type="submit" value="Click here" onclick="javascript:KhanUtil.tmpl.getVAR('GRAPH').showSolution()"/>
+                    to show one of them.
+                </p>
             </div>
         </div>
     </div>

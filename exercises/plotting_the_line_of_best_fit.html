@@ -15,7 +15,9 @@
                 <var id="FUNC">function(x) { return SLOPE * x + INTERSECT }</var>
                 <var id="TOP">(10 - INTERSECT) / abs(SLOPE)</var>
                 <var id="BOTTOM">(-10 - INTERSECT) / abs(SLOPE)</var>
-                <var id="BOUND">function(x, low, high) { return (x < low) ? low : (x > high) ? high : x; }</var>
+                <var id="BOUND">function(x, low, high) {
+                    return (x < low) ? low : (x > high) ? high : x;
+                }</var>
                 <var id="OFFSET">randRange(2, 4) / 2</var>
                 <var id="XS">(function() {
 
@@ -33,20 +35,13 @@
                 <var id="TOTALOFFSET">[]</var>
                 <var id="POINTS">_.map(XS, function(x) {
                     var total = _.reduce(TOTALOFFSET, function(sum, num) {
-                        return sum + abs(num);
-                    }, 0) / TOTALOFFSET.length;
+                        return sum + num;
+                    }, 0);
 
-                    if (isNaN(total)) {
-                        total = OFFSET;
-                    }
+                    var scale = 2 * OFFSET - abs(total);
 
-                    total = BOUND(total, OFFSET / 2, OFFSET * 2);
 
-                    console.log(total);
-
-                    scale = OFFSET / total;
-
-                    var offset = randRange(-OFFSET, OFFSET) * scale;
+                    var offset = random() * scale - total / 2;
                     TOTALOFFSET.push(offset);
 
                     return [BOUND(round(x + PERP[0] * offset), -9, 9),
@@ -69,17 +64,13 @@
                         labelOpacity: 0.5
                     });
 
-                    var func = function(x) {
-                        return SLOPE * x + INTERSECT;
-                    };
-
                     _.each(POINTS, function(pt) {
                         circle(pt, 0.2, { fill: "black" });
                     });
 
                     addMouseLayer();
                     graph.pointA = addMovablePoint({
-                        coord: [ -5, 5 ],
+                        coord: [-5, 5],
                         snapX: 0.5,
                         snapY: 0.5,
                         normalStyle: {
@@ -88,7 +79,7 @@
                         }
                     });
                     graph.pointB = addMovablePoint({
-                        coord: [ 5, 5 ],
+                        coord: [5, 5],
                         snapX: 0.5,
                         snapY: 0.5,
                         normalStyle: {
@@ -104,11 +95,13 @@
                     });
 
                     // A and B can't be in the same place
-                    graph.pointA.onMove = function( x, y ) {
-                        return ( x != graph.pointB.coord[0] || y != graph.pointB.coord[1] );
+                    graph.pointA.onMove = function(x, y) {
+                        return (x != graph.pointB.coord[0] ||
+                            y != graph.pointB.coord[1]);
                     }
-                    graph.pointB.onMove = function( x, y ) {
-                        return ( x != graph.pointA.coord[0] || y != graph.pointA.coord[1] );
+                    graph.pointB.onMove = function(x, y) {
+                        return (x != graph.pointA.coord[0] ||
+                            y != graph.pointA.coord[1]);
                     }
 
                     graph.pointA.toFront();
@@ -125,10 +118,13 @@
                     [graph.pointA.coord, graph.pointB.coord]
                 </div>
                 <div class="validator-function">
-                    var slope = (guess[0][1] - guess[1][1]) / (guess[0][0] - guess[1][0]);
+                    var slope = (guess[0][1] - guess[1][1]) /
+                        (guess[0][0] - guess[1][0]);
                     var intersect = slope * -guess[0][0] + guess[0][1];
-                    console.log(abs(slope / SLOPE - 1) + abs(intersect - INTERSECT) / SLOPE);
-                    return abs(slope / SLOPE - 1) + abs(intersect - INTERSECT) / (abs(SLOPE) + 1)< OFFSET;
+                    return abs(slope / SLOPE - 1) +
+                        abs(intersect - INTERSECT) /
+                            BOUND(abs(SLOPE), 1, Infinity)
+                        < OFFSET;
                 </div>
                 <div class="show-guess">
                     graph.pointA.coord = guess[0];

@@ -16,7 +16,7 @@
     <div class="problems">
         <div id="linear">
             <div class="vars">
-                <var id="SLOPE">randRange(-100, 100) / 20</var>
+                <var id="SLOPE">randRange(-80, 80) / 20</var>
                 <var id="INTERCEPT">randRange(-5, 5)</var>
                 <var id="FUNC">function(x) { return SLOPE * x + INTERCEPT }</var>
                 <var id="TOP">((SLOPE < 0 ? -1 : 1) * 11 - INTERCEPT) / SLOPE</var>
@@ -27,13 +27,13 @@
                 <var id="OFFSET">random() + 0.5</var>
                 <var id="LEFT">(BOTTOM < -11) ? -11 : BOTTOM</var>
                 <var id="RIGHT">(TOP > 11) ? 11 : TOP</var>
-                <var id="XS">(function() {
+                <var id="XS">sortNumbers((function() {
                     var range = (RIGHT - LEFT) / 20;
 
                     return _.map(shuffle(_.range(-8, 9), 9), function(x) {
                         return x * range;
                     });
-                })()</var>
+                })())</var>
                 <var id="UNIQARRAYS">function(a) {
                     for (var i = 0; i < a.length; ++i) {
                         for (var j = i + 1; j < a.length; ++j) {
@@ -60,7 +60,8 @@
 
                     var offset;
                     if (index < 2 || index > 6) {
-                        offset = RR(0, OFFSET);
+                        console.log("BLah");
+                        offset = RR(OFFSET/2, OFFSET);
                     } else if (total < 0) {
                         offset = RR(-OFFSET - total, OFFSET);
                     } else {

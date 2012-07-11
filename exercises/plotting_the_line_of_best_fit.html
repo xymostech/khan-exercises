@@ -17,10 +17,10 @@
         <div>
             <div class="vars">
                 <var id="SLOPE">randRange(-100, 100) / 20</var>
-                <var id="INTERSECT">randRange(-5, 5)</var>
-                <var id="FUNC">function(x) { return SLOPE * x + INTERSECT }</var>
-                <var id="TOP">(10 - INTERSECT) / SLOPE</var>
-                <var id="BOTTOM">(-10 - INTERSECT) / SLOPE</var>
+                <var id="INTERCEPT">randRange(-5, 5)</var>
+                <var id="FUNC">function(x) { return SLOPE * x + INTERCEPT }</var>
+                <var id="TOP">((SLOPE < 0 ? -1 : 1) * 10 - INTERCEPT) / SLOPE</var>
+                <var id="BOTTOM">((SLOPE < 0 ? 1 : -1) * 10 - INTERCEPT) / SLOPE</var>
                 <var id="BOUND">function(x, low, high) {
                     return (x < low) ? low : (x > high) ? high : x;
                 }</var>
@@ -31,7 +31,7 @@
                     var range = (RIGHT - LEFT) / 20;
 
                     return _.map(shuffle(_.range(-8, 9), 7), function(x) {
-                        return round(x * range);
+                        return x * range;
                     });
                 })()</var>
                 <var id="UNIQARRAYS">function(a) {
@@ -128,7 +128,28 @@
                             return round(x * 2) / 2;
                         };
 
-                        var linearreg
+                        var xAve = _.reduce(POINTS, function(sum, pt) {
+                            return sum + pt[0];
+                        }, 0) / POINTS.length;
+
+                        var yAve = _.reduce(POINTS, function(sum, pt) {
+                            return sum + pt[1];
+                        }, 0) / POINTS.length;
+
+                        var xi2 = _.reduce(POINTS, function(sum, pt) {
+                            return sum + pow(pt[0], 2);
+                        }, 0);
+
+                        var xiyi = _.reduce(POINTS, function(sum, pt) {
+                            return sum + pt[0] * pt[1];
+                        }, 0);
+
+                        var realIntercept = (yAve * xi2 - xAve * xiyi) / (xi2 - POINTS.length * pow(xAve, 2));
+                        var realSlope = (xiyi - POINTS.length * xAve * yAve) / (xi2 - POINTS.length * pow(xAve, 2));
+
+                        var realFunc = function(x) {
+                            return realSlope * x + realIntercept;
+                        };
 
                         $("html, body").animate({
                             scrollTop: $(".question").offset().top
@@ -142,13 +163,13 @@
                                     x2: graph.pointB.coord[0],
                                     y2: graph.pointB.coord[1]
                                 };
-                                var left = roundToHalf(LEFT + (RIGHT - LEFT) * 0.1);
-                                var right = roundToHalf(RIGHT - (RIGHT - LEFT) * 0.1);
+                                var left = LEFT + (RIGHT - LEFT) * 0.1;
+                                var right = RIGHT - (RIGHT - LEFT) * 0.1;
                                 $(coords).delay(100).animate({
-                                    x1: left,
-                                    y1: roundToHalf(FUNC(left)),
-                                    x2: right,
-                                    y2: roundToHalf(FUNC(right))
+                                    x1: roundToHalf(left),
+                                    y1: roundToHalf(realFunc(left)),
+                                    x2: roundToHalf(right),
+                                    y2: roundToHalf(realFunc(right))
                                 }, {
                                     duration: 500,
                                     easing: "linear",
@@ -176,13 +197,12 @@
                     [GRAPH.pointA.coord, GRAPH.pointB.coord]
                 </div>
                 <div class="validator-function">
-
                     if (_.isEqual([-5, 5], guess[0]) &amp;&amp;
                         _.isEqual([5, 5], guess[1])) {
                         return "";
                     }
 
-                    // the slope and intersect of the given line
+                    // the slope and intercept of the given line
                     var slope = (guess[0][1] - guess[1][1]) /
                         (guess[0][0] - guess[1][0]);
                     var intercept = slope * -guess[0][0] + guess[0][1];
@@ -208,8 +228,8 @@
 
                     // the average distance the points are from the line
                     var aveDist = _.reduce(POINTS, function(sum, pt) {
-                        return sum + distTo(pt);
-                    }, 0) / POINTS.length;
+                        return sum + pow(distTo(pt), 2);
+                    }, 0) / sqrt(POINTS.length);
 
                     // ensure:
                     // all the points are not up, ..., up, down, ..., down

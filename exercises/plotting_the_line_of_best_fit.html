@@ -60,7 +60,6 @@
 
                     var offset;
                     if (index < 2 || index > 6) {
-                        console.log("BLah");
                         offset = RR(OFFSET/2, OFFSET);
                     } else if (total < 0) {
                         offset = RR(-OFFSET - total, OFFSET);
@@ -191,7 +190,6 @@
 
                     GRAPH = graph;
                 </div>
-                <input type="text" id="scale" value="1" />
             </div>
 
             <div class="solution" data-type="custom">
@@ -263,8 +261,8 @@
                         _.include(updown, 1) &amp;&amp;
                         // one point is below
                         _.include(updown, -1) &amp;&amp;
-                        lowDiff &lt; 1.2 * OFFSET &amp;&amp;
-                        highDiff &lt; 1.2 * OFFSET;
+                        lowDiff &lt; 1.3 * OFFSET &amp;&amp;
+                        highDiff &lt; 1.3 * OFFSET;
                 </div>
                 <div class="show-guess">
                     GRAPH.pointA.coord = guess[0];

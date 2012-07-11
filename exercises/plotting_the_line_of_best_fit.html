@@ -235,7 +235,36 @@
                                             highfunc(highIntersectx), 2) +
                                         pow(highx - highIntersectx, 2));
 
-                    return lowDiff &lt; $("#scale").val() * OFFSET &amp;&amp; highDiff &lt; $("#scale").val() * OFFSET;
+                    // whether or not each of the points are above or below
+                    // the given line
+                    var updown = _.map(POINTS, function(pt) {
+                        var x = pt[0], y = pt[1],
+                            est = slope * x + intercept;
+                        return y &gt;= est ? 1 : -1;
+                    });
+
+                    // sort and reverse-sort updown
+                    var updownSorted = sortNumbers(updown);
+                    var updownReversed = updownSorted.slice(0).reverse();
+
+                    var normLength = pow((guess[1][0] - guess[0][0]), 2) + pow((guess[1][1] - guess[0][1]), 2);
+                    // calculate the distance from a point to the line
+                    var distTo = function(pt) {
+                        return abs((pt[0] - guess[0][0]) * (guess[1][1] - guess[0][1]) -
+                                   (pt[1] - guess[0][1]) * (guess[1][0] - guess[0][0])) / normLength;
+                    };
+
+                    // ensure:
+                    // all the points are not up, ..., up, down, ..., down
+                    return !_.isEqual(updown, updownSorted) &amp;&amp;
+                        // all the points are not down, ..., down, up, ..., up
+                        !_.isEqual(updown, updownReversed) &amp;&amp;
+                        // one point is above
+                        _.include(updown, 1) &amp;&amp;
+                        // one point is below
+                        _.include(updown, -1) &amp;&amp;
+                        lowDiff &lt; 1.2 * OFFSET &amp;&amp;
+                        highDiff &lt; 1.2 * OFFSET;
                 </div>
                 <div class="show-guess">
                     GRAPH.pointA.coord = guess[0];

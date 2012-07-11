@@ -35,6 +35,7 @@
                     });
                 })())</var>
                 <var id="UNIQARRAYS">function(a) {
+                    // make sure the points are unique in a
                     for (var i = 0; i < a.length; ++i) {
                         for (var j = i + 1; j < a.length; ++j) {
                             if (_.isEqual(a[i], a[j])) {
@@ -45,34 +46,43 @@
                     }
                     return a;
                 }</var>
-                <var id="RR">function(low, high) {
+                <var id="RANDRANGE">function(low, high) {
                     return random() * (high - low) + low;
                 }</var>
                 <var id="ANG">atan2(SLOPE, 1) + PI / 2</var>
                 <var id="PERP">[cos(ANG), sin(ANG)]</var>
                 <var id="TOTALOFFSET">[]</var>
-                <var id="POINTS">_.sortBy(UNIQARRAYS(_.map(XS, function(x, index) {
+                <var id="POINTS">UNIQARRAYS(_.map(XS, function(x, index) {
+                    // calculate the sum of the offsets so far
                     var total = _.reduce(TOTALOFFSET, function(sum, num) {
                         return sum + num;
                     }, 0);
 
-                    var scale = 2 * OFFSET - abs(total);
-
                     var offset;
                     if (index < 2 || index > 6) {
-                        offset = RR(OFFSET/2, OFFSET);
+                        // make sure the first two and last
+                        // two points are on the same side
+                        offset = RANDRANGE(OFFSET/2, OFFSET);
                     } else if (total < 0) {
-                        offset = RR(-OFFSET - total, OFFSET);
+                        // if the offset is negative, choose less
+                        // negative numbers
+                        offset = RANDRANGE(-OFFSET - total, OFFSET);
                     } else {
-                        offset = RR(-OFFSET, OFFSET - total);
+                        // if it is positive, choose less
+                        //positive numbers
+                        offset = RANDRANGE(-OFFSET, OFFSET - total);
                     }
 
+                    // store this offset
                     TOTALOFFSET.push(offset);
 
+                    // calculate the rounded point created by this offset
                     return [BOUND(round(x + PERP[0] * offset), -9, 9),
                             BOUND(round(FUNC(x) + PERP[1] * offset), -9, 9)];
-                    })), function(pt) { return pt[0]; })</var>
+                    }))</var>
                 <var id="REALSLOPE,REALINTERCEPT">(function() {
+                    // calculate the linear square regression
+                    // line for our points
                     var xAve = _.reduce(POINTS, function(sum, pt) {
                         return sum + pt[0];
                     }, 0) / POINTS.length;
@@ -114,12 +124,14 @@
                         tickOpacity: 0.4,
                         labelOpacity: 0.5
                     });
+                    addMouseLayer();
 
+                    // add the points
                     _.each(POINTS, function(pt) {
                         circle(pt, 0.2, { fill: "black" });
                     });
 
-                    addMouseLayer();
+                    // add our movable line
                     graph.pointA = addMovablePoint({
                         coord: [-5, 5],
                         snapX: 0.5,
@@ -160,6 +172,7 @@
 
                     var shown = false;
 
+                    // show the true least square regression line
                     graph.showSolution = function() {
                         if (shown) {
                             return;
@@ -194,12 +207,33 @@
 
             <div class="solution" data-type="custom">
                 <div class="instruction">
-                    Move the line to be a line of best fit for the data points.
+                    Move the line on the graph to show a best fit line,
+                    if it exists.<br>
+                    <ul>
+                        <li>
+                            <label>
+                                <input type="radio" name="linear" id="exists" checked>
+                                <span>A good best fit line exists</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="linear" id="notexists">
+                                <span>No good best fit line exists</span>
+                            </label>
+                        </li>
+                    </ul>
                 </div>
                 <div class="guess">
-                    [GRAPH.pointA.coord, GRAPH.pointB.coord]
+                    [GRAPH.pointA.coord, GRAPH.pointB.coord, $("input[@name='linear']:checked").attr("id")]
                 </div>
                 <div class="validator-function">
+                    if (_.isEqual(guess[0], [-5, 5]) &amp;&amp;
+                        _.isEqual(guess[1], [5, 5]) &amp;&amp;
+                        guess[2] === "exists") {
+                        return "";
+                    }
+
                     var low = _.first(POINTS), high = _.last(POINTS);
 
                     var slopeadd = 1 / REALSLOPE + REALSLOPE;
@@ -226,6 +260,8 @@
                                          high[1] - intercept) /
                                      (slope + 1 / REALSLOPE);
 
+                    // the differences between the least squares line and the
+                    // given line, at the highest and lowest points
                     var lowDiff = sqrt(pow(lowfunc(lowx) -
                                            lowfunc(lowIntersectx), 2) +
                                        pow(lowx - lowIntersectx, 2));
@@ -257,12 +293,15 @@
                     return !_.isEqual(updown, updownSorted) &amp;&amp;
                         // all the points are not down, ..., down, up, ..., up
                         !_.isEqual(updown, updownReversed) &amp;&amp;
-                        // one point is above
+                        // one point is above/below
                         _.include(updown, 1) &amp;&amp;
-                        // one point is below
                         _.include(updown, -1) &amp;&amp;
+                        // the differences are between some proportion
+                        // of the offset
                         lowDiff &lt; 1.3 * OFFSET &amp;&amp;
-                        highDiff &lt; 1.3 * OFFSET;
+                        highDiff &lt; 1.3 * OFFSET &amp;&amp;
+                        // they left 'a line exists' checked
+                        guess[2] === "exists";
                 </div>
                 <div class="show-guess">
                     GRAPH.pointA.coord = guess[0];
@@ -396,10 +435,55 @@
             <div class="vars">
                 <var id="SLOPE">0</var>
                 <var id="INTERCEPT">0</var>
-                <var id="OFFSET">9</var>
+                <var id="OFFSET">11</var>
                 <var id="GRAPH">{}</var>
             </div>
             
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    Move the line on the graph to show a best fit line,
+                    if it exists.<br>
+                    <ul>
+                        <li>
+                            <label>
+                                <input type="radio" name="nonlinear" id="exists" checked>
+                                <span>A good best fit line exists</span>
+                            </label>
+                        </li>
+                        <li>
+                            <label>
+                                <input type="radio" name="nonlinear" id="notexists">
+                                <span>No good best fit line exists</span>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+                <div class="guess">
+                    [GRAPH.pointA.coord, GRAPH.pointB.coord, $("input[@name='nonlinear']:checked").attr("id")]
+                </div>
+                <div class="validator-function">
+                    if (_.isEqual(guess[0], [-5, 5]) &amp;&amp;
+                        _.isEqual(guess[1], [5, 5]) &amp;&amp;
+                        guess[2] === "exists") {
+                        return "";
+                    }
+
+                    return guess[2] === "notexists";
+                </div>
+                <div class="show-guess">
+                    GRAPH.pointA.coord = guess[0];
+                    GRAPH.pointB.coord = guess[1];
+
+                    GRAPH.line1.transform(true);
+                </div>
+            </div>
+
+            <div class="hints">
+                <p>Look at the data, and try to figure out if there is
+                    a linear relationship.</p>
+                <p>Because these data are mostly random, there is no correlation,
+                    so no good best fit line exists.</p>
+            </div>
         </div>
     </div>
 </div>

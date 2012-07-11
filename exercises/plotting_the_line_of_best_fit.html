@@ -14,23 +14,23 @@
 <body>
 <div class="exercise">
     <div class="problems">
-        <div>
+        <div id="linear">
             <div class="vars">
                 <var id="SLOPE">randRange(-100, 100) / 20</var>
                 <var id="INTERCEPT">randRange(-5, 5)</var>
                 <var id="FUNC">function(x) { return SLOPE * x + INTERCEPT }</var>
-                <var id="TOP">((SLOPE < 0 ? -1 : 1) * 10 - INTERCEPT) / SLOPE</var>
-                <var id="BOTTOM">((SLOPE < 0 ? 1 : -1) * 10 - INTERCEPT) / SLOPE</var>
+                <var id="TOP">((SLOPE < 0 ? -1 : 1) * 11 - INTERCEPT) / SLOPE</var>
+                <var id="BOTTOM">((SLOPE < 0 ? 1 : -1) * 11 - INTERCEPT) / SLOPE</var>
                 <var id="BOUND">function(x, low, high) {
                     return (x < low) ? low : (x > high) ? high : x;
                 }</var>
                 <var id="OFFSET">random() + 0.5</var>
-                <var id="LEFT">(BOTTOM < -10) ? -10 : BOTTOM</var>
-                <var id="RIGHT">(TOP > 10) ? 10 : TOP</var>
+                <var id="LEFT">(BOTTOM < -11) ? -11 : BOTTOM</var>
+                <var id="RIGHT">(TOP > 11) ? 11 : TOP</var>
                 <var id="XS">(function() {
                     var range = (RIGHT - LEFT) / 20;
 
-                    return _.map(shuffle(_.range(-8, 9), 7), function(x) {
+                    return _.map(shuffle(_.range(-8, 9), 9), function(x) {
                         return x * range;
                     });
                 })()</var>
@@ -51,7 +51,7 @@
                 <var id="ANG">atan2(SLOPE, 1) + PI / 2</var>
                 <var id="PERP">[cos(ANG), sin(ANG)]</var>
                 <var id="TOTALOFFSET">[]</var>
-                <var id="POINTS">_.sortBy(UNIQARRAYS(_.map(XS, function(x) {
+                <var id="POINTS">_.sortBy(UNIQARRAYS(_.map(XS, function(x, index) {
                     var total = _.reduce(TOTALOFFSET, function(sum, num) {
                         return sum + num;
                     }, 0);
@@ -59,7 +59,9 @@
                     var scale = 2 * OFFSET - abs(total);
 
                     var offset;
-                    if (total < 0) {
+                    if (index < 2 || index > 6) {
+                        offset = RR(0, OFFSET);
+                    } else if (total < 0) {
                         offset = RR(-OFFSET - total, OFFSET);
                     } else {
                         offset = RR(-OFFSET, OFFSET - total);
@@ -97,7 +99,8 @@
                 <var id="GRAPH">{}</var>
             </div>
 
-            <p class="question">Find the line of best fit</p>
+            <p class="question">Find the line of best fit,
+                or mark that there is no linear correlation.</p>
             <div class="problem">
                 <div class="graphie">
                     graphInit({
@@ -146,16 +149,23 @@
                     graph.pointA.onMove = function(x, y) {
                         return (x != graph.pointB.coord[0] ||
                             y != graph.pointB.coord[1]);
-                    }
+                    };
                     graph.pointB.onMove = function(x, y) {
                         return (x != graph.pointA.coord[0] ||
                             y != graph.pointA.coord[1]);
-                    }
+                    };
 
                     graph.pointA.toFront();
                     graph.pointB.toFront();
 
+                    var shown = false;
+
                     graph.showSolution = function() {
+                        if (shown) {
+                            return;
+                        } else {
+                            shown = true;
+                        }
                         var roundToHalf = function(x) {
                             return round(x * 2) / 2;
                         };
@@ -170,36 +180,17 @@
                             duration: 500,
                             easing: "swing",
                             complete: function() {
-                                var coords = {
-                                    x1: graph.pointA.coord[0],
-                                    y1: graph.pointA.coord[1],
-                                    x2: graph.pointB.coord[0],
-                                    y2: graph.pointB.coord[1]
-                                };
-                                var left = LEFT + (RIGHT - LEFT) * 0.1;
-                                var right = RIGHT - (RIGHT - LEFT) * 0.1;
-                                $(coords).delay(100).animate({
-                                    x1: roundToHalf(left),
-                                    y1: roundToHalf(realFunc(left)),
-                                    x2: roundToHalf(right),
-                                    y2: roundToHalf(realFunc(right))
-                                }, {
-                                    duration: 500,
-                                    easing: "linear",
-                                    step: function( now, fx ) {
-                                        coords[ fx.prop ] = now;
-                                        graph.pointA.setCoord([ coords.x1, coords.y1 ]);
-                                        graph.pointB.setCoord([ coords.x2, coords.y2 ]);
-
-                                        graph.line1.transform(true);
-                                    }
-                                });
+                                line([-11, realFunc(-11)],
+                                     [11, realFunc(11)],
+                                     { stroke: ORANGE, opacity: 0 })
+                                    .animate({ opacity: 1 }, 750);
                             }
                         });
                     };
 
                     GRAPH = graph;
                 </div>
+                <input type="text" id="scale" value="1" />
             </div>
 
             <div class="solution" data-type="custom">
@@ -210,52 +201,40 @@
                     [GRAPH.pointA.coord, GRAPH.pointB.coord]
                 </div>
                 <div class="validator-function">
-                    if (_.isEqual([-5, 5], guess[0]) &amp;&amp;
-                        _.isEqual([5, 5], guess[1])) {
-                        return "";
-                    }
+                    var low = _.first(POINTS), high = _.last(POINTS);
 
-                    // the slope and intercept of the given line
-                    var slope = (guess[0][1] - guess[1][1]) /
-                        (guess[0][0] - guess[1][0]);
-                    var intercept = slope * -guess[0][0] + guess[0][1];
+                    var slopeadd = 1 / REALSLOPE + REALSLOPE;
 
-                    // whether or not each of the points are above or below
-                    // the given line
-                    var updown = _.map(POINTS, function(pt) {
-                        var x = pt[0], y = pt[1],
-                            est = slope * x + intercept;
-                        return y &gt;= est ? 1 : -1;
-                    });
+                    lowx = (1 / REALSLOPE * low[0] + low[1] - REALINTERCEPT) / slopeadd;
+                    highx = (1 / REALSLOPE * high[0] + high[1] - REALINTERCEPT) / slopeadd;
 
-                    // sort and reverse-sort updown
-                    var updownSorted = sortNumbers(updown);
-                    var updownReversed = updownSorted.slice(0).reverse();
-
-                    var normLength = pow((guess[1][0] - guess[0][0]), 2) + pow((guess[1][1] - guess[0][1]), 2);
-                    // calculate the distance from a point to the line
-                    var distTo = function(pt) {
-                        return abs((pt[0] - guess[0][0]) * (guess[1][1] - guess[0][1]) -
-                                   (pt[1] - guess[0][1]) * (guess[1][0] - guess[0][0])) / normLength;
+                    var lowfunc = function(x) {
+                        return -1 / REALSLOPE * (x - low[0]) + low[1];
                     };
 
-                    // the average distance the points are from the line
-                    var aveDist = _.reduce(POINTS, function(sum, pt) {
-                        return sum + pow(distTo(pt), 2);
-                    }, 0) / sqrt(POINTS.length);
+                    var highfunc = function(x) {
+                        return -1 / REALSLOPE * (x - high[0]) + high[1];
+                    };
 
-                    // ensure:
-                    // all the points are not up, ..., up, down, ..., down
-                    return !_.isEqual(updown, updownSorted) &amp;&amp;
-                        // all the points are not down, ..., down, up, ..., up
-                        !_.isEqual(updown, updownReversed) &amp;&amp;
-                        // one point is above
-                        _.include(updown, 1) &amp;&amp;
-                        // one point is below
-                        _.include(updown, -1) &amp;&amp;
-                        // the average distance is within some distance,
-                        // proportional to the offest
-                        aveDist &lt; 0.6 * OFFSET;
+                    var slope = (guess[1][1] - guess[0][1]) /
+                                (guess[1][0] - guess[0][0]);
+                    var intercept = slope * -guess[0][0] + guess[0][1];
+
+                    lowIntersectx = (1 / REALSLOPE * low[0] +
+                                        low[1] - intercept) /
+                                    (slope + 1 / REALSLOPE);
+                    highIntersectx = (1 / REALSLOPE * high[0] +
+                                         high[1] - intercept) /
+                                     (slope + 1 / REALSLOPE);
+
+                    var lowDiff = sqrt(pow(lowfunc(lowx) -
+                                           lowfunc(lowIntersectx), 2) +
+                                       pow(lowx - lowIntersectx, 2));
+                    var highDiff = sqrt(pow(highfunc(highx) -
+                                            highfunc(highIntersectx), 2) +
+                                        pow(highx - highIntersectx, 2));
+
+                    return lowDiff &lt; $("#scale").val() * OFFSET &amp;&amp; highDiff &lt; $("#scale").val() * OFFSET;
                 </div>
                 <div class="show-guess">
                     GRAPH.pointA.coord = guess[0];
@@ -384,6 +363,15 @@
                     to show one of them.
                 </p>
             </div>
+        </div>
+        <div id="nonlinear" data-type="linear">
+            <div class="vars">
+                <var id="SLOPE">0</var>
+                <var id="INTERCEPT">0</var>
+                <var id="OFFSET">9</var>
+                <var id="GRAPH">{}</var>
+            </div>
+            
         </div>
     </div>
 </div>

@@ -24,7 +24,7 @@
                 <var id="BOUND">function(x, low, high) {
                     return (x < low) ? low : (x > high) ? high : x;
                 }</var>
-                <var id="OFFSET">random() + 1.0</var>
+                <var id="OFFSET">random() + 0.5</var>
                 <var id="LEFT">(BOTTOM < -10) ? -10 : BOTTOM</var>
                 <var id="RIGHT">(TOP > 10) ? 10 : TOP</var>
                 <var id="XS">(function() {
@@ -45,6 +45,9 @@
                     }
                     return a;
                 }</var>
+                <var id="RR">function(low, high) {
+                    return random() * (high - low) + low;
+                }</var>
                 <var id="ANG">atan2(SLOPE, 1) + PI / 2</var>
                 <var id="PERP">[cos(ANG), sin(ANG)]</var>
                 <var id="TOTALOFFSET">[]</var>
@@ -55,13 +58,42 @@
 
                     var scale = 2 * OFFSET - abs(total);
 
+                    var offset;
+                    if (total < 0) {
+                        offset = RR(-OFFSET - total, OFFSET);
+                    } else {
+                        offset = RR(-OFFSET, OFFSET - total);
+                    }
 
-                    var offset = random() * scale - total / 2;
                     TOTALOFFSET.push(offset);
 
                     return [BOUND(round(x + PERP[0] * offset), -9, 9),
                             BOUND(round(FUNC(x) + PERP[1] * offset), -9, 9)];
                     })), function(pt) { return pt[0]; })</var>
+                <var id="REALSLOPE,REALINTERCEPT">(function() {
+                    var xAve = _.reduce(POINTS, function(sum, pt) {
+                        return sum + pt[0];
+                    }, 0) / POINTS.length;
+
+                    var yAve = _.reduce(POINTS, function(sum, pt) {
+                        return sum + pt[1];
+                    }, 0) / POINTS.length;
+
+                    var xi2 = _.reduce(POINTS, function(sum, pt) {
+                        return sum + pow(pt[0], 2);
+                    }, 0);
+
+                    var xiyi = _.reduce(POINTS, function(sum, pt) {
+                        return sum + pt[0] * pt[1];
+                    }, 0);
+
+                    var realIntercept = (yAve * xi2 - xAve * xiyi) /
+                        (xi2 - POINTS.length * pow(xAve, 2));
+                    var realSlope = (xiyi - POINTS.length * xAve * yAve) /
+                        (xi2 - POINTS.length * pow(xAve, 2));
+
+                    return [realSlope, realIntercept];
+                })()</var>
                 <var id="GRAPH">{}</var>
             </div>
 
@@ -128,27 +160,8 @@
                             return round(x * 2) / 2;
                         };
 
-                        var xAve = _.reduce(POINTS, function(sum, pt) {
-                            return sum + pt[0];
-                        }, 0) / POINTS.length;
-
-                        var yAve = _.reduce(POINTS, function(sum, pt) {
-                            return sum + pt[1];
-                        }, 0) / POINTS.length;
-
-                        var xi2 = _.reduce(POINTS, function(sum, pt) {
-                            return sum + pow(pt[0], 2);
-                        }, 0);
-
-                        var xiyi = _.reduce(POINTS, function(sum, pt) {
-                            return sum + pt[0] * pt[1];
-                        }, 0);
-
-                        var realIntercept = (yAve * xi2 - xAve * xiyi) / (xi2 - POINTS.length * pow(xAve, 2));
-                        var realSlope = (xiyi - POINTS.length * xAve * yAve) / (xi2 - POINTS.length * pow(xAve, 2));
-
                         var realFunc = function(x) {
-                            return realSlope * x + realIntercept;
+                            return REALSLOPE * x + REALINTERCEPT;
                         };
 
                         $("html, body").animate({
@@ -242,7 +255,7 @@
                         _.include(updown, -1) &amp;&amp;
                         // the average distance is within some distance,
                         // proportional to the offest
-                        aveDist &lt; 0.1 * OFFSET;
+                        aveDist &lt; 0.6 * OFFSET;
                 </div>
                 <div class="show-guess">
                     GRAPH.pointA.coord = guess[0];

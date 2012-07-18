@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html data-require="math">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Units 3</title>
+    <script src="../khan-exercise.js"></script>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="meters-to-feet">
+            <div class="vars">
+                <var id="METERS">randRange(2, 20)</var>
+            </div>
+            <div class="question">What is <code><var>METERS</var></code> meters in feet?</div>
+            <div class="solution" data-type="decimal" data-inexact data-max-error="0.1">
+                <var>METERS * 3.28</var>
+            </div>
+            <div class="hints">
+                <p>To find the number of feet, multiply the number of meters by the conversion from meters to feet.</p>
+                <p>The conversion factor from meters to feet is <code>3.28</code>.</p>
+                <p><code><var>METERS</var> * 3.28</code></p>
+                <p><code><var>METERS * 3.28</var></code></p>
+            </div>
+        </div>
+        <div id="feet-to-meters">
+            <div class="vars">
+                <var id="FEET">randRange(2, 20)</var>
+            </div>
+            <div class="question">What is <var>FEET</var> feet in meters?</div>
+            <div class="solution" data-type="decimal" data-inexact data-max-error="0.1">
+                <var>FEET * .305</var>
+            </div>
+            <div class="hints">
+                <p>To find the number of meters, multiply the number of feet by the conversion from feet to meters.</p>
+                <p>The conversion factor from feet to meters is .305.</p>
+                <p><var>FEET</var> * .305</p>
+                <p><var>FEET * .305</var></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

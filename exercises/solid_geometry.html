@@ -90,7 +90,7 @@
                     init({range: [[-2, 2], [-2, 2]], scale: [100, 100]});
                     addMouseLayer();
 
-                    graph.obj = makeObject(VERTICES, { scale: SCALE });
+                    graph.obj = make3dObject(VERTICES, { scale: SCALE });
                     _.each(FACES, function(face) {
                         graph.obj.addFace(face);
                     });
@@ -363,7 +363,7 @@
                         var size = 2 * WIDTH / MAX + 2 * HEIGHT / MAX;
                         init({range: [[-2, 2], [-2, 2]], scale: [100, 100]});
 
-                        graph.obj = makeObject(verts);
+                        graph.obj = make3dObject(verts);
                         _.each(faces, function(face) {
                             graph.obj.addFace(face);
                         });
@@ -432,7 +432,7 @@
                                         now / 2) * HEIGHT / MAX +
                                         2 * cos(now) * WIDTH / MAX;
 
-                                    if (now < PI / 2) {
+                                    if (now &lt; PI / 2) {
                                         UNWRAPGRAPH.obj.rotate(0, 1, 0,
                                             -2 / 10 * (now - last));
                                     } else {
@@ -574,7 +574,7 @@
 
                             var colors = [COLOR3, COLOR3, COLOR1, COLOR1, COLOR2, COLOR2];
 
-                            for (var i = 0; i < 6; ++i) {
+                            for (var i = 0; i &lt; 6; ++i) {
                                 makeSquare(i, HEIGHT, i / 3, WIDTH, colors[i]);
                             }
                             label([4.8 + WIDTH / 2, 1.76 + WIDTH], WIDTH, "below");

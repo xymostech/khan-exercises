@@ -1,7 +1,7 @@
 $.extend(KhanUtil, {
     // make a 3d object, which holds the vertices,
     //   faces, and perspective of an object
-    makeObject: function(verts, options) {
+    make3dObject: function(verts, options) {
         var object = $.extend({
             verts: verts,
             perspective: KhanUtil.makeMatrix([

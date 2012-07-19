@@ -14,18 +14,6 @@ $.extend(KhanUtil, {
             faces: []
         }, options);
 
-        // find the length of a 3d vector
-        var vectorLength = function(v) {
-            return Math.sqrt(v[0] * v[0] +
-                             v[1] * v[1] +
-                             v[2] * v[2]);
-        };
-
-        // find the dot-product of two 3d vectors
-        var vectorDot = function(a, b) {
-            return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-        };
-
         var graph = KhanUtil.currentGraph;
 
         // set the scale
@@ -123,7 +111,7 @@ $.extend(KhanUtil, {
                     ab[0] * ac[1] - ab[1] * ac[0]
                 ];
 
-                var length = vectorLength(normal);
+                var length = KhanUtil.vectorLength(normal);
 
                 return _.map(normal, function(e) { return e / length; });
             };
@@ -230,7 +218,8 @@ $.extend(KhanUtil, {
             // and which in back
             _.each(object.faces, function(face) {
                 var vert = object.doPerspective(object.verts[face.verts[0]]);
-                if (vectorDot(object.doRotation(face.normal()), vert) < 0) {
+                var normal = face.normal();
+                if (KhanUtil.vectorDot(object.doRotation(normal), vert) < 0) {
                     frontFaces.push(face);
                 } else {
                     backFaces.push(face);

@@ -65,5 +65,17 @@ $.extend(KhanUtil, {
         });
 
         return arr;
+    },
+
+    // find the length of a 3d vector
+    vectorLength: function(v) {
+        return Math.sqrt(v[0] * v[0] +
+                         v[1] * v[1] +
+                         v[2] * v[2]);
+    },
+
+    // find the dot-product of two 3d vectors
+    vectorDot: function(a, b) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
     }
 });

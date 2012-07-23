@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html data-require="math graphie">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Views of a function</title>
+    <script src="../khan-exercise.js"></script>
+    <style type="text/css">
+        #ttable {
+            text-align: left;
+            margin-top: 30px;
+            margin-left: 30px;
+        }
+
+        #ttable td {
+            padding: 0px 5px;
+        }
+
+        #ttable .labels td {
+            padding-left: 10px;
+            border-bottom: 2px solid black;
+        }
+
+        #ttable .cross-bar td {
+            padding-top: 5px;
+        }
+
+        #ttable .second-col {
+            border-left: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+<div class="exercise">
+    <div class="problems">
+        <div id="graph-to-table">
+            <div class="vars">
+                <var id="A">randRange(-3, 3)</var> 
+                <var id="B">randRangeNonZero(-3, 3)</var>
+                <var id="C">randRangeNonZero(-3, 3)</var>
+                <var id="FUNC">randFromArray([
+                    function(x) {
+                        return B * x + C;
+                    },
+                    function(x) {
+                        return A * x * x + B * x + C;
+                    },
+                    function(x) {
+                        return A * sin(C * x / 3) + B;
+                        },
+                    function(x) {
+                        return A * pow(Math.E, C * x / 3) + B;
+                    }
+                ])</var>
+            </div>
+
+            <p class="question">
+                Create a table of values for the function in the graph below.
+                Use at least 5 different points.
+            </p>
+            <div class="problem">
+                <div class="graphie">
+                    graphInit({
+                        range: 10,
+                        scale: 20,
+                        tickStep: 1,
+                        labelStep: 1,
+                        unityLabels: false,
+                        labelFormat: function( s ) { return "\\small{" + s + "}"; },
+                        axisArrows: "<->"
+                    });
+
+                    plot(FUNC, [-10, 10], { stroke: BLUE });
+                </div>
+            </div>
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    <span>Enter your data in the table below.</span>
+                    <table id="ttable">
+                        <tr class="labels">
+                            <td><code>x</code></td>
+                            <td class="second-col"><code>y</code></td>
+                        </tr>
+                        <tr class="cross-bar">
+                            <td><input type="text" /></td>
+                            <td class="second-col"><input type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" /></td>
+                            <td class="second-col"><input type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" /></td>
+                            <td class="second-col"><input type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" /></td>
+                            <td class="second-col"><input type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" /></td>
+                            <td class="second-col"><input type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" /></td>
+                            <td class="second-col"><input type="text" /></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" /></td>
+                            <td class="second-col"><input type="text" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="hints"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

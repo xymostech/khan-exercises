@@ -4,6 +4,21 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Views of a function</title>
     <script src="../khan-exercise.js"></script>
+    <script type="text/javascript">
+        chooseXValues = function(func, scale) {
+            var xs = [];
+            _.each(_.range(-9, 10), function(x) {
+                var y = func(x);
+                if (Math.abs(y) > 9) {
+                    return;
+                }
+                if (Math.abs(y - Math.round(y * scale) / scale) < 0.1) {
+                    xs.push(x);
+                }
+            });
+            return xs;
+        };
+    </script>
     <style type="text/css">
         #ttable {
             text-align: left;
@@ -42,15 +57,24 @@
                         return B * x + C;
                     },
                     function(x) {
-                        return A * x * x + B * x + C;
+                        return A / 2 * x * x + B * x + C;
                     },
                     function(x) {
-                        return A * sin(C * x / 3) + B;
+                        return A * sin(C * x / Math.PI) + B;
                         },
                     function(x) {
                         return A * pow(Math.E, C * x / 3) + B;
                     }
                 ])</var>
+                <var id="EXAMPLES">(function() {
+                    var xs = chooseXValues(FUNC, 1);
+                    if (xs.length &gt;= 5) {
+                        return sortNumbers(shuffle(xs, 5));
+                    } else {
+                        xs = chooseXValues(FUNC, 2);
+                        return sortNumbers(shuffle(xs, 5));
+                    }
+                })()</var>
             </div>
 
             <p class="question">
@@ -58,7 +82,7 @@
                 Use at least 5 different points.
             </p>
             <div class="problem">
-                <div class="graphie">
+                <div class="graphie" id="main">
                     graphInit({
                         range: 10,
                         scale: 20,
@@ -109,6 +133,53 @@
                             <td class="second-col"><input type="text" /></td>
                         </tr>
                     </table>
+                </div>
+                <div class="guess">
+                    (function(){
+                        var guess = [];
+                        $("#ttable tr").each(function() {
+                            var input = [];
+                            $(this).children().each(function() {
+                                input.push($(this).children().val());
+                            });
+                            guess.push(input);
+                        });
+                        return guess;
+                    })()
+                </div>
+                <div class="validator-function">
+                    var attempted = 0;
+                    var correct = 0;
+                    var xs = [];
+
+                    for (var i = 0; i &lt; 8; ++i) {
+                        if ($.trim(guess[i][0]) !== "" &amp;&amp;
+                            $.trim(guess[i][1]) !== "") {
+                            attempted += 1;
+
+                            var x = parseFloat(guess[i][0]), y = parseFloat(guess[i][1]);
+
+                            if (abs(FUNC(x) - y) &lt; 0.5) {
+                                correct += 1;
+                                xs.push(x);
+                            }
+                        }
+                    }
+
+                    if (attempted &lt; 5) {
+                        return "You must enter 5 or more points";
+                    }
+
+                    xs = KhanUtil.sortNumbers(xs);
+                    var different = 1;
+
+                    for (var i = 0; i &lt; correct - 1; ++i) {
+                        if (xs[i + 1] - xs[i] &gt;= 0.5) {
+                            different += 1;
+                        }
+                    }
+
+                    return different === attempted;
                 </div>
             </div>
             <div class="hints"></div>

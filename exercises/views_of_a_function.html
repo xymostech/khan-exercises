@@ -182,7 +182,36 @@
                     return different === attempted;
                 </div>
             </div>
-            <div class="hints"></div>
+
+            <div class="hints">
+                <p>You can represent a function in multiple ways. Here, we have a function represented as a graph, and we want to represent it as a table.</p>
+                <p>To represent it as a table, take any five points on the graph, and list them in the table.</p>
+                <p>For example, we can look at the point with an <code>x</code>-value of <code><var>EXAMPLES[0]</var></code>.</p>
+                <div>
+                    <p>The <code>y</code>-value at this point is <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code>, which we find from the graph.</p>
+                    <div class="graphie" data-update="main">
+                        line([EXAMPLES[0], -11], [EXAMPLES[0], 11], { strokeWidth: 1, stroke: ORANGE });
+                        circle([EXAMPLES[0], FUNC(EXAMPLES[0])], 0.2, { stroke: ORANGE, fill: ORANGE });
+                    </div>
+                </div>
+                <p>To record this in our table, put <code><var>EXAMPLES[0]</var></code> in the <code>x</code> column, and <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code> in the <code>y</code> column.</p>
+                <p>We can do this with 4 other <code>x</code>-values, such as <code><var>EXAMPLES[1]</var></code>, <code><var>EXAMPLES[2]</var></code>, <code><var>EXAMPLES[3]</var></code>, and <code><var>EXAMPLES[4]</var></code>.</p>
+                <div>
+                    <p>We can find the <code>y</code>-values at these points by finding them on the graph as well.</p>
+                    <div class="graphie" data-update="main">
+                        for (var i = 1; i &lt; 5; ++i) {
+                            line([EXAMPLES[i], -11], [EXAMPLES[i], 11], { strokeWidth: 1, stroke: ORANGE });
+                            circle([EXAMPLES[i], FUNC(EXAMPLES[i])], 0.2, { stroke: ORANGE, fill: ORANGE });
+                        }
+                    </div>
+                </div>
+                <div>
+                    <p>From this, five points on the graph are:</p>
+                    <div data-each="EXAMPLES as x">
+                        <p><code>(<var>x</var>, <var>round(FUNC(x) * 2) / 2</var>)</code></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

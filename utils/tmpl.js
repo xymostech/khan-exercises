@@ -444,6 +444,7 @@ $.fn.tmpl = function() {
 
         // Loop through the element's children if it was not removed
         for (var i = 0; i < child.length; i++) {
+            console.log(i);
             // Traverse the child; decrement the counter if the child was removed
             if (child[i].nodeType === 1 && traverse(child[i]) === null) {
                 i--;

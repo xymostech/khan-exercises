@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html data-require="math graphie">
+<html data-require="math graphie interactive">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Views of a function</title>
     <script src="../khan-exercise.js"></script>
     <script type="text/javascript">
+        roundScale = function(val, scale) {
+            return Math.round(val * scale) / scale;
+        };
+
         chooseXValues = function(func, scale) {
             var xs = [];
             _.each(_.range(-9, 10), function(x) {
@@ -216,6 +220,54 @@
                         <p><code>(<var>x</var>, <var>round(FUNC(x) * 2) / 2</var>)</code></p>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="table-to-graph">
+            <p class="question">Create a graph for the function that is modeled below by plotting the points on the graph.</p>
+
+            <div class="problem">
+                <table class="ttable">
+                    <tr class="labels">
+                        <td class="data-col">
+                            <code>x</code>
+                        </td>
+                        <td class="second-col data-col">
+                            <code>y</code>
+                        </td>
+                    </tr>
+                    <tr data-each="EXAMPLES as x">
+                        <td class="data-col">
+                            <code><var>x</var></code>
+                        </td>
+                        <td class="second-col data-col">
+                            <code><var>
+                                roundScale(FUNC(x), 2).toFixed(1)
+                                    .replace(/\.0$/, "\\hphantom{.0}")
+                            </var></code>
+                        </td>
+                    </tr>
+                </table>
+                <div class="graphie">
+                    graphInit({
+                        range: 10,
+                        scale: 20,
+                        tickStep: 1,
+                        labelStep: 1,
+                        unityLabels: false,
+                        labelFormat: function( s ) { return "\\small{" + s + "}"; },
+                        axisArrows: "<->"
+                    });
+
+                    addMouseLayer();
+
+                    for (var i = 0; i < 5; ++i) {
+                        addMovablePoint({
+                            coord: [2 * i - 4, 0]
+                        });
+                    }
+                </div>
+
             </div>
         </div>
     </div>

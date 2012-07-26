@@ -52,37 +52,36 @@
 </head>
 <body>
 <div class="exercise">
+    <div class="vars" data-ensure="EXAMPLES.length === 5">
+        <var id="A">randRange(-3, 3)</var>
+        <var id="B">randRangeNonZero(-3, 3)</var>
+        <var id="C">randRangeNonZero(-3, 3)</var>
+        <var id="FUNC">randFromArray([
+            function(x) {
+                return B * x + C;
+            },
+            function(x) {
+                return B / 2 * x * x + A * x + C;
+            },
+            function(x) {
+                return B * sin(C * x / Math.PI) + A;
+                },
+            function(x) {
+                return B * pow(Math.E, C * x / 3) + A;
+            }
+        ])</var>
+        <var id="EXAMPLES">(function() {
+            var xs = chooseXValues(FUNC, 1);
+            if (xs.length &gt;= 5) {
+                return sortNumbers(shuffle(xs, 5));
+            } else {
+                xs = chooseXValues(FUNC, 2);
+                return sortNumbers(shuffle(xs, 5));
+            }
+        })()</var>
+    </div>
     <div class="problems">
         <div id="graph-to-table">
-            <div class="vars">
-                <var id="A">randRange(-3, 3)</var> 
-                <var id="B">randRangeNonZero(-3, 3)</var>
-                <var id="C">randRangeNonZero(-3, 3)</var>
-                <var id="FUNC">randFromArray([
-                    function(x) {
-                        return B * x + C;
-                    },
-                    function(x) {
-                        return A / 2 * x * x + B * x + C;
-                    },
-                    function(x) {
-                        return A * sin(C * x / Math.PI) + B;
-                        },
-                    function(x) {
-                        return A * pow(Math.E, C * x / 3) + B;
-                    }
-                ])</var>
-                <var id="EXAMPLES">(function() {
-                    var xs = chooseXValues(FUNC, 1);
-                    if (xs.length &gt;= 5) {
-                        return sortNumbers(shuffle(xs, 5));
-                    } else {
-                        xs = chooseXValues(FUNC, 2);
-                        return sortNumbers(shuffle(xs, 5));
-                    }
-                })()</var>
-            </div>
-
             <p class="question">
                 Create a table of values for the function in the graph below.
                 Use at least 5 different points.

@@ -20,27 +20,33 @@
         };
     </script>
     <style type="text/css">
-        #ttable {
+        .ttable {
             text-align: left;
             margin-top: 30px;
             margin-left: 30px;
         }
 
-        #ttable td {
+        .ttable td {
             padding: 0px 5px;
+            text-align: right;
         }
 
-        #ttable .labels td {
+        .ttable .labels td {
             padding-left: 10px;
+            text-align: left;
             border-bottom: 2px solid black;
         }
 
-        #ttable .cross-bar td {
+        .ttable .cross-bar td {
             padding-top: 5px;
         }
 
-        #ttable .second-col {
+        .ttable .second-col {
             border-left: 2px solid black;
+        }
+
+        .ttable .data-col {
+            min-width: 40px;
         }
     </style>
 </head>
@@ -99,7 +105,7 @@
             <div class="solution" data-type="custom">
                 <div class="instruction">
                     <span>Enter your data in the table below.</span>
-                    <table id="ttable">
+                    <table class="ttable">
                         <tr class="labels">
                             <td><code>x</code></td>
                             <td class="second-col"><code>y</code></td>
@@ -137,7 +143,7 @@
                 <div class="guess">
                     (function(){
                         var guess = [];
-                        $("#ttable tr").each(function() {
+                        $(".ttable tr").each(function() {
                             var input = [];
                             $(this).children().each(function() {
                                 input.push($(this).children().val());

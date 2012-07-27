@@ -260,7 +260,7 @@
                         </td>
                     </tr>
                 </table>
-                <div class="graphie">
+                <div class="graphie" id="main">
                     graphInit({
                         range: 10,
                         scale: 20,
@@ -268,18 +268,128 @@
                         labelStep: 1,
                         unityLabels: false,
                         labelFormat: function( s ) { return "\\small{" + s + "}"; },
-                        axisArrows: "<->"
+                        axisArrows: "&lt;-&gt;"
                     });
 
                     addMouseLayer();
 
-                    for (var i = 0; i < 5; ++i) {
-                        addMovablePoint({
-                            coord: [2 * i - 4, 0]
+                    graph.points = [];
+
+                    var drawn = false;
+
+                    graph.graphFunc = function() {
+                        if (!drawn) {
+                            drawn = true;
+                            var func = plot(FUNC, [-10, 10], { stroke: ORANGE, opacity: 0.0 });
+                            func.animate({ opacity: 1.0 }, 800);
+                        }
+
+                        _.invoke(graph.points, "toFront");
+                    };
+
+                    graph.checkAnswer = function() {
+                        var used = [false, false, false, false, false];
+
+                        _.each(EXAMPLES, function(x) {
+                            var y = roundScale(FUNC(x), 2);
+                            var done = false;
+                            _.each(graph.points, function(pt, i) {
+                                if (!done) {
+                                    var coord = pt.coord;
+                                    if (coord[0] === x &amp;&amp;
+                                        coord[1] === y) {
+                                        used[i] = true;
+                                        done = true;
+                                    }
+                                }
+                            });
                         });
+
+                        return _.all(used, _.identity);
+                    };
+
+                    graph.moved = false;
+
+                    graph.checkPoints = function() {
+                        if (graph.checkAnswer()) {
+                            graph.graphFunc();
+                        }
+
+                        graph.moved = true;
+
+                        return true;
+                    };
+
+                    for (var i = 0; i &lt; 5; ++i) {
+                        graph.points.push(addMovablePoint({
+                            coord: [2 * i - 4, 0],
+                            snapX: 0.5,
+                            snapY: 0.5,
+                            onMoveEnd: graph.checkPoints
+                        }));
                     }
                 </div>
+            </div>
 
+            <div class="solution" data-type="custom">
+                <div class="instruction">
+                    Plot the points given in the table on the graph,
+                    then check your answer.
+                </div>
+                <div class="guess">
+                    [
+                        graph.moved,
+                        graph.checkAnswer(),
+                        _.pluck(graph.points, "coord")
+                    ]
+                </div>
+                <div class="validator-function">
+                    console.log(guess);
+                    if (!guess[0]) {
+                        return "";
+                    } else {
+                        return guess[1];
+                    }
+                </div>
+                <div class="show-guess">
+                    _.each(graph.points, function(pt, i) {
+                        pt.setCoord(guess[2][i]);
+                    });
+                </div>
+            </div>
+            <div class="hints">
+                <p>You can represent a function in multiple ways. Here, we have a function represented as a table, and we want it represented as a graph.</p>
+                <p>To represent it as a graph, take all the points listed in the table, and plot them on the graph.</p>
+                <p>For example, let's look at the point <code>(<var>EXAMPLES[0]</var>, <var>roundScale(FUNC(EXAMPLES[0]), 2)</var>)</code>.</p>
+                <div>
+                    We need to move one of the points to this position to represent plotting it on the graph.
+                    <div class="graphie" data-update="main">
+                        var endpt = [EXAMPLES[0], roundScale(FUNC(EXAMPLES[0]), 2)];
+
+                        line([-4, 0], endpt, { arrows: "->" });
+                        graph.points[0].moveTo(endpt[0], endpt[1]);
+
+                        graph.points[0].toFront();
+                    </div>
+                </div>
+                <div>
+                    <p>Now, plot the remaining four points by placing the remaining points on the given 'X's.</p>
+                    <div class="graphie" data-update="main">
+                        for (var i = 1; i < 5; ++i) {
+                            var x = EXAMPLES[i];
+                            var y = roundScale(FUNC(x), 2);
+
+                            line([x - 0.5, y - 0.5], [x + 0.5, y + 0.5], {
+                                stroke: PINK
+                            });
+                            line([x + 0.5, y - 0.5], [x - 0.5, y + 0.5], {
+                                stroke: PINK
+                            });
+
+                            _.invoke(graph.points, "toFront");
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     </div>

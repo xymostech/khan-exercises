@@ -30,6 +30,10 @@
             margin-left: 30px;
         }
 
+        .ttable tr {
+            height: 23px;
+        }
+
         .ttable td {
             padding: 0px 5px;
             text-align: right;
@@ -51,6 +55,10 @@
 
         .ttable .data-col {
             min-width: 40px;
+        }
+
+        #table-to-graph .ttable {
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -99,7 +107,7 @@
                         labelStep: 1,
                         unityLabels: false,
                         labelFormat: function( s ) { return "\\small{" + s + "}"; },
-                        axisArrows: "<->"
+                        axisArrows: "&lt;-&gt;"
                     });
 
                     plot(FUNC, [-10, 10], { stroke: BLUE });
@@ -238,7 +246,7 @@
                     </tr>
                     <tr data-each="EXAMPLES as x">
                         <td class="data-col">
-                            <code><var>x</var></code>
+                            <code><var>x+"\\hphantom{.0}"</var></code>
                         </td>
                         <td class="second-col data-col">
                             <code><var>

@@ -392,6 +392,23 @@
                 </div>
             </div>
         </div>
+        <div id="equation-to-table" data-type="graph-to-table">
+            <p class="question">Create a table with at least five different points in it created from the function:</p>
+            <p class="problem"><code><var>FUNCSHOW</var></code></p>
+            <div class="hints">
+                <p>You can represent a function in multiple ways. Here, we have a function represented as an equation, and we want it represented as a table.</p>
+                <p>To represent it as a table, pick some <code>x</code> values to plug into the equation, and record that <code>x</code> and the result of plugging it into the equation in the table.</p>
+                <p>For example, try plugging in <code><var>EXAMPLES[0]</var></code> to the equation.</p>
+                <p>The result of <code>f(<var>EXAMPLES[0]</var>)</code> is <code><var>roundScale(FUNC(EXAMPLES[0]), 10)</var></code>. Record this in the table by putting <code><var>EXAMPLES[0]</var></code> in the <code>x</code> column, and <code><var>roundScale(FUNC(EXAMPLES[0]), 10)</var></code> in the cooresponding <code>y</code> column.</p>
+                <p>Now, choose four more <code>x</code> values to plug into the equation. Let's try the numbers <code><var>EXAMPLES[1]</var></code>, <code><var>EXAMPLES[2]</var></code>, <code><var>EXAMPLES[3]</var></code>, and <code><var>EXAMPLES[4]</var></code>.</p>
+                <div>
+                    <p>By plugging into the equation, we get:</p>
+                    <p data-each="EXAMPLES.slice(1) as x">
+                        <code>f(<var>x</var>) = <var>roundScale(FUNC(x), 10)</var></code>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>

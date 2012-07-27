@@ -65,22 +65,26 @@
 <body>
 <div class="exercise">
     <div class="vars" data-ensure="EXAMPLES.length === 5">
-        <var id="A">randRange(-3, 3)</var>
+        <var id="A">randRangeNonZero(-3, 3)</var>
         <var id="B">randRangeNonZero(-3, 3)</var>
         <var id="C">randRangeNonZero(-3, 3)</var>
-        <var id="FUNC">randFromArray([
-            function(x) {
+        <var id="SIGNIFY">function(a) {
+            return (a === 1) ? "" : (a === -1) ? "-" : a;
+        }</var>
+        <var id="ASHOW,BSHOW,CSHOW">[SIGNIFY(A), SIGNIFY(B), SIGNIFY(C)]</var>
+        <var id="FUNC,FUNCSHOW">randFromArray([
+            [function(x) {
                 return B * x + C;
-            },
-            function(x) {
+            }, BSHOW + " x + " + C],
+            [function(x) {
                 return B / 2 * x * x + A * x + C;
-            },
-            function(x) {
+            }, ((B === 2) ? "" : (B === -2) ? "-" : (B / 2)) + " x^2 + " + ASHOW + " x + " + C],
+            [function(x) {
                 return B * sin(C * x / Math.PI) + A;
-                },
-            function(x) {
+            }, BSHOW + " \\sin\\left(" + CSHOW + " x / \\pi\\right) + " + A],
+            [function(x) {
                 return B * pow(Math.E, C * x / 3) + A;
-            }
+            }, BSHOW + "e^{" + ((abs(C) === 3) ? SIGNIFY(C/3) + "x" : CSHOW + " x / 3") + "} + " + A]
         ])</var>
         <var id="EXAMPLES">(function() {
             var xs = chooseXValues(FUNC, 1);

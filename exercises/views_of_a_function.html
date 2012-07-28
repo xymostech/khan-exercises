@@ -78,13 +78,16 @@
             }, BSHOW + " x + " + C],
             [function(x) {
                 return B / 2 * x * x + A * x + C;
-            }, ((B === 2) ? "" : (B === -2) ? "-" : (B / 2)) + " x^2 + " + ASHOW + " x + " + C],
+            }, ((B === 2) ? "" : (B === -2) ? "-" : (B / 2)) +
+                " x^2 + " + ASHOW + " x + " + C],
             [function(x) {
                 return B * sin(C * x / Math.PI) + A;
             }, BSHOW + " \\sin\\left(" + CSHOW + " x / \\pi\\right) + " + A],
             [function(x) {
                 return B * pow(Math.E, C * x / 3) + A;
-            }, BSHOW + "e^{" + ((abs(C) === 3) ? SIGNIFY(C/3) + "x" : CSHOW + " x / 3") + "} + " + A]
+            }, BSHOW + "e^{" +
+                ((abs(C) === 3) ? SIGNIFY(C/3) + "x" : CSHOW + " x / 3") +
+                "} + " + A]
         ])</var>
         <var id="EXAMPLES">(function() {
             var xs = chooseXValues(FUNC, 1);
@@ -110,7 +113,9 @@
                         tickStep: 1,
                         labelStep: 1,
                         unityLabels: false,
-                        labelFormat: function( s ) { return "\\small{" + s + "}"; },
+                        labelFormat: function(s) {
+                            return "\\small{" + s + "}";
+                        },
                         axisArrows: "&lt;-&gt;"
                     });
 
@@ -178,7 +183,8 @@
                             $.trim(guess[i][1]) !== "") {
                             attempted += 1;
 
-                            var x = parseFloat(guess[i][0]), y = parseFloat(guess[i][1]);
+                            var x = parseFloat(guess[i][0]),
+                                y = parseFloat(guess[i][1]);
 
                             if (abs(FUNC(x) - y) &lt; 0.5) {
                                 correct += 1;
@@ -205,38 +211,65 @@
             </div>
 
             <div class="hints">
-                <p>You can represent a function in multiple ways. Here, we have a function represented as a graph, and we want to represent it as a table.</p>
-                <p>To represent it as a table, take any five points on the graph, and list them in the table.</p>
-                <p>For example, we can look at the point with an <code>x</code>-value of <code><var>EXAMPLES[0]</var></code>.</p>
+                <p>You can represent a function in multiple ways.
+                    Here, we have a function represented as a graph,
+                    and we want to represent it as a table.</p>
+                <p>To represent it as a table, take any five points on the
+                    graph, and list them in the table.</p>
+                <p>For example, we can look at the point with an
+                    <code>x</code>-value of
+                    <code><var>EXAMPLES[0]</var></code>.</p>
                 <div>
-                    <p>The <code>y</code>-value at this point is <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code>, which we find from the graph.</p>
+                    <p>The <code>y</code>-value at this point is
+                        <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code>,
+                        which we find from the graph.</p>
                     <div class="graphie" data-update="main">
-                        line([EXAMPLES[0], -11], [EXAMPLES[0], 11], { strokeWidth: 1, stroke: ORANGE });
-                        circle([EXAMPLES[0], FUNC(EXAMPLES[0])], 0.2, { stroke: ORANGE, fill: ORANGE });
+                        line([EXAMPLES[0], -11], [EXAMPLES[0], 11],
+                            { strokeWidth: 1, stroke: ORANGE });
+                        circle([EXAMPLES[0], FUNC(EXAMPLES[0])], 0.2,
+                            { stroke: ORANGE, fill: ORANGE });
                     </div>
                 </div>
-                <p>To record this in our table, put <code><var>EXAMPLES[0]</var></code> in the <code>x</code> column, and <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code> in the <code>y</code> column.</p>
-                <p>We can do this with 4 other <code>x</code>-values, such as <code><var>EXAMPLES[1]</var></code>, <code><var>EXAMPLES[2]</var></code>, <code><var>EXAMPLES[3]</var></code>, and <code><var>EXAMPLES[4]</var></code>.</p>
+                <p>
+                    To record this in our table, put
+                    <code><var>EXAMPLES[0]</var></code> in the <code>x</code>
+                    column, and
+                    <code><var>round(2 * FUNC(EXAMPLES[0])) / 2</var></code>
+                    in the <code>y</code> column.
+                </p>
+                <p>
+                    We can do this with 4 other <code>x</code>-values, such as
+                    <code><var>EXAMPLES[1]</var></code>,
+                    <code><var>EXAMPLES[2]</var></code>,
+                    <code><var>EXAMPLES[3]</var></code>,
+                    and <code><var>EXAMPLES[4]</var></code>.
+                </p>
                 <div>
-                    <p>We can find the <code>y</code>-values at these points by finding them on the graph as well.</p>
+                    <p>We can find the <code>y</code>-values at these points
+                        by finding them on the graph as well.</p>
                     <div class="graphie" data-update="main">
                         for (var i = 1; i &lt; 5; ++i) {
-                            line([EXAMPLES[i], -11], [EXAMPLES[i], 11], { strokeWidth: 1, stroke: ORANGE });
-                            circle([EXAMPLES[i], FUNC(EXAMPLES[i])], 0.2, { stroke: ORANGE, fill: ORANGE });
+                            line([EXAMPLES[i], -11], [EXAMPLES[i], 11],
+                                { strokeWidth: 1, stroke: ORANGE });
+                            circle([EXAMPLES[i], FUNC(EXAMPLES[i])], 0.2,
+                                { stroke: ORANGE, fill: ORANGE });
                         }
                     </div>
                 </div>
                 <div>
                     <p>From this, five points on the graph are:</p>
                     <div data-each="EXAMPLES as x">
-                        <p><code>(<var>x</var>, <var>round(FUNC(x) * 2) / 2</var>)</code></p>
+                        <p><code>
+                            (<var>x</var>, <var>round(FUNC(x) * 2) / 2</var>)
+                        </code></p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="table-to-graph">
-            <p class="question">Create a graph for the function that is modeled below by plotting the points on the graph.</p>
+            <p class="question">Create a graph for the function that is modeled
+                below by plotting the points on the graph.</p>
 
             <div class="problem">
                 <table class="ttable">
@@ -267,7 +300,9 @@
                         tickStep: 1,
                         labelStep: 1,
                         unityLabels: false,
-                        labelFormat: function( s ) { return "\\small{" + s + "}"; },
+                        labelFormat: function(s) {
+                            return "\\small{" + s + "}";
+                        },
                         axisArrows: "&lt;-&gt;"
                     });
 
@@ -280,7 +315,8 @@
                     graph.graphFunc = function() {
                         if (!drawn) {
                             drawn = true;
-                            var func = plot(FUNC, [-10, 10], { stroke: ORANGE, opacity: 0.0 });
+                            var func = plot(FUNC, [-10, 10],
+                                { stroke: ORANGE, opacity: 0.0 });
                             func.animate({ opacity: 1.0 }, 800);
                         }
 
@@ -358,13 +394,22 @@
                 </div>
             </div>
             <div class="hints">
-                <p>You can represent a function in multiple ways. Here, we have a function represented as a table, and we want it represented as a graph.</p>
-                <p>To represent it as a graph, take all the points listed in the table, and plot them on the graph.</p>
-                <p>For example, let's look at the point <code>(<var>EXAMPLES[0]</var>, <var>roundScale(FUNC(EXAMPLES[0]), 2)</var>)</code>.</p>
+                <p>You can represent a function in multiple ways.
+                    Here, we have a function represented as a table,
+                    and we want it represented as a graph.</p>
+                <p>
+                    To represent it as a graph, take all the points listed in
+                    the table, and plot them on the graph.</p>
+                    <p>For example, let's look at the point
+                    <code>(<var>EXAMPLES[0]</var>,
+                        <var>roundScale(FUNC(EXAMPLES[0]), 2)</var>)</code>.
+                </p>
                 <div>
-                    We need to move one of the points to this position to represent plotting it on the graph.
+                    <p>We need to move one of the points to this position to
+                    represent plotting it on the graph.</p>
                     <div class="graphie" data-update="main">
-                        var endpt = [EXAMPLES[0], roundScale(FUNC(EXAMPLES[0]), 2)];
+                        var endpt = [EXAMPLES[0],
+                            roundScale(FUNC(EXAMPLES[0]), 2)];
 
                         line([-4, 0], endpt, { arrows: "->" });
                         graph.points[0].moveTo(endpt[0], endpt[1]);
@@ -373,7 +418,8 @@
                     </div>
                 </div>
                 <div>
-                    <p>Now, plot the remaining four points by placing the remaining points on the given 'X's.</p>
+                    <p>Now, plot the remaining four points by placing the
+                        remaining points on the given 'X's.</p>
                     <div class="graphie" data-update="main">
                         for (var i = 1; i < 5; ++i) {
                             var x = EXAMPLES[i];
@@ -393,18 +439,41 @@
             </div>
         </div>
         <div id="equation-to-table" data-type="graph-to-table">
-            <p class="question">Create a table with at least five different points in it created from the function:</p>
+            <p class="question">Create a table with at least five different
+                points in it created from the function:</p>
             <p class="problem"><code><var>FUNCSHOW</var></code></p>
             <div class="hints">
-                <p>You can represent a function in multiple ways. Here, we have a function represented as an equation, and we want it represented as a table.</p>
-                <p>To represent it as a table, pick some <code>x</code> values to plug into the equation, and record that <code>x</code> and the result of plugging it into the equation in the table.</p>
-                <p>For example, try plugging in <code><var>EXAMPLES[0]</var></code> to the equation.</p>
-                <p>The result of <code>f(<var>EXAMPLES[0]</var>)</code> is <code><var>roundScale(FUNC(EXAMPLES[0]), 10)</var></code>. Record this in the table by putting <code><var>EXAMPLES[0]</var></code> in the <code>x</code> column, and <code><var>roundScale(FUNC(EXAMPLES[0]), 10)</var></code> in the cooresponding <code>y</code> column.</p>
-                <p>Now, choose four more <code>x</code> values to plug into the equation. Let's try the numbers <code><var>EXAMPLES[1]</var></code>, <code><var>EXAMPLES[2]</var></code>, <code><var>EXAMPLES[3]</var></code>, and <code><var>EXAMPLES[4]</var></code>.</p>
+                <p>You can represent a function in multiple ways.
+                    Here, we have a function represented as an equation,
+                    and we want it represented as a table.</p>
+                <p>To represent it as a table, pick some <code>x</code> values
+                    to plug into the equation, and record that <code>x</code>
+                    and the result of plugging it into the equation
+                    in the table.</p>
+                <p>For example, try plugging in
+                    <code><var>EXAMPLES[0]</var></code> to the equation.</p>
+                <p>
+                    The result of <code>f(<var>EXAMPLES[0]</var>)</code> is
+                    <code><var>roundScale(FUNC(EXAMPLES[0]), 10)</var></code>.
+                    Record this in the table by putting
+                    <code><var>EXAMPLES[0]</var></code> in the <code>x</code>
+                    column, and
+                    <code><var>roundScale(FUNC(EXAMPLES[0]), 10)</var></code>
+                    in the cooresponding <code>y</code> column.
+                </p>
+                <p>
+                    Now, choose four more <code>x</code> values to plug into
+                    the equation. Let's try the numbers
+                    <code><var>EXAMPLES[1]</var></code>,
+                    <code><var>EXAMPLES[2]</var></code>,
+                    <code><var>EXAMPLES[3]</var></code>,
+                    and <code><var>EXAMPLES[4]</var></code>.
+                </p>
                 <div>
                     <p>By plugging into the equation, we get:</p>
                     <p data-each="EXAMPLES.slice(1) as x">
-                        <code>f(<var>x</var>) = <var>roundScale(FUNC(x), 10)</var></code>
+                        <code>f(<var>x</var>) =
+                            <var>roundScale(FUNC(x), 10)</var></code>
                     </p>
                 </div>
             </div>

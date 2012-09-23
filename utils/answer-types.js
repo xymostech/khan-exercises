@@ -35,7 +35,7 @@ $.extend(Khan.answerTypes, {
             return function(guess) {
                 guess = $.trim(guess);
                 return correct === guess;
-            }
+            };
         }
     },
 
@@ -370,7 +370,7 @@ if (match) {
                 });
 
                 return ret;
-            }
+            };
         }
     },
 
@@ -438,7 +438,7 @@ if (match) {
             return function(guess) {
                 guess = $.trim(guess);
                 return guess.match(correct) != null;
-            }
+            };
         }
     },
 
@@ -497,7 +497,7 @@ if (match) {
                 } else {
                     return false;
                 }
-            }
+            };
         }
     },
 
@@ -580,7 +580,7 @@ if (match) {
                 } else {
                     return valid;
                 }
-            }
+            };
         }
     }
 

@@ -432,6 +432,65 @@ if (match) {
                 return guess.match(correct) != null;
             }
         }
+    },
+
+    radical: {
+        setup: function(solutionarea, solution) {
+            var options = $.extend({
+                simplify: "required"
+            }, $(solution).data());
+            var inte = $("<input type='text'>"), rad = $("<input type='text'>");
+            solutionarea.addClass("radical")
+                .append($("<span>").append(inte))
+                .append('<span class="surd">&radic;</span>')
+                .append($("<span>").append(rad).addClass("overline"));
+
+            var ansSquared = parseFloat($(solution).text());
+            var ans = KhanUtil.splitRadical(ansSquared);
+
+            return {
+                validator: Khan.answerTypes.radical.validatorCreator(solution),
+                answer: function() {
+                    return [
+                        inte.val().length > 0 ? inte.val() : "1",
+                        rad.val().length > 0 ? rad.val() : "1"
+                    ];
+                },
+                solution: ans,
+                examples: (options.simplify === "required") ?
+                    ["a simplified radical, like <code>\\sqrt{2}</code> or <code>3\\sqrt{5}</code>"] :
+                    ["a radical, like <code>\\sqrt{8}</code> or <code>2\\sqrt{2}</code>"],
+                showGuess: function(guess) {
+                    inte.val(guess ? guess[0] : "");
+                    rad.val(guess ? guess[1] : "");
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var options = $.extend({
+                simplify: "required"
+            }, $(solution).data());
+            var ansSquared = parseFloat($(solution).text());
+            var ans = KhanUtil.splitRadical(ansSquared);
+
+            return function(guess) {
+                var inteGuess = parseFloat(guess[0]);
+                var radGuess = parseFloat(guess[1]);
+
+                var simplified = inteGuess === ans[0] && radGuess === ans[1];
+                var correct = Math.abs(inteGuess) * inteGuess * radGuess === ansSquared;
+
+                if (correct) {
+                    if (simplified || options.simplify === "optional") {
+                        return true;
+                    } else {
+                        return inexactMessages.unsimplified;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
     }
 
     // UNUSED
@@ -473,58 +532,6 @@ if (match) {
     //},
 
 
-    //radical: function(solutionarea, solution) {
-        //var options = $.extend({
-            //simplify: "required"
-        //}, $(solution).data());
-        //var ansSquared = parseFloat($(solution).text());
-        //var ans = KhanUtil.splitRadical(ansSquared);
-
-        //var inte = $("<span>"), inteGuess, rad = $("<span>"), radGuess;
-
-        //var inteValid = Khan.answerTypes.text(inte, null, "1", function(correct, guess) { inteGuess = guess; });
-        //var radValid = Khan.answerTypes.text(rad, null, "1", function(correct, guess) { radGuess = guess; });
-
-        //solutionarea.addClass("radical")
-            //.append(inte)
-            //.append('<span class="surd">&radic;</span>')
-            //.append(rad.addClass("overline"));
-
-        //var ret = function() {
-            //// Load entered values into inteGuess, radGuess
-            //inteValid();
-            //radValid();
-
-            //inteGuess = parseFloat(inteGuess);
-            //radGuess = parseFloat(radGuess);
-
-            //ret.guess = [inteGuess, radGuess];
-
-            //var simplified = inteGuess === ans[0] && radGuess === ans[1];
-            //var correct = Math.abs(inteGuess) * inteGuess * radGuess === ansSquared;
-
-            //if (correct) {
-                //if (simplified || options.simplify === "optional") {
-                    //return true;
-                //} else {
-                    //return inexactMessages.unsimplified;
-                //}
-            //} else {
-                //return false;
-            //}
-        //};
-        //if (options.simplify === "required") {
-            //ret.examples = ["a simplified radical, like <code>\\sqrt{2}</code> or <code>3\\sqrt{5}</code>"];
-        //} else {
-            //ret.examples = ["a radical, like <code>\\sqrt{8}</code> or <code>2\\sqrt{2}</code>"];
-        //}
-        //ret.solution = ans;
-        //ret.showGuess = function(guess) {
-            //inteValid.showGuess(guess ? guess[0] : "");
-            //radValid.showGuess(guess ? guess[1] : "");
-        //};
-        //return ret;
-    //},
 
     //multiple: function(solutionarea, solution) {
         //solutionarea = $(solutionarea);

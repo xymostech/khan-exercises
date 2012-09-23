@@ -1225,16 +1225,16 @@ var Khan = (function() {
             }
         }
 
-        //if (!answerType) {
-            //// If a multiple choice block exists
-            //if (choices.length) {
-                //answerType = "radio";
+        if (!answerType) {
+            // If a multiple choice block exists
+            if (choices.length) {
+                answerType = "radio";
 
-            //// Otherwise we assume the smart number type
-            //} else {
-                //answerType = "number";
-            //}
-        //}
+            // Otherwise we assume the smart number type
+            } else {
+                answerType = "number";
+            }
+        }
 
         // Generate a type of problem
         // (this includes possibly generating the multiple choice problems,

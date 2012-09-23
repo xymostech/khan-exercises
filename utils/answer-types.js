@@ -10,7 +10,7 @@ Khan.answerTypes = Khan.answerTypes || {};
 $.extend(Khan.answerTypes, {
     text: {
         setup: function(solutionarea, solution) {
-            input = $('<input type="text">');
+            var input = $('<input type="text">');
             $(solutionarea).append(input);
 
             var fallback = $(solution).data("fallback");
@@ -417,7 +417,7 @@ if (match) {
 
     regex: {
         setup: function(solutionarea, solution) {
-            input = $('<input type="text">');
+            var input = $('<input type="text">');
             $(solutionarea).append(input);
 
             return {

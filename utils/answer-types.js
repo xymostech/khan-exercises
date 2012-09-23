@@ -499,6 +499,89 @@ if (match) {
                 }
             }
         }
+    },
+
+    multiple: {
+        setup: function(solutionarea, solution) {
+            $(solutionarea).append($(solution).clone().contents().tmpl());
+
+            var solutionArray = [];
+            var answersArray = [];
+
+            $(solutionarea).find(".sol").each(function() {
+                var type = $(this).data("type");
+                type = type != null ? type : "number";
+
+                var sol = $(this).clone(),
+                    solarea = $(this).empty();
+
+                var validator = Khan.answerTypes[type].setup(solarea, sol);
+                solutionArray.unshift(validator.solution);
+                answersArray.unshift(validator.answer);
+            });
+
+            return {
+                validator: Khan.answerTypes.multiple.validatorCreator(solution),
+                answer: function() {
+                    var answer = [];
+
+                    $.each(answersArray, function(i, getAns) {
+                        answer.unshift(getAns());
+                    });
+
+                    return answer;
+                },
+                solution: solutionArray,
+                examples: [],
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var validators = [];
+
+            $(solution).find(".sol").each(function() {
+                var sol = $(this);
+
+                var type = sol.data("type");
+                type = type != null ? type : "number";
+
+                var validator = Khan.answerTypes[type].validatorCreator(sol);
+
+                validators.push({
+                    validator: validator,
+                    required: sol.attr("required") != undefined
+                });
+            });
+
+            return function(guess) {
+                var valid = true;
+                var missing_required_answer = false;
+                var invalid_reason = "";
+
+                $.each(guess, function(i, g) {
+                    var pass = validators[i].validator(g);
+
+                    if (pass === "" && validators[i].required) {
+                        missing_required_answer = true;
+                        return false;
+                    } else if (typeof pass === "string") {
+                        invalid_reason = pass;
+                    } else {
+                        valid = valid && pass;
+                    }
+                });
+
+                if (missing_required_answer) {
+                    return "";
+                } else if (invalid_reason.length > 0) {
+                    return invalid_reason;
+                } else {
+                    return valid;
+                }
+            }
+        }
     }
 
     // UNUSED
@@ -541,109 +624,6 @@ if (match) {
 
 
 
-    //multiple: function(solutionarea, solution) {
-        //solutionarea = $(solutionarea);
-        //// here be dragons
-        //solutionarea.append($(solution).clone().contents().tmpl());
-
-        //var solutionArray = [];
-
-        //solutionarea.find(".sol").each(function() {
-            //var type = $(this).data("type");
-            //type = type != null ? type : "number";
-
-            //var sol = $(this).clone(),
-                //solarea = $(this).empty();
-
-            //var fallback = sol.data("fallback"),
-                //validator = Khan.answerTypes[type](solarea, sol, fallback);
-
-            //$(this).data("validator", validator);
-            //solutionArray.unshift(validator.solution);
-        //});
-
-        //var ret = function() {
-            //var valid = true,
-                //missing_required_answer = false,
-                //guess = [];
-
-            //solutionarea.find(".sol").each(function() {
-                //var validator = $(this).data("validator", validator);
-
-                //if (validator != null) {
-                    //// Don't short-circuit so we can record all guesses
-                    //valid = validator() && valid;
-
-                    //// If this is one of the required entries, and it is not filled in
-                    //// set the flag that indicates that a required entry is not filled in.
-                    //if (jQuery(this).attr("required") != undefined && validator.guess === "") {
-                        //missing_required_answer = true;
-                        //// Break out of the each loop since a required item is not set.
-                        //return false;
-                    //}
-                    //guess.push(validator.guess);
-                //}
-            //});
-
-            //// If a required answer was not provided, return "". This keeps the problem
-            //// from being submitted.
-            //if (missing_required_answer === true) {
-                //ret.guess = "";
-            //} else {
-                //ret.guess = guess;
-            //}
-
-            //return valid;
-        //};
-
-        //ret.showGuess = function(guess) {
-            //guess = $.extend(true, [], guess);
-
-            //solutionarea.find(".sol").each(function() {
-                //var validator = $(this).data("validator", validator);
-
-                //if (validator != null) {
-                    //// Shift regardless of whether we can show the guess
-                    //var next = guess.shift();
-
-                    //if (typeof validator.showGuess === "function") {
-                        //validator.showGuess(next);
-                    //}
-                //}
-            //});
-        //};
-
-        //ret.showCustomGuess = function(guess) {
-            //guess = $.extend(true, [], guess);
-
-            //solutionarea.find(".sol").each(function() {
-                //var validator = $(this).data("validator", validator);
-
-                //if (validator != null) {
-                    //// Shift regardless of whether we can show the interactive guess
-                    //var next = guess.shift();
-
-                    //if ($.isFunction(validator.showCustomGuess)) {
-                        //validator.showCustomGuess(next);
-                    //}
-                //}
-            //});
-        //};
-
-        //// If there's only a single sol in the multiple and there aren't any examples defined,
-        //// use the examples from the single sol element.
-        //if (solutionarea.find(".sol").length === 1 && solutionarea.find(".example").length === 0) {
-            //ret.examples = solutionarea.find(".sol").first().data("validator").examples;
-        //} else {
-            //ret.examples = solutionarea.find(".example").remove()
-                //.map(function(i, el) {
-                    //return $(el).html();
-                //});
-        //}
-        //ret.solution = solutionArray;
-
-        //return ret;
-    //},
 
     //set: function(solutionarea, solution) {
         //var solutionarea = $(solutionarea),

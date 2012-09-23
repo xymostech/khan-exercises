@@ -33,8 +33,34 @@ $.extend(Khan.answerTypes, {
                 return correct === guess;
             }
         }
-    }
+    },
 
+    number: {
+        setup: function(solutionarea, solution) {
+            input = $('<input type="text">');
+            $(solutionarea).append(input);
+
+            return {
+                validator: Khan.answerTypes.text.validatorCreator(solution),
+                answer: function() {
+                    return input.val().length > 0 ? input.val() : "";
+                },
+                solution: $.trim($(solution).text()),
+                examples: [],
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var correct = $.trim($(solution).text());
+
+            return function(guess) {
+                guess = $.trim(guess);
+                return correct === guess;
+            }
+        }
+    }
 
     //number: function(solutionarea, solution, fallback, accForms) {
         //var options = $.extend({

@@ -364,6 +364,47 @@ if (match) {
                 return ret;
             }
         }
+    },
+
+    decimal: {
+        setup: function(solutionarea, solution) {
+            solution.data("forms", "decimal");
+            return Khan.answerTypes.number.setup(solutionarea, solution);
+        },
+        validatorCreator: function(solution) {
+            return Khan.answerTypes.number.validatorCreator(solution)
+        }
+    },
+
+    rational: {
+        setup: function(solutionarea, solution) {
+            solution.data("forms", "decimal, proper, improper, mixed");
+            return Khan.answerTypes.number.setup(solutionarea, solution);
+        },
+        validatorCreator: function(solution) {
+            return Khan.answerTypes.number.validatorCreator(solution)
+        }
+    },
+
+    // A little bit of a misnomer as proper fractions are also accepted
+    improper: {
+        setup: function(solutionarea, solution) {
+            solution.data("forms", "integer, proper, improper");
+            return Khan.answerTypes.number.setup(solutionarea, solution);
+        },
+        validatorCreator: function(solution) {
+            return Khan.answerTypes.number.validatorCreator(solution)
+        }
+    },
+
+    mixed: {
+        setup: function(solutionarea, solution) {
+            solution.data("forms", "integer, proper, mixed");
+            return Khan.answerTypes.number.setup(solutionarea, solution);
+        },
+        validatorCreator: function(solution) {
+            return Khan.answerTypes.number.validatorCreator(solution)
+        }
     }
 
     // UNUSED
@@ -412,22 +453,6 @@ if (match) {
         //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
     //},
 
-    //decimal: function(solutionarea, solution, fallback) {
-        //return Khan.answerTypes.number(solutionarea, solution, fallback, "decimal");
-    //},
-
-    //rational: function(solutionarea, solution, fallback) {
-        //return Khan.answerTypes.number(solutionarea, solution, fallback, "integer, proper, improper, mixed");
-    //},
-
-    //// A little bit of a misnomer as proper fractions are also accepted
-    //improper: function(solutionarea, solution, fallback) {
-        //return Khan.answerTypes.number(solutionarea, solution, fallback, "integer, proper, improper");
-    //},
-
-    //mixed: function(solutionarea, solution, fallback) {
-        //return Khan.answerTypes.number(solutionarea, solution, fallback, "integer, proper, mixed");
-    //},
 
     //radical: function(solutionarea, solution) {
         //var options = $.extend({

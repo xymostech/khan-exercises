@@ -199,6 +199,7 @@ var Khan = (function() {
 
     // The current validator function
     validator,
+    getAnswer,
 
     hints,
 
@@ -1224,16 +1225,16 @@ var Khan = (function() {
             }
         }
 
-        if (!answerType) {
-            // If a multiple choice block exists
-            if (choices.length) {
-                answerType = "radio";
+        //if (!answerType) {
+            //// If a multiple choice block exists
+            //if (choices.length) {
+                //answerType = "radio";
 
-            // Otherwise we assume the smart number type
-            } else {
-                answerType = "number";
-            }
-        }
+            //// Otherwise we assume the smart number type
+            //} else {
+                //answerType = "number";
+            //}
+        //}
 
         // Generate a type of problem
         // (this includes possibly generating the multiple choice problems,
@@ -1241,7 +1242,10 @@ var Khan = (function() {
         guessLog = [];
         userActivityLog = [];
         debugLog("decided on answer type " + answerType);
-        validator = Khan.answerTypes[answerType](solutionarea, solution);
+        var answerData = Khan.answerTypes[answerType].setup(solutionarea, solution);
+
+        validator = answerData.validator;
+        getAnswer = answerData.answer;
         debugLog("validator created");
 
         // A working solution was generated
@@ -1868,12 +1872,12 @@ var Khan = (function() {
                     }
                 })
                 .on("keyup.emptyAnswer", function() {
-                    validator();
-                    if (checkIfAnswerEmpty()) {
-                        checkAnswerButton.attr("disabled", "disabled");
-                    } else {
+                    //validator();
+                    //if (checkIfAnswerEmpty()) {
+                        //checkAnswerButton.attr("disabled", "disabled");
+                    //} else {
                         checkAnswerButton.removeAttr("disabled");
-                    }
+                    //}
                 });
         }
 
@@ -2024,17 +2028,18 @@ var Khan = (function() {
         }
 
         function handleSubmit() {
-            var pass = validator();
+            var guess = getAnswer();
+            var pass = validator(guess);
 
             // Stop if the user didn't enter a response
             // If multiple-answer, join all responses and check if that's empty
             // Remove commas left by joining nested arrays in case multiple-answer is nested
 
-            if (checkIfAnswerEmpty()) {
-                return false;
-            } else {
-                guessLog.push(validator.guess);
-            }
+            //if (checkIfAnswerEmpty()) {
+                //return false;
+            //} else {
+                //guessLog.push(validator.guess);
+            //}
 
             // Stop if the form is already disabled and we're waiting for a response.
             if ($("#answercontent input").not("#hint,#next-question-button").is(":disabled")) {

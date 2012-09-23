@@ -8,43 +8,44 @@ var inexactMessages = {
 Khan.answerTypes = Khan.answerTypes || {};
 
 $.extend(Khan.answerTypes, {
-    text: function(solutionarea, solution, fallback, verifier, input) {
-        if (!input) {
+    text: {
+        setup: function(solutionarea, solution) {
             input = $('<input type="text">');
-        }
 
-        $(solutionarea).append(input);
+            $(solutionarea).append(input);
 
-        var correct = typeof solution === "object" ? $(solution).text() : solution;
+            var correct = typeof solution === "object" ? $(solution).text() : solution;
 
-        if (verifier == null) {
-            verifier = function(correct, guess) {
+            var realValidator = Khan.answerTypes.text.validatorCreator(correct);
+
+            return {
+                validator: realValidator,
+                answer: function() {
+                    // we want the normal input if it's nonempty, the fallback converted to a string if
+                    // the input is empty and a fallback exists, and the empty string if the input
+                    // is empty and the fallback doesn't exist.
+                    var val = input.val().length > 0 ?
+                        input.val() :
+                        (typeof fallback !== "undefined") ?
+                            fallback + "" :
+                            "";
+
+                    return val;
+                },
+                solution: $.trim(correct),
+                examples: [],
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(correct) {
+            return function(guess) {
                 correct = $.trim(correct);
                 guess = $.trim(guess);
                 return correct === guess;
-            };
+            }
         }
-
-        var ret = function() {
-            // we want the normal input if it's nonempty, the fallback converted to a string if
-            // the input is empty and a fallback exists, and the empty string if the input
-            // is empty and the fallback doesn't exist.
-            var val = input.val().length > 0 ?
-                input.val() :
-                (typeof fallback !== "undefined") ?
-                    fallback + "" :
-                    "";
-
-            ret.guess = input.val();
-
-            return verifier(correct, val);
-        };
-        ret.solution = $.trim(correct);
-        ret.examples = verifier.examples || [];
-        ret.showGuess = function(guess) {
-            input.val(guess);
-        };
-        return ret;
     }
 
     // UNUSED

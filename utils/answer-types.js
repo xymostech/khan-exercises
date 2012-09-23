@@ -35,44 +35,6 @@ $.extend(Khan.answerTypes, {
         }
     }
 
-    // UNUSED
-    //graphic: function(solutionarea, solution, fallback) {
-            //var verifier = function(correct, guess) {
-                    //return Math.abs(correct - guess) < 0.3;
-                //};
-        //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
-    //},
-
-    // UNUSED
-    //line: function(solutionarea, solution, fallback) {
-
-        //var verifier = function(correct, guess) {
-            //var result = true;
-            //for (var i = 0; i < 5; i++) {
-                //var sampleX = KhanUtil.randRange(-100, 100);
-                //if (guess.match(/[A-W]|[a-w]|[y-z]|[Y-Z]/) !== null) {
-                    //return false;
-                //}
-
-                //var newGuess = guess
-                        //.replace(/\u2212/, "-")
-                        //.replace(/(\d)(x)/, "$1 * $2")
-                        //.replace("x", sampleX)
-                        //.replace(/(\d)(\()/, "$1 * $2");
-                //var newCorrect = correct
-                        //.replace(/(\d)(x)/, "$1 * $2")
-                        //.replace("x", sampleX)
-                        //.replace(/(\d)(\()/, "$1 * $2")
-                        //.replace(/-\s?-/, "");
-                //result = result && (eval(newCorrect) === eval(newGuess));
-            //}
-            //return result;
-        //};
-        //verifier.examples = "An equation of a line, like 3(x+1)/2 or 2x + 1";
-        //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
-
-    //},
-
 
     //number: function(solutionarea, solution, fallback, accForms) {
         //var options = $.extend({
@@ -391,6 +353,44 @@ $.extend(Khan.answerTypes, {
         //}
 
         //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier, input);
+    //}
+
+    // UNUSED
+    //graphic: function(solutionarea, solution, fallback) {
+            //var verifier = function(correct, guess) {
+                    //return Math.abs(correct - guess) < 0.3;
+                //};
+        //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
+    //},
+
+    // UNUSED
+    //line: function(solutionarea, solution, fallback) {
+
+        //var verifier = function(correct, guess) {
+            //var result = true;
+            //for (var i = 0; i < 5; i++) {
+                //var sampleX = KhanUtil.randRange(-100, 100);
+                //if (guess.match(/[A-W]|[a-w]|[y-z]|[Y-Z]/) !== null) {
+                    //return false;
+                //}
+
+                //var newGuess = guess
+                        //.replace(/\u2212/, "-")
+                        //.replace(/(\d)(x)/, "$1 * $2")
+                        //.replace("x", sampleX)
+                        //.replace(/(\d)(\()/, "$1 * $2");
+                //var newCorrect = correct
+                        //.replace(/(\d)(x)/, "$1 * $2")
+                        //.replace("x", sampleX)
+                        //.replace(/(\d)(\()/, "$1 * $2")
+                        //.replace(/-\s?-/, "");
+                //result = result && (eval(newCorrect) === eval(newGuess));
+            //}
+            //return result;
+        //};
+        //verifier.examples = "An equation of a line, like 3(x+1)/2 or 2x + 1";
+        //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
+
     //},
 
     //regex: function(solutionarea, solution, fallback) {

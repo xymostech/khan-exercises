@@ -13,10 +13,14 @@ $.extend(Khan.answerTypes, {
             input = $('<input type="text">');
             $(solutionarea).append(input);
 
+            var fallback = $(solution).data("fallback");
+
             return {
                 validator: Khan.answerTypes.text.validatorCreator(solution),
                 answer: function() {
-                    return input.val().length > 0 ? input.val() : "";
+                    return input.val().length > 0 ?
+                        input.val() :
+                        (fallback ? fallback : "");
                 },
                 solution: $.trim($(solution).text()),
                 examples: [],
@@ -98,10 +102,14 @@ $.extend(Khan.answerTypes, {
                 }
             });
 
+            var fallback = $(solution).data("fallback");
+
             return {
                 validator: Khan.answerTypes.number.validatorCreator(solution),
                 answer: function() {
-                    return input.val().length > 0 ? input.val() : "";
+                    return input.val().length > 0 ?
+                        input.val() :
+                        (fallback ? fallback : "");
                 },
                 solution: $.trim($(solution).text()),
                 examples: examples,

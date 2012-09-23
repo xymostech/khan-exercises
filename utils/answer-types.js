@@ -11,19 +11,15 @@ $.extend(Khan.answerTypes, {
     text: {
         setup: function(solutionarea, solution) {
             input = $('<input type="text">');
-
             $(solutionarea).append(input);
 
-            var correct = typeof solution === "object" ? $(solution).text() : solution;
-
-            var realValidator = Khan.answerTypes.text.validatorCreator(correct);
-
             return {
-                validator: realValidator,
+                validator: Khan.answerTypes.text.validatorCreator(solution),
                 answer: function() {
-                    // we want the normal input if it's nonempty, the fallback converted to a string if
-                    // the input is empty and a fallback exists, and the empty string if the input
-                    // is empty and the fallback doesn't exist.
+                    // we want the normal input if it's nonempty, the fallback
+                    // converted to a string if the input is empty and a
+                    // fallback exists, and the empty string if the input is
+                    // empty and the fallback doesn't exist.
                     var val = input.val().length > 0 ?
                         input.val() :
                         (typeof fallback !== "undefined") ?
@@ -32,16 +28,17 @@ $.extend(Khan.answerTypes, {
 
                     return val;
                 },
-                solution: $.trim(correct),
+                solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
                     input.val(guess);
                 }
             };
         },
-        validatorCreator: function(correct) {
+        validatorCreator: function(solution) {
+            var correct = $.trim($(solution).text());
+
             return function(guess) {
-                correct = $.trim(correct);
                 guess = $.trim(guess);
                 return correct === guess;
             }

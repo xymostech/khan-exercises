@@ -405,6 +405,33 @@ if (match) {
         validatorCreator: function(solution) {
             return Khan.answerTypes.number.validatorCreator(solution)
         }
+    },
+
+    regex: {
+        setup: function(solutionarea, solution) {
+            input = $('<input type="text">');
+            $(solutionarea).append(input);
+
+            return {
+                validator: Khan.answerTypes.regex.validatorCreator(solution),
+                answer: function() {
+                    return input.val().length > 0 ? input.val() : "";
+                },
+                solution: $.trim($(solution).text()),
+                examples: [],
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var correct = $.trim($(solution).text());
+
+            return function(guess) {
+                guess = $.trim(guess);
+                return guess.match(correct) != null;
+            }
+        }
     }
 
     // UNUSED
@@ -443,14 +470,6 @@ if (match) {
         //verifier.examples = "An equation of a line, like 3(x+1)/2 or 2x + 1";
         //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
 
-    //},
-
-    //regex: function(solutionarea, solution, fallback) {
-        //var verifier = function(correct, guess) {
-            //return $.trim(guess).match(correct) != null;
-        //};
-
-        //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
     //},
 
 

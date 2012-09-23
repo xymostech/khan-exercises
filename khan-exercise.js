@@ -1289,11 +1289,11 @@ var Khan = (function() {
         $("#answercontent input").not("#check-answer-button")
             .removeAttr("disabled");
 
-        if (examples !== null && validator.examples && validator.examples.length > 0) {
+        if (examples !== null && answerData.examples && answerData.examples.length > 0) {
             $("#examples-show").show();
             examples.empty();
 
-            $.each(validator.examples, function(i, example) {
+            $.each(answerData.examples, function(i, example) {
                 examples.append("<li>" + example + "</li>");
             });
 

@@ -16,17 +16,7 @@ $.extend(Khan.answerTypes, {
             return {
                 validator: Khan.answerTypes.text.validatorCreator(solution),
                 answer: function() {
-                    // we want the normal input if it's nonempty, the fallback
-                    // converted to a string if the input is empty and a
-                    // fallback exists, and the empty string if the input is
-                    // empty and the fallback doesn't exist.
-                    var val = input.val().length > 0 ?
-                        input.val() :
-                        (typeof fallback !== "undefined") ?
-                            fallback + "" :
-                            "";
-
-                    return val;
+                    return input.val().length > 0 ? input.val() : "";
                 },
                 solution: $.trim($(solution).text()),
                 examples: [],

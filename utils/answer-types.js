@@ -987,58 +987,6 @@ if (match) {
 
 
 
-    //// The user is asked to enter the separate parts of a complex number in 2 textboxes.
-    //// Expected solution: [real part, imaginary part]
-    //complexNumberSeparate: function(solutionarea, solution) {
-        //solutionarea = $(solutionarea);
-
-        //var json = typeof solution === "object" ? $(solution).text() : solution;
-        //var correct = eval(json);
-
-        //var solutionArray = [];
-
-        //var realArea = $("<p />").html("Real part: ");
-        //var realControl = $('<span data-inexact data-max-error="0.01" />').html(correct[0]);
-        //var realValidator = Khan.answerTypes["number"](realArea, realControl, 0);
-
-        //var imagArea = $("<p />").html("Imaginary part: ");
-        //var imagControl = $('<span data-inexact data-max-error="0.01" />').html(correct[1]);
-        //var imagValidator = Khan.answerTypes["number"](imagArea, imagControl, 0);
-
-        //var area = $("<div />");
-        //area.append(realArea).append(imagArea).tmpl();
-        //area.find("input").css("width", "50px");
-        //solutionarea.append(area);
-
-        //var ret = function() {
-            //var valid = true;
-            //var guess = [];
-            //if (realValidator != null) {
-                //valid = realValidator() && valid;
-                //guess.push(realValidator.guess);
-            //}
-            //if (imagValidator != null) {
-                //valid = imagValidator() && valid;
-                //guess.push(imagValidator.guess);
-            //}
-            //ret.guess = guess;
-            //return valid;
-        //};
-
-        //ret.showGuess = function(guess) {
-            //realValidator.showGuess(guess[0]);
-            //imagValidator.showGuess(guess[1]);
-        //};
-
-        //ret.examples = [
-            //"the separate parts of a complex number (<code>5.3 - 3i</code> has real part 5.3 and imaginary part -3)"
-        //];
-
-        //ret.solution = [realValidator.solution, imagValidator.solution];
-
-        //return ret;
-    //},
-
     //// To be used with ComplexPolarForm in graphie-helpers.js
     //// (see The complex plane for an example)
     //// The solution argument is expected to be [angle, magnitude]

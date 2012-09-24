@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <title>Dividing complex numbers</title>
     <script src="../khan-exercise.js"></script>
+    <style type="text/css">
+        #solutionarea input[type="text"] {
+            width: 50px
+        }
+    </style>
 </head>
 <body>
     <div class="exercise">
@@ -42,8 +47,11 @@
             <p>
                 <code>\qquad \dfrac{<var>A_REP_COLORED</var>}{<var>B_REP_COLORED</var>}</code>
             </p>
-            <div class="solution" data-type="complexNumberSeparate">
-                [ <var>ANSWER_REAL_UNROUNDED</var>, <var>ANSWER_IMAG_UNROUNDED</var> ]
+            <div class="solution" data-type="multiple">
+                <span class="sol" data-inexact data-max-error="0.01"><var>ANSWER_REAL_UNROUNDED</var></span>
+                <code>+</code>
+                <span class="sol" data-inexact data-max-error="0.01"><var>ANSWER_IMAG_UNROUNDED</var></span>
+                <code>i</code>
             </div>
             <div class="hints">
                 <p>

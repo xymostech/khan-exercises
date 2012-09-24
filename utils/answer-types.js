@@ -874,7 +874,7 @@ if (match) {
 
     custom: {
         setup: function(solutionarea, solution) {
-            solution.find(".instruction").clone().appendTo(solutionarea);
+            solution.find(".instruction").clone().appendTo(solutionarea).tmpl();
 
             var guessCode = solution.find(".guess").text();
 

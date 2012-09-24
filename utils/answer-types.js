@@ -836,6 +836,40 @@ if (match) {
                 return false;
             };
         }
+    },
+
+    list: {
+        setup: function(solutionarea, solution) {
+            var input = $("<select></select>");
+            $(solutionarea).append(input);
+
+            var choices = $.tmpl.getVAR($(solution).data("choices"));
+
+            $.each(choices, function(index, value) {
+                input.append('<option value="' + value + '">'
+                    + value + "</option>");
+            });
+
+            return {
+                validator: Khan.answerTypes.list.validatorCreator(solution),
+                answer: function() {
+                    return input.val();
+                },
+                solution: $.trim($(solution).text()),
+                examples: [],
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var correct = $.trim($(solution).text());
+
+            return function(guess) {
+                guess = $.trim(guess);
+                return correct === guess;
+            };
+        }
     }
 
     // UNUSED
@@ -876,44 +910,6 @@ if (match) {
 
     //},
 
-
-
-
-
-
-    //list: function(solutionarea, solution) {
-        //var input = $("<select></select>");
-        //$(solutionarea).append(input);
-
-        //var choices = $.tmpl.getVAR($(solution).data("choices"));
-
-        //$.each(choices, function(index, value) {
-            //input.append('<option value="' + value + '">'
-                //+ value + "</option>");
-        //});
-
-        //var correct = $(solution).text();
-
-        //var verifier = function(correct, guess) {
-            //correct = $.trim(correct);
-            //guess = $.trim(guess);
-            //return correct === guess;
-        //};
-
-        //var ret = function() {
-            //ret.guess = input.val();
-
-            //return verifier(correct, ret.guess);
-        //};
-
-        //ret.solution = $.trim(correct);
-
-        //ret.showGuess = function(guess) {
-            //input.val(guess);
-        //};
-
-        //return ret;
-    //},
 
     //primeFactorization: function(solutionarea, solution, fallback) {
         //var verifier = function(correct, guess) {

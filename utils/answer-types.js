@@ -870,6 +870,44 @@ if (match) {
                 return correct === guess;
             };
         }
+    },
+
+    custom: {
+        setup: function(solutionarea, solution) {
+            solution.find(".instruction").clone().appendTo(solutionarea);
+
+            var guessCode = solution.find(".guess").text();
+
+            return {
+                validator: Khan.answerTypes.custom.validatorCreator(solution),
+                answer: function() {
+                    return KhanUtil.tmpl.getVAR(guessCode,
+                                                KhanUtil.currentGraph);
+                },
+                solution: $.trim($(solution).text()),
+                examples: solution.find(".example").map(function(i, el) {
+                    return $(el).html();
+                }),
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var validatorCode = $(solution).find(".validator-function").text();
+
+            var validator = function(guess) {
+                var code = "(function() { " +
+                                "var guess = " + JSON.stringify(guess) + ";" +
+                                validatorCode +
+                            "})()";
+                return KhanUtil.tmpl.getVAR(code, KhanUtil.currentGraph);
+            };
+
+            return function(guess) {
+                return validator(guess);
+            };
+        }
     }
 
     // UNUSED
@@ -1053,55 +1091,6 @@ if (match) {
         //return ret;
     //},
 
-    //custom: function(solutionarea, solution) {
-        //var isTimeline = !(solutionarea.attr("id") === "solutionarea" || solutionarea.parent().attr("id") === "solutionarea");
-        //var guessCorrect = false;
-        //solution.find(".instruction").appendTo(solutionarea);
-        //var guessCode = solution.find(".guess").text();
-
-        //var validatorCode = solution.find(".validator-function").text();
-        //var validator = function(guess) {
-            //var code = "(function() { var guess = " + JSON.stringify(guess) + ";" + validatorCode + "})()";
-            //return KhanUtil.tmpl.getVAR(code, KhanUtil.currentGraph);
-        //};
-
-        //ret = function() {
-            //ret.guess = KhanUtil.tmpl.getVAR(guessCode, KhanUtil.currentGraph);
-            //if (isTimeline) {
-                //return guessCorrect;
-            //} else {
-                //var result = validator(ret.guess);
-                //if (result === "") {
-                    //ret.guess = "";
-                //}
-                //return result;
-            //}
-        //};
-
-        //ret.examples = solution.find(".example").map(function(i, el) {
-            //return $(el).html();
-        //});
-        //ret.solution = "custom";
-        //var showGuessSolutionCode = $(solution).find(".show-guess-solutionarea").text() || "";
-        //ret.showGuess = function(guess) {
-            //if (isTimeline) {
-                //guessCorrect = validator(guess);
-                //$(solutionarea).empty();
-                //$(solutionarea).append(guessCorrect === true ? "Answer correct" : "Answer incorrect");
-            //} else {
-                //var code = "(function() { var guess = " + (JSON.stringify(guess) || "[]") + ";" + showGuessSolutionCode + "})()";
-                //KhanUtil.tmpl.getVAR(code, KhanUtil.currentGraph);
-            //}
-        //};
-
-        //var showGuessCode = $(solution).find(".show-guess").text();
-        //ret.showCustomGuess = function(guess) {
-            //var code = "(function() { var guess = " + JSON.stringify(guess) + ";" + showGuessCode + "})()";
-            //KhanUtil.tmpl.getVAR(code, KhanUtil.currentGraph);
-        //};
-
-        //return ret;
-    //}
 });
 
 })();

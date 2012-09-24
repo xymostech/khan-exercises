@@ -1037,9 +1037,9 @@ var Khan = (function() {
     }
 
 
-    function checkIfAnswerEmpty() {
-        return $.trim(validator.guess) === "" ||
-                 (validator.guess instanceof Array && $.trim(validator.guess.join("").replace(/,/g, "")) === "");
+    function checkIfAnswerEmpty(guess) {
+        return $.trim(guess) === "" ||
+                 (guess instanceof Array && $.trim(guess.join("").replace(/,/g, "")) === "");
     }
 
     function makeProblem(id, seed) {
@@ -1872,12 +1872,12 @@ var Khan = (function() {
                     }
                 })
                 .on("keyup.emptyAnswer", function() {
-                    //validator();
-                    //if (checkIfAnswerEmpty()) {
-                        //checkAnswerButton.attr("disabled", "disabled");
-                    //} else {
+                    var guess = getAnswer();
+                    if (checkIfAnswerEmpty(guess)) {
+                        checkAnswerButton.attr("disabled", "disabled");
+                    } else {
                         checkAnswerButton.removeAttr("disabled");
-                    //}
+                    }
                 });
         }
 
@@ -2035,11 +2035,11 @@ var Khan = (function() {
             // If multiple-answer, join all responses and check if that's empty
             // Remove commas left by joining nested arrays in case multiple-answer is nested
 
-            //if (checkIfAnswerEmpty()) {
-                //return false;
-            //} else {
-                //guessLog.push(validator.guess);
-            //}
+            if (checkIfAnswerEmpty(guess) || checkIfAnswerEmpty(pass)) {
+                return false;
+            } else {
+                guessLog.push(validator.guess);
+            }
 
             // Stop if the form is already disabled and we're waiting for a response.
             if ($("#answercontent input").not("#hint,#next-question-button").is(":disabled")) {

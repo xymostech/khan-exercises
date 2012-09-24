@@ -908,6 +908,43 @@ if (match) {
                 return validator(guess);
             };
         }
+    },
+
+    primeFactorization: {
+        setup: function(solutionarea, solution) {
+            var input = $('<input type="text">');
+            $(solutionarea).append(input);
+
+            var fallback = $(solution).data("fallback");
+
+            return {
+                validator: Khan.answerTypes
+                               .primeFactorization.validatorCreator(solution),
+                answer: function() {
+                    return input.val().length > 0 ?
+                        input.val() :
+                        (fallback ? fallback : "");
+                },
+                solution: $.trim($(solution).text()),
+                examples: [
+                    "a product of prime factors, like <code>2 \\times 3</code>",
+                    "a single prime number, like <code>5</code>"
+                ],
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var correct = $.trim($(solution).text());
+
+            return function(guess) {
+                guess = guess.split(" ").join("").toLowerCase();
+                guess = KhanUtil.sortNumbers(guess.split(/x|\*|\u00d7/)).join("x");
+                console.log(guess);
+                return guess === correct;
+            };
+        }
     }
 
     // UNUSED
@@ -949,19 +986,6 @@ if (match) {
     //},
 
 
-    //primeFactorization: function(solutionarea, solution, fallback) {
-        //var verifier = function(correct, guess) {
-            //guess = guess.split(" ").join("").toLowerCase();
-            //guess = KhanUtil.sortNumbers(guess.split(/x|\*|\u00d7/)).join("x");
-            //return guess === correct;
-        //};
-        //verifier.examples = [
-            //"a product of prime factors, like <code>2 \\times 3</code>",
-            //"a single prime number, like <code>5</code>"
-        //];
-
-        //return Khan.answerTypes.text(solutionarea, solution, fallback, verifier);
-    //},
 
     //// The user is asked to enter the separate parts of a complex number in 2 textboxes.
     //// Expected solution: [real part, imaginary part]

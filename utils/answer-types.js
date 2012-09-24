@@ -672,6 +672,170 @@ if (match) {
                 return valid;
             };
         }
+    },
+
+    radio: {
+        setup: function(solutionarea, solution) {
+            var extractRawCode = function(solution) {
+                return $(solution).clone()
+                    .find(".MathJax").remove().end()
+                    .find("code").removeAttr("id").end()
+                    .html();
+            };
+
+            var list = $("<ul></ul>");
+            list.on("click", "input:radio", function() {
+                $(this).focus();
+            });
+            $(solutionarea).append(list);
+
+            // Get all of the wrong choices
+            var choices = $(solution).siblings(".choices");
+
+            var solutionClone = $(solution).clone();
+
+            // Set number of choices equal to all wrong plus one correct
+            var numChoices = choices.children().length + 1;
+            // Or set number as specified
+            if (choices.data("show")) {
+                numChoices = parseFloat(choices.data("show"));
+            }
+
+            // Optionally include none of the above as a choice
+            var showNone = choices.data("none");
+            var noneIsCorrect = false;
+            if (showNone) {
+                noneIsCorrect = KhanUtil.rand(numChoices) === 0;
+                numChoices -= 1;
+            }
+
+            // If a category exercise, the correct answer is already included in .choices
+            // and choices are always presented in the same order
+            var isCategory = choices.data("category");
+            var possibleChoices = choices.children().get();
+            if (isCategory) {
+                numChoices -= 1;
+            } else {
+                possibleChoices = KhanUtil.shuffle(possibleChoices);
+            }
+
+            // Add the correct answer
+            if (!noneIsCorrect && !isCategory) {
+                $(solutionClone).data("correct", true);
+            }
+
+            // Insert correct answer as first of possibleChoices
+            if (!isCategory) {
+                possibleChoices.splice(0, 0, $(solutionClone));
+            }
+
+            var dupes = {};
+            var shownChoices = [];
+            var solutionTextSquish = solutionClone.text().replace(/\s+/g, "");
+            for (var i = 0; i < possibleChoices.length &&
+                                shownChoices.length < numChoices; i++) {
+                var choice = $(possibleChoices[i]);
+                choice.runModules();
+                var choiceTextSquish = choice.text().replace(/\s+/g, "");
+
+                if (isCategory && solutionTextSquish === choiceTextSquish) {
+                    choice.data("correct", true);
+                }
+
+                if (!dupes[choiceTextSquish]) {
+                    dupes[choiceTextSquish] = true;
+
+                    // i == 0 is the solution except in category mode; skip it
+                    // when none is correct
+                    if (!(noneIsCorrect && i === 0) || isCategory) {
+                        shownChoices.push(choice);
+                    }
+                }
+            }
+
+            if (shownChoices.length < numChoices) {
+                return false;
+            }
+
+            if (!isCategory) {
+                shownChoices = KhanUtil.shuffle(shownChoices);
+            }
+
+            if (showNone) {
+                var none = $("<span>None of the above.</span>");
+
+                if (noneIsCorrect) {
+                    none.data("correct", true);
+                    solutionText = none.text();
+                    list.data("real-answer",
+                            $(solutionClone)
+                                .runModules()
+                                .contents()
+                                .wrapAll('<span class="value""></span>')
+                                .parent());
+                }
+
+                shownChoices.push(none);
+            }
+
+            $.each(shownChoices, function(i, choice) {
+                if (choice.data("correct")) {
+                    correctIndex = i + "";
+                }
+                choice.contents()
+                    .wrapAll('<li><label><span class="value"></span></label></li>')
+                    .parent()
+                    .before('<input type="radio" name="solution" value="' + i + '">')
+                    .parent().parent()
+                    .appendTo(list);
+            });
+
+            return {
+                validator: Khan.answerTypes.radio.validatorCreator(solution),
+                answer: function() {
+                    var choice = list.find("input:checked");
+
+                    var choiceVal = choice.siblings(".value");
+
+                    return [extractRawCode(choiceVal),
+                            choice.val(),
+                            noneIsCorrect];
+                },
+                solution: $.trim($(solution).text()),
+                examples: [],
+                showGuess: function(guess) {
+                    input.val(guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var extractRawCode = function(solution) {
+                return $(solution).clone()
+                    .find(".MathJax").remove().end()
+                    .find("code").removeAttr("id").end()
+                    .html();
+            };
+            var correct = extractRawCode(solution);
+
+            return function(guess) {
+                if (guess[2] && guess[0] === "None of the above.") {
+                    // Hacky stuff to make the correct solution appear when
+                    // "none of the above" is the correct answer
+                    var solutionarea = $("#solutionarea");
+                    var list = solutionarea.find("ul");
+                    var choice = list.children().find("[value="+guess[1]+"]");
+                    choice.next().fadeOut("fast", function() {
+                            $(this).replaceWith(list.data("real-answer"))
+                                .fadeIn("fast");
+                        });
+                    return true;
+                } else if (guess[0] === correct) {
+                    return true;
+                }
+
+                return false;
+            };
+        }
     }
 
     // UNUSED
@@ -716,145 +880,6 @@ if (match) {
 
 
 
-    //radio: function(solutionarea, solution) {
-        //var extractRawCode = function(solution) {
-            //return $(solution).find(".value").clone()
-                //.find(".MathJax").remove().end()
-                //.find("code").removeAttr("id").end()
-                //.html();
-        //};
-        //// Without this we get numbers twice and things sometimes
-        //var solutionText = extractRawCode(solution);
-
-        //var list = $("<ul></ul>");
-        //list.on("click", "input:radio", function() {
-            //$(this).focus();
-        //});
-        //$(solutionarea).append(list);
-
-        //// Get all of the wrong choices
-        //var choices = $(solution).siblings(".choices");
-
-        //// Set number of choices equal to all wrong plus one correct
-        //var numChoices = choices.children().length + 1;
-        //// Or set number as specified
-        //if (choices.data("show")) {
-            //numChoices = parseFloat(choices.data("show"));
-        //}
-
-        //// Optionally include none of the above as a choice
-        //var showNone = choices.data("none");
-        //var noneIsCorrect = false;
-        //if (showNone) {
-            //noneIsCorrect = KhanUtil.rand(numChoices) === 0;
-            //numChoices -= 1;
-        //}
-
-        //// If a category exercise, the correct answer is already included in .choices
-        //// and choices are always presented in the same order
-        //var isCategory = choices.data("category");
-        //var possibleChoices = choices.children().get();
-        //if (isCategory) {
-            //numChoices -= 1;
-        //} else {
-            //possibleChoices = KhanUtil.shuffle(possibleChoices);
-        //}
-
-        //// Add the correct answer
-        //if (!noneIsCorrect && !isCategory) {
-            //$(solution).data("correct", true);
-        //}
-
-        //// Insert correct answer as first of possibleChoices
-        //if (!isCategory) {
-            //possibleChoices.splice(0, 0, solution);
-        //}
-
-        //var dupes = {};
-        //var shownChoices = [];
-        //var solutionTextSquish = solution.text().replace(/\s+/g, "");
-        //for (var i = 0; i < possibleChoices.length && shownChoices.length < numChoices; i++) {
-            //var choice = $(possibleChoices[i]);
-            //choice.runModules();
-            //var choiceTextSquish = choice.text().replace(/\s+/g, "");
-
-            //if (isCategory && solutionTextSquish === choiceTextSquish) {
-                //choice.data("correct", true);
-            //}
-
-            //if (!dupes[choiceTextSquish]) {
-                //dupes[choiceTextSquish] = true;
-
-                //// i == 0 is the solution except in category mode; skip it when none is correct
-                //if (!(noneIsCorrect && i === 0) || isCategory) {
-                    //shownChoices.push(choice);
-                //}
-            //}
-        //}
-
-        //if (shownChoices.length < numChoices) {
-            //return false;
-        //}
-
-        //if (!isCategory) {
-            //shownChoices = KhanUtil.shuffle(shownChoices);
-        //}
-
-        //if (showNone) {
-            //var none = $("<span>None of the above.</span>");
-
-            //if (noneIsCorrect) {
-                //none.data("correct", true);
-                //solutionText = none.text();
-                //list.data("real-answer",
-                        //$(solution).runModules()
-                            //.contents()
-                            //.wrapAll('<span class="value""></span>')
-                            //.parent());
-            //}
-
-            //shownChoices.push(none);
-        //}
-
-        //var correctIndex = -1;
-
-        //$.each(shownChoices, function(i, choice) {
-            //if (choice.data("correct")) {
-                //correctIndex = i + "";
-            //}
-            //choice.contents().wrapAll('<li><label><span class="value"></span></label></li>')
-                //.parent().before('<input type="radio" name="solution" value="' + i + '">')
-                //.parent().parent()
-                //.appendTo(list);
-        //});
-
-        //var ret = function() {
-            //var choice = list.find("input:checked");
-
-            //if (noneIsCorrect && choice.val() === correctIndex) {
-                //choice.next()
-                    //.fadeOut("fast", function() {
-                        //$(this).replaceWith(list.data("real-answer"))
-                            //.fadeIn("fast");
-                    //});
-            //}
-
-            //ret.guess = $.trim(extractRawCode(choice.closest("li")));
-
-            //return choice.val() === correctIndex;
-        //};
-
-        //ret.solution = $.trim(solutionText);
-        //ret.showGuess = function(guess) {
-            //list.find("input:checked").prop("checked", false);
-
-            //var li = list.children().filter(function() {
-                //return $.trim(extractRawCode(this)) === guess;
-            //});
-            //li.find("input[name=solution]").prop("checked", true);
-        //};
-        //return ret;
-    //},
 
     //list: function(solutionarea, solution) {
         //var input = $("<select></select>");

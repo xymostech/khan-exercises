@@ -807,12 +807,13 @@ if (match) {
 
                     return [extractRawCode(choiceVal),
                             choice.val(),
-                            noneIsCorrect];
+                            noneIsCorrect,
+                            choiceVal.html()];
                 },
                 solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
-                    input.val(guess);
+                    $(solutionarea).find("input[value="+guess[1]+"]").attr("checked", true);
                 }
             };
         },

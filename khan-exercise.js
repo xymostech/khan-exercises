@@ -1465,7 +1465,7 @@ var Khan = (function() {
                         if (answerType === "radio") {
                             // radio is the only answer type that can't display its own guesses
                             thissolutionarea.append($(
-                                "<p class='solution'>" + guess + "</p>").tmpl()
+                                "<p class='solution'>" + guess[3] + "</p>").tmpl()
                             );
 
                             if (index === userExercise.userActivity.length - 1) {

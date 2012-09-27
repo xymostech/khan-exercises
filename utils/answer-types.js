@@ -516,8 +516,8 @@ if (match) {
                     solarea = $(this).empty();
 
                 var validator = Khan.answerTypes[type].setup(solarea, sol);
-                solutionArray.unshift(validator.solution);
-                answersArray.unshift(validator.answer);
+                solutionArray.push(validator.solution);
+                answersArray.push(validator.answer);
             });
 
             return {
@@ -526,7 +526,7 @@ if (match) {
                     var answer = [];
 
                     $.each(answersArray, function(i, getAns) {
-                        answer.unshift(getAns());
+                        answer.push(getAns());
                     });
 
                     return answer;

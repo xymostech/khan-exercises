@@ -198,6 +198,7 @@ var Khan = (function() {
     problemID,
 
     // The current validator function
+    answerData,
     validator,
     getAnswer,
 
@@ -1242,7 +1243,7 @@ var Khan = (function() {
         guessLog = [];
         userActivityLog = [];
         debugLog("decided on answer type " + answerType);
-        var answerData = Khan.answerTypes[answerType].setup(solutionarea, solution);
+        answerData = Khan.answerTypes[answerType].setup(solutionarea, solution);
 
         validator = answerData.validator;
         getAnswer = answerData.answer;

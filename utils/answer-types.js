@@ -596,6 +596,7 @@ if (match) {
             );
 
             var inputArray = [];
+            var showGuessArray = [];
             $(solutionarea).find(".entry").each(function() {
                 var input = $(this), type = $(this).data("type");
                 type = type != null ? type : "number";
@@ -603,6 +604,7 @@ if (match) {
                 var validator = Khan.answerTypes[type]
                                     .setup(input, $(this).clone().empty());
                 inputArray.push(validator.answer);
+                showGuessArray.push(validator.showGuess);
             });
 
             return {
@@ -619,7 +621,9 @@ if (match) {
                 solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
-                    input.val(guess);
+                    $.each(showGuessArray, function(i, showGuess) {
+                        showGuess(guess[i]);
+                    });
                 }
             };
         },

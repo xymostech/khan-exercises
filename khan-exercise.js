@@ -1311,7 +1311,7 @@ var Khan = (function() {
 
         // Hook out for exercise test runner
         if (testMode && parent !== window && typeof parent.jQuery !== "undefined") {
-            parent.jQuery(parent.document).trigger("problemLoaded", [makeProblem, validator.solution]);
+            parent.jQuery(parent.document).trigger("problemLoaded", [makeProblem, answerData.solution]);
         }
 
         // Save problem info in dump data for testers
@@ -1323,7 +1323,7 @@ var Khan = (function() {
                 seed: problemSeed,
                 type: problemID,
                 VARS: $.tmpl.VARS,
-                solution: validator.solution
+                solution: answerData.solution
             });
 
             dataDump.problems.push(lastProblem);
@@ -1333,7 +1333,7 @@ var Khan = (function() {
 
             var answer = $(testerInfo).find(".answer").empty();
 
-            var displayedSolution = validator.solution;
+            var displayedSolution = answerData.solution;
             if (!$.isArray(displayedSolution)) {
                 displayedSolution = [displayedSolution];
             }
@@ -2038,7 +2038,7 @@ var Khan = (function() {
             if (checkIfAnswerEmpty(guess) || checkIfAnswerEmpty(pass)) {
                 return false;
             } else {
-                guessLog.push(validator.guess);
+                guessLog.push(guess);
             }
 
             // Stop if the form is already disabled and we're waiting for a response.
@@ -2087,7 +2087,7 @@ var Khan = (function() {
 
             // Save the problem results to the server
             var curTime = new Date().getTime();
-            var data = buildAttemptData(pass, ++attempts, JSON.stringify(validator.guess), curTime);
+            var data = buildAttemptData(pass, ++attempts, JSON.stringify(guess), curTime);
             debugLog("attempt " + JSON.stringify(data));
             request("problems/" + problemNum + "/attempt", data, function() {
 

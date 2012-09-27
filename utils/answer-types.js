@@ -507,6 +507,7 @@ if (match) {
 
             var solutionArray = [];
             var answersArray = [];
+            var showGuessArray = []
 
             $(solutionarea).find(".sol").each(function() {
                 var type = $(this).data("type");
@@ -518,6 +519,7 @@ if (match) {
                 var validator = Khan.answerTypes[type].setup(solarea, sol);
                 solutionArray.push(validator.solution);
                 answersArray.push(validator.answer);
+                showGuessArray.push(validator.showGuess);
             });
 
             return {
@@ -534,7 +536,9 @@ if (match) {
                 solution: solutionArray,
                 examples: [],
                 showGuess: function(guess) {
-                    input.val(guess);
+                    $.each(showGuessArray, function(i, showGuess) {
+                        showGuess(guess[i]);
+                    });
                 }
             };
         },

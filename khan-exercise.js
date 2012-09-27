@@ -1477,11 +1477,11 @@ var Khan = (function() {
                                 thissolutionarea.attr("title", "Incorrect Answer");
                             }
                         } else {
-                            var thisValidator = Khan.answerTypes[answerType](thissolutionarea, solution);
+                            var thisAnswerData = Khan.answerTypes[answerType].setup(thissolutionarea, solution);
 
-                            thisValidator.showGuess(guess);
+                            thisAnswerData.showGuess(guess);
 
-                            if (thisValidator() === true) {
+                            if (thisAnswerData.validator(guess) === true) {
                                 // If the user didn't get the problem right on the first try, all
                                 // answers are labelled incorrect by default
                                 thissolutionarea
@@ -1606,9 +1606,9 @@ var Khan = (function() {
                         }
                     };
 
-                    if (thisSlide.data("guess") !== undefined && $.isFunction(validator.showCustomGuess)) {
+                    if (thisSlide.data("guess") !== undefined && $.isFunction(answerData.showCustomGuess)) {
                         KhanUtil.currentGraph = $(realWorkArea).find(".graphie").data("graphie");
-                        validator.showCustomGuess(thisSlide.data("guess"));
+                        answerData.showCustomGuess(thisSlide.data("guess"));
                         MathJax.Hub.Queue(recordState);
                     } else {
                         recordState();
@@ -1636,9 +1636,9 @@ var Khan = (function() {
                         solutionarea.effect("highlight", {}, fadeTime);
 
                         // If there is a guess we show it as if it was filled in by the user
-                        validator.showGuess(thisSlide.data("guess"));
+                        answerData.showGuess(thisSlide.data("guess"));
                     } else {
-                        validator.showGuess();
+                        answerData.showGuess();
                     }
 
                     // TODO: still highlight even if hint modifies problem (and highlight following hints)

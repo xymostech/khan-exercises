@@ -505,9 +505,7 @@ if (match) {
         setup: function(solutionarea, solution) {
             $(solutionarea).append($(solution).clone().contents().tmpl());
 
-            var solutionArray = [];
-            var answersArray = [];
-            var showGuessArray = []
+            var answerDataArray = [];
 
             $(solutionarea).find(".sol").each(function() {
                 var type = $(this).data("type");
@@ -516,10 +514,8 @@ if (match) {
                 var sol = $(this).clone(),
                     solarea = $(this).empty();
 
-                var validator = Khan.answerTypes[type].setup(solarea, sol);
-                solutionArray.push(validator.solution);
-                answersArray.push(validator.answer);
-                showGuessArray.push(validator.showGuess);
+                var answerData = Khan.answerTypes[type].setup(solarea, sol);
+                answerDataArray.push(answerData);
             });
 
             return {
@@ -527,17 +523,21 @@ if (match) {
                 answer: function() {
                     var answer = [];
 
-                    $.each(answersArray, function(i, getAns) {
-                        answer.push(getAns());
+                    $.each(answerDataArray, function(i, answerData) {
+                        answer.push(answerData.answer());
                     });
 
                     return answer;
                 },
-                solution: solutionArray,
+                solution: (function() {
+                    $.map(answerDataArray, function(answerData) {
+                        return answerData.solution;
+                    });
+                })(),
                 examples: [],
                 showGuess: function(guess) {
-                    $.each(showGuessArray, function(i, showGuess) {
-                        showGuess(guess[i]);
+                    $.each(answerDataArray, function(i, answerData) {
+                        answerData.showGuess(guess[i]);
                     });
                 }
             };

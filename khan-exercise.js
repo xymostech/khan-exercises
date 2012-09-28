@@ -1477,6 +1477,24 @@ var Khan = (function() {
                             } else {
                                 thissolutionarea.attr("title", "Incorrect Answer");
                             }
+                        } else if (answerType === "custom") {
+                            // radio is the only answer type that can't display its own guesses
+
+                            if (index === userExercise.userActivity.length - 1) {
+                                thissolutionarea
+                                    .removeClass("incorrect-activity")
+                                    .addClass("correct-activity");
+
+                                thissolutionarea.attr("title", "Correct Answer");
+                                thissolutionarea.append(
+                                    $("<p class='solution'>Answer correct</p>")
+                                );
+                            } else {
+                                thissolutionarea.attr("title", "Incorrect Answer");
+                                thissolutionarea.append(
+                                    $("<p class='solution'>Answer incorrect</p>")
+                                );
+                            }
                         } else {
                             var thisAnswerData = Khan.answerTypes[answerType].setup(thissolutionarea, solution);
 

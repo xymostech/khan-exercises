@@ -886,6 +886,8 @@ if (match) {
             solution.find(".instruction").clone().appendTo(solutionarea).tmpl();
 
             var guessCode = solution.find(".guess").text();
+            var showCustomGuessCode = solution.find(".show-guess").text();
+            var showGuessCode = solution.find(".show-guess-answerarea").text();
 
             return {
                 validator: Khan.answerTypes.custom.validatorCreator(solution),
@@ -897,8 +899,19 @@ if (match) {
                 examples: solution.find(".example").map(function(i, el) {
                     return $(el).html();
                 }),
+                showCustomGuess: function(guess) {
+                    var code = "(function() { " +
+                                    "var guess = " + JSON.stringify(guess) + ";" +
+                                    showCustomGuessCode +
+                                "})()";
+                    KhanUtil.tmpl.getVAR(code, KhanUtil.currentGraph);
+                },
                 showGuess: function(guess) {
-                    input.val(guess);
+                    var code = "(function() { " +
+                                    "var guess = " + JSON.stringify(guess) + ";" +
+                                    showGuessCode +
+                                "})()";
+                    KhanUtil.tmpl.getVAR(code, KhanUtil.currentGraph);
                 }
             };
         },

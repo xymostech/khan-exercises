@@ -971,6 +971,32 @@ if (match) {
                 return guess === correct;
             };
         }
+    },
+
+    checkbox: {
+        setup: function(solutionarea, solution) {
+            var input = $('<input type="checkbox">');
+            $(solutionarea).append(input);
+
+            return {
+                validator: Khan.answerTypes.checkbox.validatorCreator(solution),
+                answer: function() {
+                    return input.is(":checked");
+                },
+                solution: $.trim($(solution).text()),
+                examples: [],
+                showGuess: function(guess) {
+                    input.attr("checked", guess === undefined ? false : guess);
+                }
+            };
+        },
+        validatorCreator: function(solution) {
+            var correct = $.trim($(solution).text()) === "true";
+
+            return function(guess) {
+                return correct === guess;
+            };
+        }
     }
 });
 

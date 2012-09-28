@@ -1651,7 +1651,7 @@ var Khan = (function() {
                     $("#hintsarea").remove();
                     $("#problemarea").append(thisState.problem).append(thisState.hintArea);
 
-                    if (thisSlide.data("guess")) {
+                    if (thisSlide.data("guess") !== undefined) {
                         solutionarea.effect("highlight", {}, fadeTime);
 
                         // If there is a guess we show it as if it was filled in by the user

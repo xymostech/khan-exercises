@@ -518,6 +518,8 @@ if (match) {
                 answerDataArray.push(answerData);
             });
 
+            $(solutionarea).find(".example").remove();
+
             return {
                 validator: Khan.answerTypes.multiple.validatorCreator(solution),
                 answer: function() {
@@ -534,7 +536,9 @@ if (match) {
                         return answerData.solution;
                     });
                 })(),
-                examples: [],
+                examples: solution.find(".example").remove().map(function(i, el) {
+                    return $(el).html();
+                }),
                 showGuess: function(guess) {
                     $.each(answerDataArray, function(i, answerData) {
                         answerData.showGuess(guess[i]);

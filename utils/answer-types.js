@@ -1303,7 +1303,6 @@ if (match) {
                 guess = guess.split(" ").join("").toLowerCase();
                 // Split on x, *, or unicode x, sort, and join with xs
                 guess = KhanUtil.sortNumbers(guess.split(/x|\*|\u00d7/)).join("x");
-                console.log(guess);
                 // perform simple string comparison
                 return guess === correct;
             };

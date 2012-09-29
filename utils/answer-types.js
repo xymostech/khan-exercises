@@ -770,7 +770,6 @@ if (match) {
      */
     set: {
         setup: function(solutionarea, solution) {
-            var showUnused = ($(solution).data("showUnused") === true);
             // Append the input format to the solution area
             $(solutionarea).append(
                 $(solution).find(".input-format").clone().contents().tmpl()

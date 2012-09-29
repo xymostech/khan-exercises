@@ -792,6 +792,22 @@ if (match) {
                 showGuessArray.push(validator.showGuess);
             });
 
+            var solutionArray = [];
+
+            // Make fake solutionareas, and store the solutions from each
+            // TODO(emily): fix this horrible hack, by making the solution
+            //              easier to access
+            $(solution).find(".set-sol").clone().each(function() {
+                var type = $(this).data("type");
+                type = type != null ? type : "number";
+
+                var solarea = $("<div>");
+
+                var validator = Khan.answerTypes[type].setup(solarea, $(this));
+
+                solutionArray.push(validator.solution);
+            });
+
             return {
                 validator: Khan.answerTypes.set.validatorCreator(solution),
                 answer: function() {
@@ -805,7 +821,7 @@ if (match) {
 
                     return answer;
                 },
-                solution: $.trim($(solution).text()),
+                solution: solution,
                 examples: [],
                 showGuess: function(guess) {
                     // For each of the inputs, call the appropriate showGuess

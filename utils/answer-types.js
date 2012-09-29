@@ -68,7 +68,7 @@ $.extend(Khan.answerTypes, {
                 solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
-                    input.val(guess);
+                    input.val(guess === undefined ? "" : guess);
                 }
             };
         },
@@ -180,7 +180,7 @@ $.extend(Khan.answerTypes, {
                 solution: $.trim($(solution).text()),
                 examples: examples,
                 showGuess: function(guess) {
-                    input.val(guess);
+                    input.val(guess === undefined ? "" : guess);
                 }
             };
         },
@@ -533,7 +533,7 @@ if (match) {
                 solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
-                    input.val(guess);
+                    input.val(guess === undefined ? "" : guess);
                 }
             };
         },
@@ -689,7 +689,11 @@ if (match) {
                     // Iterate through each of the answerDatas, and show the
                     // cooresponding guess for each
                     $.each(answerDataArray, function(i, answerData) {
-                        answerData.showGuess(guess[i]);
+                        if (guess !== undefined) {
+                            answerData.showGuess(guess[i]);
+                        } else {
+                            answerData.showGuess();
+                        }
                     });
                 }
             };
@@ -827,7 +831,11 @@ if (match) {
                     // For each of the inputs, call the appropriate showGuess
                     // function
                     $.each(showGuessArray, function(i, showGuess) {
-                        showGuess(guess[i]);
+                        if (guess === undefined) {
+                            showGuess();
+                        } else {
+                            showGuess(guess[i]);
+                        }
                     });
                 }
             };
@@ -1088,8 +1096,14 @@ if (match) {
                 solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
-                    // Select the correct radio button
-                    $(solutionarea).find("input[value="+guess[1]+"]").attr("checked", true);
+                    if (guess === undefined) {
+                        $(solutionarea).find("input:checked")
+                                       .attr("checked", false);
+                    } else {
+                        // Select the correct radio button
+                        $(solutionarea).find("input[value="+guess[1]+"]")
+                                       .attr("checked", true);
+                    }
                 }
             };
         },
@@ -1151,7 +1165,7 @@ if (match) {
                 solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
-                    input.val(guess);
+                    input.val(guess === undefined ? "" : guess);
                 }
             };
         },
@@ -1277,7 +1291,7 @@ if (match) {
                     "a single prime number, like <code>5</code>"
                 ],
                 showGuess: function(guess) {
-                    input.val(guess);
+                    input.val(guess === undefined ? "" : guess);
                 }
             };
         },

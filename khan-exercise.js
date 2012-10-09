@@ -2361,7 +2361,7 @@ var Khan = (function() {
 
             $("#misconception-button").attr('disabled', true);
 
-            misconceptions.splice(i, 1);
+            misconceptions.splice(currmisconception, 1);
 
             currmisconception = null;
         });

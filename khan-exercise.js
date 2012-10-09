@@ -204,6 +204,9 @@ var Khan = (function() {
 
     hints,
 
+    misconceptions,
+    currmisconception,
+
     // The exercise elements
     exercises,
 
@@ -1147,6 +1150,8 @@ var Khan = (function() {
         // Remove and store hints to delay running modules on it
         hints = problem.children(".hints").remove();
 
+        misconceptions = problem.children(".misconceptions").remove();
+
         // Remove the hint box if there are no hints in the problem
         if (hints.length === 0) {
             $(".hint-box").remove();
@@ -1307,6 +1312,15 @@ var Khan = (function() {
         }
         // save a normal JS array of hints so we can shift() through them later
         hints = hints.tmpl().children().get();
+
+        misconceptions = _.map(misconceptions.tmpl().children().get(), function(mis) {
+            var missolution = $(mis).find(".mis-sol");
+            var mishint = $(mis).find(".mis-hint");
+
+            var misvalidator = Khan.answerTypes[answerType].createValidator(missolution);
+
+            return { validator: misvalidator, hint: mishint };
+        });
 
         if (hints.length === 0) {
             // Disable the get hint button
@@ -2054,6 +2068,8 @@ var Khan = (function() {
             var guess = getAnswer();
             var pass = validator(guess);
 
+            $("#misconception-alert").slideUp();
+
             // Stop if the user didn't enter a response
             // If multiple-answer, join all responses and check if that's empty
             // Remove commas left by joining nested arrays in case multiple-answer is nested
@@ -2065,7 +2081,7 @@ var Khan = (function() {
             }
 
             // Stop if the form is already disabled and we're waiting for a response.
-            if ($("#answercontent input").not("#hint,#next-question-button").is(":disabled")) {
+            if ($("#answercontent input").not("#hint,#next-question-button,#misconception-button").is(":disabled")) {
                 return false;
             }
 
@@ -2084,6 +2100,15 @@ var Khan = (function() {
                 // Is this a message to be shown?
                 if (typeof pass === "string") {
                     $("#check-answer-results .check-answer-message").html(pass).tmpl().show();
+                } else {
+                    $.each(misconceptions, function(i, mis) {
+                        if (mis.validator(guess) == true) {
+                            currmisconception = i;
+                            $("#misconception-alert").slideDown();
+                            $("#misconception-button").attr('disabled', false);
+                            return false;
+                        }
+                    });
                 }
 
                 // Refocus text field so user can type a new answer
@@ -2321,6 +2346,24 @@ var Khan = (function() {
                 );
             }
 
+        });
+
+        $("#misconception-button").click(function() {
+            if (currmisconception == null) {
+                return false;
+            }
+
+            mis = misconceptions[currmisconception];
+
+            misconhint = $("<div>").addClass("misconception");
+            $(mis.hint).clone().appendTo(misconhint);
+            misconhint.appendTo("#hintsarea").runModules(problem);
+
+            $("#misconception-button").attr('disabled', true);
+
+            misconceptions.splice(i, 1);
+
+            currmisconception = null;
         });
 
         // On an exercise page, replace the "Report a Problem" link with a button

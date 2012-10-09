@@ -59,6 +59,9 @@ div.definition {
 #answer_area #check-answer-results .check-answer-message { font-size: 12px; line-height: 20px; margin: 0; }
 #sad, #happy { float: left; margin: 0 6px 4px 0; }
 
+#answer_area #misconception-alert { text-align: center; line-height: 1.2; margin-top: 10px; }
+#answer_area #misconception-alert input { margin-top: 10px; }
+
 #examples { color: #777; margin-left: 20px; list-style-type: disc; }
 #examples li { margin: 5px 0; }
 
@@ -269,6 +272,11 @@ var, div.graphie { white-space: pre; }
 .hint-activity {
   background-color: #f19726;
   text-shadow: 0 -1px 0 #B55C00;
+}
+
+.misconception {
+    padding-left: 15px;
+    border-left: 2px solid #F7AF31;
 }
 
 .user-activity {

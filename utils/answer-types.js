@@ -812,11 +812,12 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                 var input = $(this), type = $(this).data("type");
                 type = type != null ? type : "number";
 
-                var solarea = input.empty(),
-                    sol = input.clone().empty();
+                var sol = input.clone();
+                var solarea = input.empty();
 
                 // Perform setup within that element
                 var validator = Khan.answerTypes[type].setup(solarea, sol);
+
                 // Store the answer and showGuess functions
                 inputArray.push(validator.answer);
                 showGuessArray.push(validator.showGuess);

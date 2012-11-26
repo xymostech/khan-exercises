@@ -800,6 +800,8 @@ var Khan = (function() {
 
             // Only run loadModules if exercises are in the page
             } else if ($("div.exercise").length) {
+                $("div.exercise").data("name", exerciseId);
+
                 loadModules();
             }
         });
@@ -1251,12 +1253,7 @@ var Khan = (function() {
 
         // Try to get the current exercise filename so we can look up what
         // modules are required
-        var currentExercise = Khan.currExerciseFilename;
-        if (Khan.isSummative) {
-            // If this is a summative exercise, extract the name of the
-            // exercise from the data-name of the exercise
-            currentExercise = exercise.data("name") + ".html";
-        }
+        var currentExercise = exercise.data("name") + ".html";
 
         // Reset modules to only those required by the current exercise
         Khan.resetModules(Khan.exerciseModulesMap[currentExercise]);
@@ -1889,7 +1886,7 @@ var Khan = (function() {
             });
 
 
-            if (exercise.data("name") != null) {
+            if (exercise.data("name") !== exerciseId) {
                 links.append("<br>");
                 links.append("Original exercise: " + exercise.data("name"));
             }
@@ -2442,7 +2439,7 @@ var Khan = (function() {
                 title = $("#issue-title").val(),
                 path = exerciseFile + "?seed=" +
                     problemSeed + "&problem=" + problemID,
-                pathlink = "[" + path + (exercise.data("name") != null && exercise.data("name") !== exerciseId ? " (" + exercise.data("name") + ")" : "") + "](http://sandcastle.khanacademy.org/media/castles/Khan:master/exercises/" + path + "&debug)",
+                pathlink = "[" + path + (exercise.data("name") !== exerciseId ? " (" + exercise.data("name") + ")" : "") + "](http://sandcastle.khanacademy.org/media/castles/Khan:master/exercises/" + path + "&debug)",
                 historyLink = "[Answer timeline](" + "http://sandcastle.khanacademy.org/media/castles/Khan:master/exercises/" + path + "&debug&activity=" + encodeURIComponent(JSON.stringify(userActivityLog)).replace(/\)/g, "\\)") + ")",
                 agent = navigator.userAgent,
                 mathjaxInfo = "MathJax is " + (typeof MathJax === "undefined" ? "NOT loaded" :

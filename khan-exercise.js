@@ -306,6 +306,8 @@ var Khan = (function() {
         // exerciseModulesMap
         currExerciseFilename: "",
 
+        isSummative: false,
+
         // So modules can use file paths properly
         urlBase: urlBase,
 
@@ -785,11 +787,14 @@ var Khan = (function() {
             var remoteExercises = $("div.exercise[data-name]");
 
             if (remoteExercises.length) {
+                isSummative = true;
 
                 remoteExercises.each(loadExercise);
 
             // Only run loadModules if exercises are in the page
             } else if ($("div.exercise").length) {
+                isSummative = false;
+
                 loadModules();
             }
         });
@@ -1236,8 +1241,16 @@ var Khan = (function() {
 
         debugLog("added inline styles");
 
+        // Try to get the current exercise filename so we can look up what
+        // modules are required
+        var currentExercise = Khan.currExerciseFilename;
+        // Khan.currExerciseFilename will be "" in the case of a summative
+        if (isSummative) {
+            currentExercise = exercise.data("name") + ".html";
+        }
+
         // Reset modules to only those required by the current exercise
-        Khan.resetModules(Khan.exerciseModulesMap[Khan.currExerciseFilename]);
+        Khan.resetModules(Khan.exerciseModulesMap[currentExercise]);
 
         // Run the main method of any modules
         problem.runModules(problem, "Load");

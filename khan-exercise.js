@@ -786,15 +786,15 @@ var Khan = (function() {
         $(function() {
             var remoteExercises = $("div.exercise[data-name]");
 
+            isSummative = false;
+
             if (remoteExercises.length) {
-                isSummative = true;
+                Khan.isSummative = true;
 
                 remoteExercises.each(loadExercise);
 
             // Only run loadModules if exercises are in the page
             } else if ($("div.exercise").length) {
-                isSummative = false;
-
                 loadModules();
             }
         });
@@ -964,6 +964,8 @@ var Khan = (function() {
             .data("displayName", exerciseName)
             .data("fileName", exerciseFile)
             .data("rootName", exerciseId);
+
+        Khan.isSummative = false;
 
         // Queue up an exercise load
         loadExercise.call(exerciseElem, function() {
@@ -1245,7 +1247,7 @@ var Khan = (function() {
         // modules are required
         var currentExercise = Khan.currExerciseFilename;
         // Khan.currExerciseFilename will be "" in the case of a summative
-        if (isSummative) {
+        if (Khan.isSummative) {
             currentExercise = exercise.data("name") + ".html";
         }
 
@@ -2985,6 +2987,7 @@ var Khan = (function() {
 
             // Maybe the exercise we just loaded loads some others
             newContents.filter("[data-name]").each(function() {
+                Khan.isSummative = true;
                 loadExercise.call(this, callback);
             });
 

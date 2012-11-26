@@ -306,6 +306,9 @@ var Khan = (function() {
         // exerciseModulesMap
         currExerciseFilename: "",
 
+        // Used to determine whether the current exercise is a summative
+        // exercise, so that we can correctly load dependencies for the child
+        // exercise
         isSummative: false,
 
         // So modules can use file paths properly
@@ -786,9 +789,11 @@ var Khan = (function() {
         $(function() {
             var remoteExercises = $("div.exercise[data-name]");
 
+            // Reset isSummative
             isSummative = false;
 
             if (remoteExercises.length) {
+                // If there are child exercises, this is a summative exercise
                 Khan.isSummative = true;
 
                 remoteExercises.each(loadExercise);
@@ -965,6 +970,7 @@ var Khan = (function() {
             .data("fileName", exerciseFile)
             .data("rootName", exerciseId);
 
+        // Reset isSummative
         Khan.isSummative = false;
 
         // Queue up an exercise load
@@ -1246,8 +1252,9 @@ var Khan = (function() {
         // Try to get the current exercise filename so we can look up what
         // modules are required
         var currentExercise = Khan.currExerciseFilename;
-        // Khan.currExerciseFilename will be "" in the case of a summative
         if (Khan.isSummative) {
+            // If this is a summative exercise, extract the name of the
+            // exercise from the data-name of the exercise
             currentExercise = exercise.data("name") + ".html";
         }
 
@@ -2987,6 +2994,7 @@ var Khan = (function() {
 
             // Maybe the exercise we just loaded loads some others
             newContents.filter("[data-name]").each(function() {
+                // If there are child exercises, this is a summative exercise
                 Khan.isSummative = true;
                 loadExercise.call(this, callback);
             });

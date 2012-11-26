@@ -787,6 +787,8 @@ var Khan = (function() {
         exercises = jQuery();
 
         $(function() {
+            $("div.exercise").not("[data-name]").data("name", exerciseId);
+
             var remoteExercises = $("div.exercise[data-name]");
 
             // Reset isSummative
@@ -800,8 +802,6 @@ var Khan = (function() {
 
             // Only run loadModules if exercises are in the page
             } else if ($("div.exercise").length) {
-                $("div.exercise").data("name", exerciseId);
-
                 loadModules();
             }
         });

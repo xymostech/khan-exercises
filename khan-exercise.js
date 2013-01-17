@@ -318,6 +318,7 @@ var Khan = (function() {
             "math": [{
                 src: urlBase + "utils/MathJax/1.1a/MathJax.js?config=KAthJax-8a6b08f6f5c97d7c3c310cc909a7a140"
             }, "raphael"],
+            "answer-types": ["number-parse"],
 
             // Load Raphael locally because IE8 has a problem with the 1.5.2 minified release
             // http://groups.google.com/group/raphaeljs/browse_thread/thread/c34c75ad8d431544

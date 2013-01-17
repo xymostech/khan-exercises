@@ -207,250 +207,6 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
             }, $(solution).data());
             var acceptableForms = options.forms.split(/\s*,\s*/);
 
-            // Take text looking like a fraction, and turn it into a number
-            var fractionTransformer = function(text) {
-                text = text
-                    // Replace unicode minus sign with hyphen
-                    .replace(/\u2212/, "-")
-
-                    // Remove space after +, -
-                    .replace(/([+-])\s+/g, "$1")
-
-                    // Remove leading/trailing whitespace
-                    .replace(/(^\s*)|(\s*$)/gi, "");
-
-                    // Extract numerator and denominator
-                var match = text.match(/^([+-]?\d+)\s*\/\s*([+-]?\d+)$/);
-                var parsedInt = parseInt(text, 10);
-                if (match) {
-                    var num = parseFloat(match[1]),
-                        denom = parseFloat(match[2]);
-                    var simplified = denom > 0 &&
-                        (options.ratio || match[2] !== "1") &&
-                        KhanUtil.getGCD(num, denom) === 1;
-                    return [{
-                        value: num / denom,
-                        exact: simplified
-                    }];
-                } else if (!isNaN(parsedInt) && "" + parsedInt === text) {
-                    return [{
-                        value: parsedInt,
-                        exact: true
-                    }];
-                }
-
-                return [];
-            };
-
-            /*
-             * Different forms of numbers
-             *
-             * Each function returns a list of objects of the form:
-             *
-             * {
-             *    value: numerical value,
-             *    exact: true/false
-             * }
-             */
-            var forms = {
-                // a literal, decimal looking number
-                literal: function(text) {
-                    // Prevent literal comparisons for decimal-looking-like
-                    // strings
-                    return [{
-                        value: (/[^+-\u2212\d\.\s]/).test(text) ? text : null
-                    }];
-                },
-
-                // integer, which is encompassed by decimal
-                integer: function(text) {
-                    return forms.decimal(text);
-                },
-
-                // A proper fraction
-                proper: function(text) {
-                    return $.map(fractionTransformer(text), function(o) {
-                        // All fractions that are less than 1
-                        if (Math.abs(o.value) < 1) {
-                            return [o];
-                        } else {
-                            return [];
-                        }
-                    });
-                },
-
-                // an improper fraction
-                improper: function(text) {
-                    return $.map(fractionTransformer(text), function(o) {
-                        // All fractions that are greater than 1
-                        if (Math.abs(o.value) >= 1) {
-                            return [o];
-                        } else {
-                            return [];
-                        }
-                    });
-                },
-
-                // pi-like numbers
-                pi: function(text) {
-                    var match, possibilities = [];
-
-                    // Replace unicode minus sign with hyphen
-                    text = text.replace(/\u2212/, "-");
-
-                    // - pi
-                    if (match = text.match(
-                                    /^([+-]?)\s*(pi?|\u03c0|t(?:au)?|\u03c4)$/i
-                                )) {
-                        possibilities = [{ value: parseFloat(match[1] + "1"), exact: true }];
-
-                    // 5 / 6 pi
-                    } else if (match = text.match(/^([+-]?\d+\s*(?:\/\s*[+-]?\d+)?)\s*\*?\s*(pi?|\u03c0|t(?:au)?|\u03c4)$/i)) {
-                        possibilities = fractionTransformer(match[1]);
-
-                    // 5 pi / 6
-                    } else if (match = text.match(/^([+-]?\d+)\s*\*?\s*(pi?|\u03c0|t(?:au)?|\u03c4)\s*(?:\/\s*([+-]?\d+))?$/i)) {
-                        possibilities = fractionTransformer(match[1] +
-                                                            "/" + match[3]);
-
-                    // - pi / 4
-                    } else if (match = text.match(/^([+-]?)\s*\*?\s*(pi?|\u03c0|t(?:au)?|\u03c4)\s*(?:\/\s*([+-]?\d+))?$/i)) {
-                        possibilities = fractionTransformer(match[1] +
-                                                            "1/" + match[3]);
-
-                    // 0
-                    } else if (text === "0") {
-                        possibilities = [{ value: 0, exact: true }];
-
-                    // 0.5 pi (fallback)
-                    } else if (match = text.match(
-                                /^(\S+)\s*\*?\s*(pi?|\u03c0|t(?:au)?|\u03c4)$/i
-                                        )) {
-                        possibilities = forms.decimal(match[1]);
-                    }
-
-                    var multiplier = Math.PI;
-                    if (match && match[2].match(/t(?:au)?|\u03c4/)) {
-                        multiplier = Math.PI * 2;
-                    }
-
-                    $.each(possibilities, function(ix, possibility) {
-                        possibility.value *= multiplier;
-                    });
-                    return possibilities;
-                },
-
-                // simple log(c) form
-                log: function(text) {
-                    var match, possibilities = [];
-
-                    // Replace unicode minus sign with hyphen
-                    text = text.replace(/\u2212/, "-");
-                    text = text.replace(/[ \(\)]/g, "");
-
-                    if (match = text.match(/^log\s*(\S+)\s*$/i)) {
-                        possibilities = forms.decimal(match[1]);
-                    } else if (text === "0") {
-                        possibilities = [{ value: 0, exact: true }];
-                    }
-                    return possibilities;
-                },
-
-                // Numbers with percent signs
-                percent: function(text) {
-                    text = $.trim(text);
-                    // store whether or not there is a percent sign
-                    var hasPercentSign = false;
-
-                    if (text.indexOf("%") === (text.length - 1)) {
-                        text = $.trim(text.substring(0, text.length - 1));
-                        hasPercentSign = true;
-                    }
-
-                    var transformed = forms.decimal(text);
-                    $.each(transformed, function(ix, t) {
-                        t.exact = hasPercentSign;
-                    });
-                    return transformed;
-                },
-
-                // Numbers with dollar signs
-                dollar: function(text) {
-                    text = $.trim(text.replace("$", ""));
-
-                    return forms.decimal(text);
-                },
-
-                // Mixed numbers, like 1 3/4
-                mixed: function(text) {
-                    var match = text
-                        // Replace unicode minus sign with hyphen
-                        .replace(/\u2212/, "-")
-
-                        // Remove space after +, -
-                        .replace(/([+-])\s+/g, "$1")
-
-                        // Extract integer, numerator and denominator
-                        .match(/^([+-]?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
-
-                    if (match) {
-                        var sign = parseFloat(match[1] + "1"),
-                            integ = parseFloat(match[2]),
-                            num = parseFloat(match[3]),
-                            denom = parseFloat(match[4]);
-                        var simplified = num < denom &&
-                            KhanUtil.getGCD(num, denom) === 1;
-
-                        return [{
-                            value: sign * (integ + num / denom),
-                            exact: simplified
-                        }];
-                    }
-
-                    return [];
-                },
-
-                // Decimal numbers
-                decimal: function(text) {
-                    var normal = function(text) {
-                        var match = text
-
-                            // Replace unicode minus sign with hyphen
-                            .replace(/\u2212/, "-")
-
-                            // Remove space after +, -
-                            .replace(/([+-])\s+/g, "$1")
-
-                            // Extract integer, numerator and denominator If
-                            // commas or spaces are used, they must be in the
-                            // "correct" places
-                            .match(/^([+-]?(?:\d{1,3}(?:[, ]?\d{3})*\.?|\d{0,3}(?:[, ]?\d{3})*\.(?:\d{3}[, ]?)*\d{1,3}))$/);
-
-                        if (match) {
-                            var x = parseFloat(match[1].replace(/[, ]/g, ""));
-
-                            if (options.inexact === undefined) {
-                                var factor = Math.pow(10, 10);
-                                x = Math.round(x * factor) / factor;
-                            }
-
-                            return x;
-                        }
-                    };
-
-                    var commas = function(text) {
-                        text = text.replace(/([\.,])/g, function(_, c) {
-                            return (c === "." ? "," : ".");
-                        });
-                        return normal(text);
-                    };
-
-                    return [
-                        { value: normal(text), exact: true },
-                        { value: commas(text), exact: true }
-                    ];
-                }
-            };
 
             // Store the correct text and float values
             var correct = $.trim($(solution).text());
@@ -463,38 +219,34 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
 
                 // iterate over all the acceptable forms, and if one of the
                 // answers is correct, return true
-                $.each(acceptableForms, function(i, form) {
-                    var transformed = forms[form](guess);
+                $.each(KhanUtil.parseNumber(guess, acceptableForms, options), function(i, parse) {
+                    var val = parse.value;
+                    var exact = parse.exact;
 
-                    for (var j = 0, l = transformed.length; j < l; j++) {
-                        var val = transformed[j].value;
-                        var exact = transformed[j].exact;
-
-                        // If a string was returned, and it exactly matches,
+                    // If a string was returned, and it exactly matches,
+                    // return true
+                    if (typeof val === "string" &&
+                            correct.toLowerCase() === val.toLowerCase()) {
+                        ret = true;
+                        return false; // break;
+                    } if (typeof val === "number" &&
+                            Math.abs(correctFloat - val) <
+                            options.maxError) {
+                        // If the exact correct number was returned,
                         // return true
-                        if (typeof val === "string" &&
-                                correct.toLowerCase() === val.toLowerCase()) {
+                        if (exact || options.simplify === "optional") {
                             ret = true;
-                            return false; // break;
-                        } if (typeof val === "number" &&
-                                Math.abs(correctFloat - val) <
-                                options.maxError) {
-                            // If the exact correct number was returned,
-                            // return true
-                            if (exact || options.simplify === "optional") {
-                                ret = true;
-                            } else if (form === "percent") {
-                                // Otherwise, an error was returned
-                                ret = "Your answer is almost correct, but " +
-                                      "it is missing a <code>\\%</code> at " +
-                                      "the end.";
-                            } else {
-                                ret = "Your answer is almost correct, but " +
-                                      "it needs to be simplified.";
-                            }
-
-                            return false; // break;
+                        } else if (form === "percent") {
+                            // Otherwise, an error was returned
+                            ret = "Your answer is almost correct, but " +
+                                  "it is missing a <code>\\%</code> at " +
+                                  "the end.";
+                        } else {
+                            ret = "Your answer is almost correct, but " +
+                                  "it needs to be simplified.";
                         }
+
+                        return false; // break;
                     }
                 });
 

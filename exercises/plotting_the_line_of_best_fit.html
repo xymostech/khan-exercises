@@ -309,6 +309,12 @@
                                    (pt[1] - guess[0][1]) * (guess[1][0] - guess[0][0])) / normLength;
                     };
 
+                    // Add a special check for if they put in the actual line
+                    // of best fit, provided in the hints
+                    if (lowDiff &lt; 0.2 &amp;&amp; highDiff &lt; 0.2) {
+                        return true;
+                    }
+
                     // ensure:
                     // all the points are not up, ..., up, down, ..., down
                     return !_.isEqual(updown, updownSorted) &amp;&amp;

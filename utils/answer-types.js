@@ -724,8 +724,8 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                     // Store the entered values in a list
                     // If nothing is typed into one of the boxes, use 1
                     return [
-                        inte.val().length > 0 ? inte.val() : "1",
-                        rad.val().length > 0 ? rad.val() : "1"
+                        inte.val().trim().length > 0 ? inte.val().trim() : "1",
+                        rad.val().trim().length > 0 ? rad.val().trim() : "1"
                     ];
                 },
                 solution: ans,

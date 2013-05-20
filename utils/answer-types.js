@@ -1228,12 +1228,14 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
             // If showNone, replace the last solution with "None of the above",
             // which reveals the correct answer when it is picked and is right
             if (showNone) {
-                var none = $("<span>None of the above.</span>");
+                var none = $("<span>").html($._("None of the above."));
+
+                none.data("noneOfTheAbove", true);
 
                 if (noneIsCorrect) {
                     none.data("correct", true);
                     solutionText = none.text();
-                    list.data("real-answer",
+                    list.data("realAnswer",
                             $(solutionClone)
                                 .runModules()
                                 .contents()
@@ -1241,7 +1243,7 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                                 .parent());
                 }
 
-                shownChoices.push(none);
+                shownChoices.push(none.wrap("<span>").parent());
             }
 
             $.each(shownChoices, function(i, choice) {
@@ -1263,23 +1265,39 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                     // Find the chosen answer
                     var choice = list.find("input:checked");
 
+                    // If nothing's checked, return null immediately
+                    if (choice.length === 0) {
+                        return null;
+                    }
+
                     // Find it's cooresponding value
                     var choiceVal = choice.siblings(".value");
 
-                    // return the raw code of the chosen value
-                    return extractRawCode(choiceVal);
+                    // This (probably) only does something useful when the
+                    // selected answer is the "none of the above" one
+                    var choiceNoneChild = choiceVal.children().eq(0);
+
+                    return {
+                        // Some data about the "none of the above" answer
+                        isNone: choiceNoneChild.data("noneOfTheAbove"),
+                        noneIsCorrect: noneIsCorrect,
+                        // The raw text value that was chosen
+                        value: extractRawCode(choiceVal),
+                        // The index of the value that was chosen
+                        index: choice.val()
+                    };
                 },
                 solution: $.trim($(solution).text()),
                 examples: [],
                 showGuess: function(guess) {
-                    if (guess === undefined) {
+                    if (guess == null) {
                         $(solutionarea).find("input:checked")
                                        .attr("checked", false);
                     } else {
                         // Select the correct radio button
                         list.children().filter(function() {
-                            return $.trim(extractRawCode($(this).find("span")))
-                                === $.trim(guess);
+                            // Filter using the index to choose the radio
+                            return guess.index === $(this).find("input").val();
                         }).find("input").attr("checked", true);
                     }
                 }
@@ -1297,22 +1315,21 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
             return function(guess) {
                 if (guess == null) {
                     return "";
-                } else if (guess === "None of the above." &&
-                        $("#solutionarea").find("ul").data("real-answer") !=
-                        null) {
+                } else if (guess.isNone && guess.noneIsCorrect) {
                     // Hacky stuff to make the correct solution appear when
                     // "none of the above" is the correct answer
                     var list = $("#solutionarea").find("ul");
-                    var choice = list.children().filter(function() {
-                            return $.trim(extractRawCode($(this).find("span")))
-                            === $.trim(guess);
+                    var choice =
+                        list.children().filter(function() {
+                            return $(this).find("span.value > span")
+                                          .data("noneOfTheAbove");
                         }).find("input");
                     choice.next().fadeOut("fast", function() {
-                            $(this).replaceWith(list.data("real-answer"))
-                                .fadeIn("fast");
-                        });
+                        $(this).replaceWith(list.data("real-answer"))
+                               .fadeIn("fast");
+                    });
                     return true;
-                } else if ($.trim(guess.replace(/\r\n?|\n/g, "")) ===
+                } else if ($.trim(guess.value.replace(/\r\n?|\n/g, "")) ===
                         $.trim(correct.replace(/\r\n?|\n/g, ""))) {
                     return true;
                 }

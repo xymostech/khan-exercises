@@ -155,7 +155,7 @@ function renderReadOnlyProblem(event, args) {
                         if (answerType === "radio") {
                             thissolutionarea.append(
                                 // Add the guess to the activity bar
-                                $("<p class='solution'>" + guess + "</p>").tmpl()
+                                $("<p class='solution'>" + guess.value + "</p>").tmpl()
                             );
                             if (validator(guess)) {
                                 thissolutionarea

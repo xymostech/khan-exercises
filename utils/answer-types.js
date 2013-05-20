@@ -99,14 +99,14 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                         return true;
                     } else {
                         if (guess === guess.toLowerCase()) {
-                            return "Your answer is almost correct, but must be " +
-                                   "in capital letters.";
+                            return $._("Your answer is almost correct, but " +
+                                       "must be in capital letters.");
                         } else if (guess === guess.toUpperCase()) {
-                            return "Your answer is almost correct, but must not " +
-                                   "be in capital letters.";
+                            return $._("Your answer is almost correct, but " +
+                                       "must not be in capital letters.");
                         } else {
-                            return "Your answer is almost correct, but must be " +
-                                   "in the correct case.";
+                            return $._("Your answer is almost correct, but " +
+                                       "must be in the correct case.");
                         }
                     }
                 } else {
@@ -183,20 +183,20 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                 proper: (function() {
                         if (options.simplify === "optional") {
                             return $._("a <em>proper</em> fraction, like " +
-                                "<code>1/2</code> or <code>6/10</code>");
+                                       "<code>1/2</code> or <code>6/10</code>");
                         } else {
                             return $._("a <em>simplified proper</em> " +
-                                "fraction, like <code>3/5</code>");
+                                       "fraction, like <code>3/5</code>");
                         }
                     })(),
 
                 improper: (function() {
                         if (options.simplify === "optional") {
                             return $._("an <em>improper</em> fraction, like " +
-                                "<code>10/7</code> or <code>14/8</code>");
+                                       "<code>10/7</code> or <code>14/8</code>");
                         } else {
-                            return "a <em>simplified improper</em> " +
-                                   "fraction, like <code>7/4</code>";
+                            return $._("a <em>simplified improper</em> " +
+                                       "fraction, like <code>7/4</code>");
                         }
                     })(),
 
@@ -571,21 +571,21 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                             } else if (form === "percent") {
                                 // Otherwise, an error was returned
                                 ret = $._("Your answer is almost correct, " +
-                                    "but it is missing a <code>\\%</code> at " +
-                                    "the end.");
+                                          "but it is missing a " +
+                                          "<code>\\%</code> at the end.");
                             } else {
                                 ret = $._("Your answer is almost correct, " +
-                                    "but it needs to be simplified.");
+                                          "but it needs to be simplified.");
                             }
 
                             return false; // break;
                         } else if (piApprox &&
                                    predicate(val, Math.abs(val * 0.001))) {
-                            ret = "Your answer is close, but you may have " +
-                                  "approximated pi. Enter your answer as a " +
-                                  "multiple of pi, like <code>12\\ " +
-                                  "\\text{pi}</code> or <code>2/3\\ " +
-                                  "\\text{pi}</code>";
+                            ret = $._("Your answer is close, but you may " +
+                                      "have approximated pi. Enter your " +
+                                      "answer as a multiple of pi, like " +
+                                      "<code>12\\ \\text{pi}</code> or " +
+                                      "<code>2/3\\ \\text{pi}</code>");
                         }
                     }
                 });
@@ -731,9 +731,9 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                 solution: ans,
                 examples: (options.simplify === "required") ?
                     [$._("a simplified radical, like <code>\\sqrt{2}</code> " +
-                        "or <code>3\\sqrt{5}</code>")] :
+                         "or <code>3\\sqrt{5}</code>")] :
                     [$._("a radical, like <code>\\sqrt{8}</code> or " +
-                        "<code>2\\sqrt{2}</code>")],
+                         "<code>2\\sqrt{2}</code>")],
                 showGuess: function(guess) {
                     inte.val(guess ? guess[0] : "");
                     rad.val(guess ? guess[1] : "");
@@ -768,7 +768,7 @@ Khan.answerTypes = $.extend(Khan.answerTypes, {
                         return true;
                     } else {
                         return $._("Your answer is almost correct, but it " +
-                            "needs to be simplified.");
+                                   "needs to be simplified.");
                     }
                 } else {
                     return false;

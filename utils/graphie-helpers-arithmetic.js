@@ -324,14 +324,34 @@ function drawCircles(num, color) {
             scale: [30, 30]
         });
 
-        style({
-            stroke: color,
-            fill: color
-        });
+        if (color !== "target") {
+            style({
+                stroke: color,
+                fill: color
+            });
+        }
 
         for (var i = numRows; i > 0; i--) {
             for (var j = numCols; j > 0; j--) {
-                circle([j, i], 0.25);
+                if (color === "target") {
+                    style({
+                        stroke: "red",
+                        fill: "red",
+                    });
+                    circle([j, i], 0.25*1.4);
+                    style({
+                        stroke: "white",
+                        fill: "white",
+                    });
+                    circle([j, i], 0.15*1.4);
+                    style({
+                        stroke: "red",
+                        fill: "red",
+                    });
+                    circle([j, i], 0.05*1.4);
+                } else {
+                    circle([j, i], 0.25);
+                }
             }
         }
 

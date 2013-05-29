@@ -356,7 +356,25 @@ function drawCircles(num, color) {
         }
 
         for (var j = extra; j > 0; j--) {
-            circle([j, 0], 0.25);
+            if (color === "target") {
+                style({
+                    stroke: "red",
+                    fill: "red",
+                });
+                circle([j, 0], 0.25*1.4);
+                style({
+                    stroke: "white",
+                    fill: "white",
+                });
+                circle([j, 0], 0.15*1.4);
+                style({
+                    stroke: "red",
+                    fill: "red",
+                });
+                circle([j, 0], 0.05*1.4);
+            } else {
+                circle([j, 0], 0.25);
+            }
         }
     }
 }

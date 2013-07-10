@@ -141,16 +141,18 @@
                     mjCallback = null;
                 }
             });
-            MathJax.Hub.Queue(function() {
-                if (!needsLabelTypeset) {
-                    return;
-                }
-                mjCallback = MathJax.Callback(function() {});
-                _.defer(function() {
-                    doLabelTypeset();
-                });
-                return mjCallback;
-            });
+            //MathJax.Hub.Queue(function() {
+                //if (!needsLabelTypeset) {
+                    //return;
+                //}
+                //var done = MathJax.Callback(function() {});
+                //_.defer(function() {
+                    //doLabelTypeset();
+                    //done();
+                //});
+                //return done;
+            //});
+            doLabelTypeset();
         }
 
         var typesetLabels = function() {
@@ -159,60 +161,74 @@
                 return;
             }
 
-            MathJax.Hub.Queue(["Process", MathJax.Hub, el]);
-            MathJax.Hub.Queue(function() {
-                // If the graphie div is detached for some reason, the
-                // dimensions will all just be 0 anyway so don't bother trying
-                // to reposition.
-                if (!$.contains(document.body, el)) {
-                    return;
-                }
+            try {
+                $.each(spans, function(i, span) {
+                    var text = $(span).text();
 
-                var callback = MathJax.Callback(function() {});
+                    console.log("MJLite label", text);
+                    var mathelem = $("<span>");
+                    mathelem.addClass("mathmathmath");
+                    MJLite.process(text, mathelem[0]);
+                    $(span).append(mathelem);
+                    var width = span.scrollWidth;
+                    var height = span.scrollHeight;
+                    setLabelMargins(span, [width, height]);
+                });
+            } catch(e) {
+                //MathJax.Hub.Queue(["Process", MathJax.Hub, el]);
+                //MathJax.Hub.Queue(function() {
+                    //// If the graphie div is detached for some reason, the
+                    //// dimensions will all just be 0 anyway so don't bother trying
+                    //// to reposition.
+                    //if (!$.contains(document.body, el)) {
+                        //return;
+                    //}
 
-                // Wait for the browser to render the labels
-                var tries = 0;
-                (function check() {
-                    var allRendered = true;
+                    //var callback = MathJax.Callback(function() {});
 
-                    // Iterate in reverse so we can delete while iterating
-                    for (var i = spans.length; i-- > 0;) {
-                        var span = spans[i];
-                        if (!$.contains(el, span) ||
-                                span.style.display === "none") {
-                            spans.splice(i, 1);
-                            continue;
-                        }
-                        var width = span.scrollWidth;
-                        var height = span.scrollHeight;
+                    //// Wait for the browser to render the labels
+                    //var tries = 0;
+                    //(function check() {
+                        //var allRendered = true;
 
-                        // Heuristic to guess if the font has kicked in so we
-                        // have box metrics (magic number ick, but this seems
-                        // to work mostly-consistently)
-                        if (height > 18 || tries >= 10) {
-                            setLabelMargins(span, [width, height]);
+                        //// Iterate in reverse so we can delete while iterating
+                        //for (var i = spans.length; i-- > 0;) {
+                            //var span = spans[i];
+                            //if (!$.contains(el, span) ||
+                                    //span.style.display === "none") {
+                                //spans.splice(i, 1);
+                                //continue;
+                            //}
+                            //var width = span.scrollWidth;
+                            //var height = span.scrollHeight;
 
-                            // Remove the span from the list so we don't look
-                            // at it a second time
-                            spans.splice(i, 1);
-                        } else {
-                            // Avoid an icky flash
-                            $(span).css("visibility", "hidden");
-                        }
-                    }
+                            //// Heuristic to guess if the font has kicked in so we
+                            //// have box metrics (magic number ick, but this seems
+                            //// to work mostly-consistently)
+                            //if (height > 18 || tries >= 10) {
 
-                    if (spans.length) {
-                        // Some spans weren't ready -- wait a bit and try again
-                        tries++;
-                        setTimeout(check, 100);
-                    } else {
-                        // We're done!
-                        callback();
-                    }
-                })();
+                                //// Remove the span from the list so we don't look
+                                //// at it a second time
+                                //spans.splice(i, 1);
+                            //} else {
+                                //// Avoid an icky flash
+                                //$(span).css("visibility", "hidden");
+                            //}
+                        //}
 
-                return callback;
-            });
+                        //if (spans.length) {
+                            //// Some spans weren't ready -- wait a bit and try again
+                            //tries++;
+                            //setTimeout(check, 100);
+                        //} else {
+                            //// We're done!
+                            //callback();
+                        //}
+                    //})();
+
+                    //return callback;
+                //});
+            }
         };
 
         var svgPath = function(points) {
@@ -410,10 +426,7 @@
 
                 var $span = $("<span>").addClass("graphie-label");
 
-                if (latex) {
-                    var $script = $("<script type='math/tex'>").text(text);
-                    $span.append($script);
-                } else {
+                if (!latex) {
                     $span.html(text);
                 }
 
@@ -437,7 +450,17 @@
                 };
                 $span.setPosition(point);
 
-                setNeedsLabelTypeset();
+                if (latex) {
+                    var span = $span[0];
+                    var mathelem = $("<span>");
+                    mathelem.addClass("mathmathmath");
+                    MJLite.process(text, mathelem[0]);
+                    $(span).append(mathelem);
+                    var width = span.scrollWidth;
+                    var height = span.scrollHeight;
+                    setLabelMargins(span, [width, height]);
+                }
+
                 return $span;
             },
 

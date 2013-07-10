@@ -256,23 +256,39 @@ $.tmpl = {
 
                     // Stick the processing request onto the queue
                     if (typeof MathJax !== "undefined") {
-                        KhanUtil.debugLog("adding " + text +
-                                " to MathJax typeset queue");
-                        MathJax.Hub.Queue(["Process", MathJax.Hub, elem]);
-                        MathJax.Hub.Queue(function() {
-                            KhanUtil.debugLog("MathJax done typesetting " +
-                                    text);
-                        });
+                        try {
+                            var mathelem = $("<span>");
+                            mathelem.addClass("mathmathmath");
+                            MJLite.process(text, mathelem[0]);
+                            $elem.append(mathelem);
+                        } catch (e) {
+                            console.log("MJLite failed:", text);
+                            //KhanUtil.debugLog("adding " + text +
+                                    //" to MathJax typeset queue");
+                            //MathJax.Hub.Queue(["Process", MathJax.Hub, elem]);
+                            //MathJax.Hub.Queue(function() {
+                                //KhanUtil.debugLog("MathJax done typesetting " +
+                                        //text);
+                            //});
+                        }
                     } else {
                         KhanUtil.debugLog("not adding " + text +
                                 " to queue because MathJax is undefined");
                     }
                 } else {
-                    KhanUtil.debugLog("reprocessing MathJax: " + text);
-                    MathJax.Hub.Queue(["Reprocess", MathJax.Hub, elem]);
-                    MathJax.Hub.Queue(function() {
-                        KhanUtil.debugLog("MathJax done reprocessing " + text);
-                    });
+                    var $script = $elem.find("script[type='math/tex']");
+                    var text = $script.text().trim();
+                    try {
+                        var mathelem = $elem.children().filter(".mathmathmath");
+                        MJLite.process(text, mathelem[0]);
+                    } catch (e) {
+                        console.log("MJLite failed (reprocess):", text);
+                        //KhanUtil.debugLog("reprocessing MathJax: " + text);
+                        //MathJax.Hub.Queue(["Reprocess", MathJax.Hub, elem]);
+                        //MathJax.Hub.Queue(function() {
+                            //KhanUtil.debugLog("MathJax done reprocessing " + text);
+                        //});
+                    }
                 }
             };
         }
@@ -384,28 +400,28 @@ $.fn.tmplCleanup = function() {
 
     this.find("code").each(function() {
         KhanUtil.debugLog("cleaning up: " + $(this).text());
-        var jax = MathJax.Hub.getJaxFor(this);
-        KhanUtil.debugLog("got jax of type " + $.type(jax));
-        if (jax) {
-            var e = jax.SourceElement();
-            KhanUtil.debugLog("source element is type " + $.type(e));
-            if ("outerHTML" in e) {
-                KhanUtil.debugLog("source element " + e.outerHTML);
-            } else {
-                KhanUtil.debugLog("no source element");
-            }
+        //var jax = MathJax.Hub.getJaxFor(this);
+        //KhanUtil.debugLog("got jax of type " + $.type(jax));
+        //if (jax) {
+            //var e = jax.SourceElement();
+            //KhanUtil.debugLog("source element is type " + $.type(e));
+            //if ("outerHTML" in e) {
+                //KhanUtil.debugLog("source element " + e.outerHTML);
+            //} else {
+                //KhanUtil.debugLog("no source element");
+            //}
 
-            if (e.previousSibling && e.previousSibling.className) {
-                jax.Remove();
-            } else {
-                // MathJax chokes if e.previousSibling is a text node, which it
-                // is if tmplCleanup is called before MathJax's typesetting
-                // finishes
-                KhanUtil.debugLog("previousSibling isn't an element");
-            }
+            //if (e.previousSibling && e.previousSibling.className) {
+                //jax.Remove();
+            //} else {
+                //// MathJax chokes if e.previousSibling is a text node, which it
+                //// is if tmplCleanup is called before MathJax's typesetting
+                //// finishes
+                //KhanUtil.debugLog("previousSibling isn't an element");
+            //}
 
-            KhanUtil.debugLog("removed!");
-        }
+            //KhanUtil.debugLog("removed!");
+        //}
     });
 };
 

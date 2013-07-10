@@ -246,6 +246,11 @@ var Khan = (function() {
             link.rel = "stylesheet";
             link.href = urlBase + "css/khan-exercise.css";
             document.getElementsByTagName("head")[0].appendChild(link);
+
+            link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = urlBase + "css/mjlite.css";
+            document.getElementsByTagName("head")[0].appendChild(link);
         })();
     }
 
@@ -335,7 +340,7 @@ var Khan = (function() {
             // MathJax is here because Perseus wants it loaded regardless of if
             // we load a khan-exercises problem that needs it. Previously it
             // was a dependency of 'math' so this isn't really any different.
-            mods.push("answer-types", "tmpl", "jquery.adhesion", "calculator",
+            mods.push("answer-types", "tmpl", "jquery.adhesion", "calculator", "MJLite",
                 {
                     src: urlBase + "utils/MathJax/2.1/MathJax.js?config=KAthJax-da9a7f53e588f3837b045a600e1dc439"
                 });
@@ -1338,8 +1343,8 @@ var Khan = (function() {
         if (validator) {
             // Have MathJax redo the font metrics for the solution area
             // (ugh, this is gross)
-            MathJax.Hub.Queue(["Reprocess", MathJax.Hub,
-                    $("#solutionarea")[0]]);
+            //MathJax.Hub.Queue(["Reprocess", MathJax.Hub,
+                    //$("#solutionarea")[0]]);
 
             // Focus the first input
             // Use .select() and on a delay to make IE happy
